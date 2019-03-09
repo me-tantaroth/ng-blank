@@ -8,6 +8,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { UikitModule } from './uikit.module';
 import { MaterialModule } from './material.module';
 import { CovalentModule } from './covalent.module';
+import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { LayoutsModule } from './layouts/layouts.module';
 
@@ -31,6 +32,7 @@ import { HomeComponent } from './pages/home/home.component';
     UikitModule,
     MaterialModule,
     CovalentModule,
+    SharedModule,
     AppRoutingModule,
     LayoutsModule
   ],
