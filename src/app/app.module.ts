@@ -11,11 +11,12 @@ import { CovalentModule } from './covalent.module';
 import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { LayoutsModule } from './layouts/layouts.module';
+import { AuthModule } from './auth/auth.module';
 
 import { environment } from '../environments/environment';
 
 import { AppComponent } from './app.component';
-import { HomeComponent } from './pages/home/home.component';
+import { HomeComponent } from './pages';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { HomeComponent } from './pages/home/home.component';
     CovalentModule,
     SharedModule,
     AppRoutingModule,
-    LayoutsModule
+    LayoutsModule,
+    AuthModule
   ],
   providers: [],
   bootstrap: [AppComponent]
