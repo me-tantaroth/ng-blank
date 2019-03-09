@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { LayoutsModule } from '../layouts/layouts.module';
 import { AuthRoutingModule } from './auth-routing.module';
 
-import { LoginComponent } from './pages';
+import { SignInComponent, SignUpComponent } from './pages';
 
 @NgModule({
-  declarations: [LoginComponent],
+  declarations: [SignUpComponent, SignInComponent],
   imports: [
     CommonModule,
     LayoutsModule,
