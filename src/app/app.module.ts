@@ -5,10 +5,11 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AppRoutingModule } from './app-routing.module';
 import { UikitModule } from './uikit.module';
 import { MaterialModule } from './material.module';
 import { CovalentModule } from './covalent.module';
+import { AppRoutingModule } from './app-routing.module';
+import { LayoutsModule } from './layouts/layouts.module';
 
 import { environment } from '../environments/environment';
 
@@ -27,10 +28,11 @@ import { HomeComponent } from './pages/home/home.component';
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features,
     AngularFireStorageModule, // imports firebase/storage only needed for storage features,
-    AppRoutingModule,
     UikitModule,
     MaterialModule,
-    CovalentModule
+    CovalentModule,
+    AppRoutingModule,
+    LayoutsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
