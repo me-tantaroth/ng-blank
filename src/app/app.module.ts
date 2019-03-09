@@ -13,10 +13,12 @@ import { CovalentModule } from './covalent.module';
 import { environment } from '../environments/environment';
 
 import { AppComponent } from './app.component';
+import { HomeComponent } from './pages/home/home.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
