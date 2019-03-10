@@ -10,9 +10,10 @@ import { SignInComponent, SignUpComponent } from './pages';
 import { SignInFormComponent } from './components/sign-in-form/sign-in-form.component';
 
 import { AuthService } from './services/auth.service';
+import { SignOutComponent } from './pages/sign-out/sign-out.component';
 
 @NgModule({
-  declarations: [SignUpComponent, SignInComponent, SignInFormComponent],
+  declarations: [SignUpComponent, SignInComponent, SignInFormComponent, SignOutComponent],
   imports: [
     CommonModule,
     FormsModule,
