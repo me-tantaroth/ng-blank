@@ -1,9 +1,11 @@
 {
-  "useTabs": false,
+  "jsxBracketSameLine": false,
   "printWidth": 80,
   "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
   "singleQuote": true,
   "trailingComma": "none",
-  "jsxBracketSameLine": false,
-  "parser": "typescript"
+  "bracketSpacing": true,
+  "arrowParens": "always"
 }
