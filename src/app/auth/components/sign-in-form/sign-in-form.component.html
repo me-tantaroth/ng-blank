@@ -13,10 +13,10 @@
       name="email"
       formControlName="email"
     />
-    <mat-error *ngIf="!!form.controls.email.hasError('required')">
+    <mat-error *ngIf="f.email.hasError('required')">
       E-mail is <strong>required</strong>
     </mat-error>
-    <mat-error *ngIf="!!form.controls.email.hasError('email')">
+    <mat-error *ngIf="f.email.hasError('email')">
       E-mail is <strong>wrong</strong>
     </mat-error>
   </mat-form-field>
@@ -31,13 +31,13 @@
       name="password"
       formControlName="password"
     />
-    <mat-error *ngIf="!!form.controls.password.hasError('required')">
+    <mat-error *ngIf="f.password.hasError('required')">
       Password is <strong>required</strong>
     </mat-error>
-    <mat-error *ngIf="!!form.controls.password.hasError('minlength')">
+    <mat-error *ngIf="f.password.hasError('minlength')">
       Password must have more than
       <strong
-        >{{ passwordField.errors.minlength.requiredLength }} letters</strong
+        >{{ f.password.errors.minlength.requiredLength }} letters</strong
       >
     </mat-error>
   </mat-form-field>

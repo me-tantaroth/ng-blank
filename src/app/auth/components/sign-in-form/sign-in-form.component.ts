@@ -19,10 +19,8 @@ export class SignInFormComponent implements OnInit {
     store.select('authentications');
   }
 
-  get passwordField(): any {
-    return this.form.controls && this.form.controls.password
-      ? this.form.controls.password
-      : null;
+  get f(): any {
+    return this.form.controls;
   }
 
   ngOnInit() {
@@ -52,6 +50,7 @@ export class SignInFormComponent implements OnInit {
   }
   onSubmitted(event: boolean) {
     this.submitted = true;
+
     if (event) {
       this.submitted = false;
       this.reset();

@@ -6,11 +6,10 @@ import { MaterialModule } from '../material.module';
 import { LayoutsModule } from '../layouts/layouts.module';
 import { AuthRoutingModule } from './auth-routing.module';
 
-import { SignInComponent, SignUpComponent } from './pages';
-import { SignInFormComponent } from './components/sign-in-form/sign-in-form.component';
+import { SignInComponent, SignUpComponent, SignOutComponent } from './pages';
+import { SignInFormComponent } from './components';
 
 import { AuthService } from './services/auth.service';
-import { SignOutComponent } from './pages/sign-out/sign-out.component';
 
 @NgModule({
   declarations: [SignUpComponent, SignInComponent, SignInFormComponent, SignOutComponent],
@@ -23,6 +22,7 @@ import { SignOutComponent } from './pages/sign-out/sign-out.component';
     LayoutsModule,
     AuthRoutingModule
   ],
+  exports: [SignInFormComponent],
   providers: [AuthService]
 })
 export class AuthModule {}
