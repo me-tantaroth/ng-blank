@@ -1,3 +1,4 @@
+<td-message *ngIf="message.show" [label]="message.label" [sublabel]="message.sublabel" [color]="message.color" [icon]="message.icon" class="uk-margin"></td-message>
 <tnt-barn-form
   [formGroup]="form"
   (submitting)="onSubmitting($event)"

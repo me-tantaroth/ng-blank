@@ -2,8 +2,8 @@
   <td-navigation-drawer
     flex
     [sidenavTitle]="name"
-    name="Firstname Lastname"
-    email="firstname.lastname@company.com"
+    [name]="user ? user.displayName : ''"
+    [email]="user ? user.email : ''"
   >
     <mat-nav-list>
       <a [routerLink]="[item.route]" *ngFor="let item of routes" mat-list-item

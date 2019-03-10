@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 
 import { UsersService } from '../../users/services/users.service';
@@ -17,19 +16,28 @@ interface Response {
   providedIn: 'root'
 })
 export class AuthService {
-  users: User[] = [];
+  private users: User[] = [];
 
-  constructor(private store: StoreService, private usersService: UsersService) {
-    const langsNode = this.store.get('langs-node');
-
+  constructor(private usersService: UsersService) {
     this.users = this.usersService.users;
   }
 
   get authenticated(): Observable<boolean> {
-    const authEmailLocal = window.localStorage.getItem('authenticated-email');
     return new Observable((observer) => {
-      observer.next(!!authEmailLocal);
+      observer.next(!!window.localStorage.getItem('authenticated-email'));
       observer.complete();
+    });
+  }
+
+  getUser(): Observable<Response> {
+    const results = _.filter(this.users, function(item) {
+      return item.email.indexOf(window.localStorage.getItem('authenticated-email')) > -1;
+    });
+    return new Observable((observer) => {
+      observer.next({
+        status: true,
+        data: results[0]
+      });
     });
   }
 
@@ -68,7 +76,7 @@ export class AuthService {
       } else {
         observer.next({
           status: false,
-          error: 'User not found'
+          error: 'User exist'
         });
       }
       observer.complete();

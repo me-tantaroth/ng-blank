@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 
-import { LangsService } from '../../../langs/services/langs.service';
+import { UsersService } from '../../services/users.service';
 import { AuthService } from '../../../auth/services/auth.service';
 
 import { ConfirmPasswordValidator } from '../../../shared/validators/confirm-password-validator';
 
 import { User } from '../../models/user';
+import { Message } from '../../../models/message';
 
 @Component({
   selector: 'app-user-form',
@@ -16,19 +18,21 @@ import { User } from '../../models/user';
   styleUrls: ['./user-form.component.scss']
 })
 export class UserFormComponent implements OnInit {
+  users: User[] = [];
   submitted: boolean;
   form: FormGroup;
   editing: boolean;
-  users: User[] = [];
+  message: Message = {
+    show: false
+  };
 
   constructor(
     private store: StoreService,
-    private langs: LangsService,
-    private auth: AuthService
+    private usersService: UsersService,
+    private auth: AuthService,
+    private router: Router
   ) {
-    const langsNode = this.store.get('langs-node');
-
-    this.users = langsNode[this.langs.currentLang].users;
+    this.users = usersService.users;
     store.select('users');
   }
 
@@ -75,6 +79,21 @@ export class UserFormComponent implements OnInit {
         delete value.confirmPassword;
 
         this.users.push(value);
+        this.auth.signOut().subscribe(
+          responseSignOut => {
+            if (responseSignOut.status) {
+              this.router.navigate(['/auth/sign-in']);
+            }
+          }
+        );
+      } else {
+        this.message = {
+          show: true,
+          label: 'Error!',
+          sublabel: response.error,
+          color: 'warn',
+          icon: 'error'
+        };
       }
     });
   }

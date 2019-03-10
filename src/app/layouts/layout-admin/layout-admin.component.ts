@@ -1,7 +1,12 @@
+import { Observable } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';
 import { TdMediaService } from '@covalent/core';
+
+import { AuthService } from '../../auth/services/auth.service';
+
+import { User } from '../../users/models/user';
 
 @Component({
   selector: 'app-layout-admin',
@@ -11,7 +16,9 @@ import { TdMediaService } from '@covalent/core';
 export class LayoutAdminComponent implements OnInit {
   name = 'AFROUP';
 
-  routes: Object[] = [
+  user: User;
+
+  routes: any[] = [
     {
       icon: 'home',
       route: '.',
@@ -21,29 +28,9 @@ export class LayoutAdminComponent implements OnInit {
       icon: 'people',
       route: '/user/list',
       title: 'Users'
-    },
-    {
-      icon: 'library_books',
-      route: '.',
-      title: 'Documentation'
-    },
-    {
-      icon: 'color_lens',
-      route: '.',
-      title: 'Style Guide'
-    },
-    {
-      icon: 'view_quilt',
-      route: '.',
-      title: 'Layouts'
-    },
-    {
-      icon: 'picture_in_picture',
-      route: '.',
-      title: 'Components & Addons'
     }
   ];
-  usermenu: Object[] = [
+  usermenu: any[] = [
     {
       icon: 'swap_horiz',
       route: '.',
@@ -62,6 +49,7 @@ export class LayoutAdminComponent implements OnInit {
   ];
 
   constructor(
+    private authService: AuthService,
     public media: TdMediaService,
     private _iconRegistry: MatIconRegistry,
     private _domSanitizer: DomSanitizer
@@ -89,5 +77,13 @@ export class LayoutAdminComponent implements OnInit {
     );
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.authService.getUser().subscribe(
+      response => {
+        if (response.status) {
+          this.user = response.data;
+        }
+      }
+    );
+  }
 }
