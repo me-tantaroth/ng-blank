@@ -6,13 +6,13 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { NgBarnModule } from 'ng-barn';
-import { UikitModule } from './uikit.module';
 import { MaterialModule } from './material.module';
 import { CovalentModule } from './covalent.module';
 import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { LayoutsModule } from './layouts/layouts.module';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 import { environment } from '../environments/environment';
 
@@ -38,13 +38,13 @@ import { HomeComponent } from './pages';
         authenticated: {}
       }
     }),
-    UikitModule,
     MaterialModule,
     CovalentModule,
     SharedModule,
     AppRoutingModule,
     LayoutsModule,
-    AuthModule
+    AuthModule,
+    UsersModule
   ],
   providers: [],
   bootstrap: [AppComponent]

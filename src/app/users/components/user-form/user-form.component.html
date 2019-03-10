@@ -1,0 +1,26 @@
+<tnt-barn-form
+  [formGroup]="form"
+  (submitting)="onSubmitting($event)"
+  (submitted)="onSubmitted($event)"
+>
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+    <input
+      matInput
+      #displayName
+      type="text"
+      placeholder="Name"
+      id="displayName"
+      name="displayName"
+      formControlName="displayName"
+    />
+  </mat-form-field>
+
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="submitted"
+  >
+    Add
+  </button>
+</tnt-barn-form>
