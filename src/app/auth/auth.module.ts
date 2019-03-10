@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgBarnModule } from 'ng-barn';
 import { MaterialModule } from '../material.module';
+import { CovalentModule } from '../covalent.module';
 import { LayoutsModule } from '../layouts/layouts.module';
 import { AuthRoutingModule } from './auth-routing.module';
 
@@ -19,6 +20,7 @@ import { AuthService } from './services/auth.service';
     ReactiveFormsModule,
     NgBarnModule,
     MaterialModule,
+    CovalentModule,
     LayoutsModule,
     AuthRoutingModule
   ],

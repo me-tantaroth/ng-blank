@@ -15,10 +15,88 @@
     />
   </mat-form-field>
 
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+    <input
+      matInput
+      #email
+      type="email"
+      placeholder="E-mail"
+      id="email"
+      name="email"
+      formControlName="email"
+    />
+    <mat-error *ngIf="f.email.hasError('required')">
+      E-mail is <strong>required</strong>
+    </mat-error>
+    <mat-error *ngIf="f.email.hasError('email')">
+      E-mail is <strong>wrong</strong>
+    </mat-error>
+    <mat-error *ngIf="f.email.hasError('pattern')">
+      E-mail is not correct
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+    <input
+      matInput
+      type="password"
+      placeholder="Password"
+      formControlName="password"
+      name="password"
+      required
+      #password
+    />
+    <mat-error *ngIf="f.password.hasError('required')">
+      Password is <strong>required</strong>
+    </mat-error>
+    <mat-error *ngIf="f.password.hasError('pattern')">
+      Password pattern is not correct, example: <strong>(P@ssw0rd)</strong>
+    </mat-error>
+    <mat-error *ngIf="f.password.hasError('minlength')">
+      Required min length
+      <strong>{{ f.password.errors.minlength.requiredLength }}</strong>
+    </mat-error>
+    <mat-error *ngIf="f.password.hasError('maxlength')">
+      Required max length
+      <strong>{{ f.password.errors.maxlength.requiredLength }}</strong>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+    <input
+      matInput
+      type="password"
+      placeholder="Confirm Password"
+      formControlName="confirmPassword"
+      name="confirmPassword"
+      required
+      #confirmPassword
+    />
+    <mat-error *ngIf="f.confirmPassword.hasError('required')">
+      Confirm Password is <strong>required</strong>
+    </mat-error>
+    <mat-error *ngIf="f.confirmPassword.hasError('notMatched')">
+      Confirm Password is not <strong>match</strong>
+    </mat-error>
+    <mat-error *ngIf="f.confirmPassword.hasError('pattern')">
+      Confirm Password pattern is not correct, example:
+      <strong>(P@ssw0rd)</strong>
+    </mat-error>
+    <mat-error *ngIf="f.confirmPassword.hasError('minlength')">
+      Required min length
+      <strong>{{ f.confirmPassword.errors.minlength.requiredLength }}</strong>
+    </mat-error>
+    <mat-error *ngIf="f.confirmPassword.hasError('maxlength')">
+      Required max length
+      <strong>{{ f.confirmPassword.errors.maxlength.requiredLength }}</strong>
+    </mat-error>
+  </mat-form-field>
+
   <button
     mat-raised-button
     color="primary"
     type="submit"
+    class="uk-align-right"
     [disabled]="submitted"
   >
     Add

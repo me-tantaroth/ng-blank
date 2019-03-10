@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { StoreService } from 'ng-barn';
 
+import { ConfirmPasswordValidator } from '../../../shared/validators/confirm-password-validator';
+
 @Component({
   selector: 'app-user-form',
   templateUrl: './user-form.component.html',
@@ -22,7 +24,27 @@ export class UserFormComponent implements OnInit {
 
   ngOnInit() {
     this.form = new FormGroup({
-      displayName: new FormControl('')
+      displayName: new FormControl(''),
+      email: new FormControl('', [
+        Validators.required,
+        Validators.email,
+        Validators.pattern(
+          /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+        )
+      ]),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,45}/),
+        Validators.minLength(8),
+        Validators.maxLength(45)
+      ]),
+      confirmPassword: new FormControl(null, [
+        Validators.required,
+        Validators.pattern(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,45}/),
+        Validators.minLength(8),
+        Validators.maxLength(45),
+        ConfirmPasswordValidator('password')
+      ])
     });
   }
 
@@ -33,12 +55,14 @@ export class UserFormComponent implements OnInit {
   onSubmitting(event: any) {
     const value = event[event.index];
 
-    console.log(value, this.store);
+    delete value.password;
+    delete value.confirmPassword;
+
+    this.store.update(event.index, value);
   }
   onSubmitted(event: boolean) {
     this.submitted = true;
 
-    console.log(this.form, this.store, event);
     if (event) {
       this.submitted = false;
       this.reset();

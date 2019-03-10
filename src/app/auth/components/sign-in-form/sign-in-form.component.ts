@@ -5,6 +5,8 @@ import { StoreService } from 'ng-barn';
 
 import { AuthService } from '../../services/auth.service';
 
+import { Message } from '../../../models/message';
+
 @Component({
   selector: 'app-sign-in-form',
   templateUrl: './sign-in-form.component.html',
@@ -14,6 +16,9 @@ export class SignInFormComponent implements OnInit {
   submitted: boolean;
   index: number;
   form: FormGroup;
+  message: Message = {
+    show: false
+  };
 
   constructor(private router: Router, private store: StoreService, private auth: AuthService) {
     store.select('authentications');
@@ -44,7 +49,19 @@ export class SignInFormComponent implements OnInit {
       if (response.status) {
         this.store.set(value, 'authenticated');
 
+        this.message = {
+          show: false
+        };
+
         this.router.navigate(['/']);
+      } else {
+        this.message = {
+          show: true,
+          label: 'Error!',
+          sublabel: response.error,
+          color: 'warn',
+          icon: 'error'
+        };
       }
     });
   }
