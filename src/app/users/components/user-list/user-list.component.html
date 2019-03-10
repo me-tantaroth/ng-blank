@@ -1,8 +1,73 @@
 <div *ngIf="users.length > 0">
-  <mat-list role="list">
-    <mat-list-item role="user" *ngFor="let user of users">
-      {{ user.displayName }} - {{ user.email }}
-    </mat-list-item>
-  </mat-list>
+  <mat-accordion>
+    <mat-expansion-panel
+      role="user"
+      *ngFor="let user of users; let i = index"
+      (opened)="panelOpenState = true"
+      (closed)="panelOpenState = false"
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title> {{ user.displayName }} </mat-panel-title>
+        <mat-panel-description> {{ user.email }} </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div>
+        <div align="right">
+          <a [routerLink]="['/user/form', i]" class="uk-text-primary">Edit</a>
+          &nbsp;
+          <span *ngIf="user.emailVerified" class="uk-text-success">{{
+            user.emailVerified ? 'Email Verified' : ''
+          }}</span>
+          <a
+            [routerLink]="['/user/form', i]"
+            class="uk-text-warning"
+            (click)="verfifyEmail(i, user)"
+            *ngIf="!user.emailVerified"
+            >Verify Email</a
+          >
+          &nbsp;
+          <span *ngIf="user.blocked" class="uk-text-success">{{
+            user.blocked ? 'Blocked' : ''
+          }}</span>
+          <a
+            [routerLink]="['/user/form', i]"
+            class="uk-text-danger"
+            (click)="blockUser(i, user)"
+            *ngIf="!user.blocked"
+            >Block</a
+          >
+        </div>
+        <h4>{{ user.createdAt | date }}</h4>
+        <blockquote cite="#">
+          <p class="uk-margin-small-bottom">{{ user.cite || '--' }}</p>
+          <footer>
+            by
+            <cite
+              ><a [routerLink]="['/user/form', i]" class="uk-text-primary">{{
+                user.displayName
+              }}</a></cite
+            >
+          </footer>
+        </blockquote>
+        {{ user.aboutMe || '--' }}
+      </div>
+      <h3 class="uk-heading-bullet">Contact</h3>
+      <div uk-grid>
+        <div class="uk-width-1-3">
+          <mat-list-item>
+            <mat-icon mat-list-icon>phone</mat-icon>
+            <h4 mat-line>Phone</h4>
+            <span mat-line>{{ user.phoneNumber || '--' }}</span>
+          </mat-list-item>
+        </div>
+        <div class="uk-width-1-3">
+          <mat-list-item>
+            <mat-icon mat-list-icon>mail</mat-icon>
+            <h4 mat-line>Email</h4>
+            <span mat-line>{{ user.email || '--' }}</span>
+          </mat-list-item>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
 </div>
 <div *ngIf="users.length <= 0"><h2>Not found data</h2></div>

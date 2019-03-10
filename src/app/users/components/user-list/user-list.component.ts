@@ -10,11 +10,24 @@ import { User } from '../../models/user';
   styleUrls: ['./user-list.component.scss']
 })
 export class UserListComponent implements OnInit {
+  panelOpenState: boolean;
   users: User[] = [];
 
   constructor(private usersService: UsersService) {}
 
   ngOnInit() {
     this.users = this.usersService.users;
+  }
+
+  verfifyEmail(index: string, user: User) {
+    user.emailVerified = true;
+
+    this.users[index] = user;
+  }
+
+  blockUser(index: string, user: User) {
+    user.blocked = true;
+
+    this.users[index] = user;
   }
 }

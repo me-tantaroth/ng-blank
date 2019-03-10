@@ -44,7 +44,14 @@ import { LangsModule } from './langs/langs.module';
             users: [
               {
                 displayName: 'Eduard Ramirez',
-                email: 'tantaroth@gmail.com'
+                username: 'tantaroth',
+                email: 'tantaroth@gmail.com',
+                cite: 'La libertad siempre ha sido importante para mi.',
+                aboutMe: 'Hola, soy Eduard Ramirez!',
+                phoneNumber: 3150339393,
+                blocked: false,
+                emailVerified: true,
+                createdAt: new Date()
               }
             ]
           }

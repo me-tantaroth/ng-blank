@@ -15,6 +15,11 @@ const routes: Routes = [
     path: 'form',
     component: UserComponent,
     canActivate: [SignInGuard]
+  },
+  {
+    path: 'form/:id',
+    component: UserComponent,
+    canActivate: [SignInGuard]
   }
 ];
 

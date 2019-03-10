@@ -1,4 +1,11 @@
-<td-message *ngIf="message.show" [label]="message.label" [sublabel]="message.sublabel" [color]="message.color" [icon]="message.icon" class="uk-margin"></td-message>
+<td-message
+  *ngIf="message.show"
+  [label]="message.label"
+  [sublabel]="message.sublabel"
+  [color]="message.color"
+  [icon]="message.icon"
+  class="uk-margin"
+></td-message>
 <tnt-barn-form
   [formGroup]="form"
   (submitting)="onSubmitting($event)"
@@ -37,15 +44,81 @@
     </mat-error>
   </mat-form-field>
 
+  <div *ngIf="userId">
+    <mat-form-field class="uk-width-1-1 uk-margin-small">
+      <input
+        matInput
+        type="text"
+        placeholder="Username"
+        formControlName="username"
+        name="username"
+        #username
+      />
+    </mat-form-field>
+    <mat-form-field class="uk-width-1-1 uk-margin-small">
+      <input
+        matInput
+        #phoneNumber
+        type="tel"
+        placeholder="Phone Number"
+        id="phoneNumber"
+        name="phoneNumber"
+        formControlName="phoneNumber"
+      />
+    </mat-form-field>
+  
+    <mat-form-field class="uk-width-1-1 uk-margin-small">
+      <input
+        matInput
+        type="text"
+        placeholder="Cite"
+        formControlName="cite"
+        name="cite"
+        #cite
+      />
+    </mat-form-field>
+    <mat-form-field class="uk-width-1-1 uk-margin-small">
+      <textarea
+        matInput
+        placeholder="About me"
+        formControlName="aboutMe"
+        name="aboutMe"
+        #aboutMe
+      ></textarea>
+    </mat-form-field>
+    <section>
+      <mat-slide-toggle
+        color="accent"
+        formControlName="blocked"
+        name="blocked"
+        required
+        #blocked
+      >
+        Blocked
+      </mat-slide-toggle>
+    </section>
+    <section>
+      <mat-slide-toggle
+        color="accent"
+        formControlName="emailVerified"
+        name="emailVerified"
+        required
+        #emailVerified
+      >
+        Email verified
+      </mat-slide-toggle>
+    </section>
+  </div>
   <mat-form-field class="uk-width-1-1 uk-margin-small">
     <input
       matInput
       type="password"
-      placeholder="Password"
+      [placeholder]="(userId ? 'Current ' : '') + 'Password'"
       formControlName="password"
       name="password"
       required
       #password
+      (change)="addConfirmPassword(password.value)"
     />
     <mat-error *ngIf="f.password.hasError('required')">
       Password is <strong>required</strong>
@@ -63,46 +136,47 @@
     </mat-error>
   </mat-form-field>
 
-  <mat-form-field class="uk-width-1-1 uk-margin-small">
-    <input
-      matInput
-      type="password"
-      placeholder="Confirm Password"
-      formControlName="confirmPassword"
-      name="confirmPassword"
-      required
-      #confirmPassword
-    />
-    <mat-error *ngIf="f.confirmPassword.hasError('required')">
-      Confirm Password is <strong>required</strong>
-    </mat-error>
-    <mat-error *ngIf="f.confirmPassword.hasError('notMatched')">
-      Confirm Password is not <strong>match</strong>
-    </mat-error>
-    <mat-error *ngIf="f.confirmPassword.hasError('pattern')">
-      Confirm Password pattern is not correct, example:
-      <strong>(P@ssw0rd)</strong>
-    </mat-error>
-    <mat-error *ngIf="f.confirmPassword.hasError('minlength')">
-      Required min length
-      <strong>{{ f.confirmPassword.errors.minlength.requiredLength }}</strong>
-    </mat-error>
-    <mat-error *ngIf="f.confirmPassword.hasError('maxlength')">
-      Required max length
-      <strong>{{ f.confirmPassword.errors.maxlength.requiredLength }}</strong>
-    </mat-error>
-  </mat-form-field>
+  <div *ngIf="!userId">
+    <mat-form-field class="uk-width-1-1 uk-margin-small">
+      <input
+        matInput
+        type="password"
+        placeholder="Confirm Password"
+        formControlName="confirmPassword"
+        name="confirmPassword"
+        required
+        #confirmPassword
+      />
+      <mat-error *ngIf="f.confirmPassword.hasError('required')">
+        Confirm Password is <strong>required</strong>
+      </mat-error>
+      <mat-error *ngIf="f.confirmPassword.hasError('notMatched')">
+        Confirm Password is not <strong>match</strong>
+      </mat-error>
+      <mat-error *ngIf="f.confirmPassword.hasError('pattern')">
+        Confirm Password pattern is not correct, example:
+        <strong>(P@ssw0rd)</strong>
+      </mat-error>
+      <mat-error *ngIf="f.confirmPassword.hasError('minlength')">
+        Required min length
+        <strong>{{ f.confirmPassword.errors.minlength.requiredLength }}</strong>
+      </mat-error>
+      <mat-error *ngIf="f.confirmPassword.hasError('maxlength')">
+        Required max length
+        <strong>{{ f.confirmPassword.errors.maxlength.requiredLength }}</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
 
-  
   <mat-divider></mat-divider>
   <mat-card-actions align="right">
-      <button
+    <button
       mat-raised-button
       color="primary"
       type="submit"
       [disabled]="submitted"
     >
-      Add
+      Save
     </button>
   </mat-card-actions>
 </tnt-barn-form>
