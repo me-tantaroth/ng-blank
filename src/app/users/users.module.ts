@@ -7,14 +7,15 @@ import { MaterialModule } from '../material.module';
 import { LayoutsModule } from '../layouts/layouts.module';
 
 import { UsersComponent, UserComponent } from './pages';
-import { UserListComponent, UserFormComponent } from './components';
+import { UserListComponent, UserFormComponent, ModalUserListComponent } from './components';
 
 @NgModule({
   declarations: [
     UserListComponent,
     UsersComponent,
     UserComponent,
-    UserFormComponent
+    UserFormComponent,
+    ModalUserListComponent
   ],
   imports: [
     CommonModule,
@@ -25,6 +26,6 @@ import { UserListComponent, UserFormComponent } from './components';
     LayoutsModule,
     UsersRoutingModule
   ],
-  exports: [UserListComponent, UserFormComponent]
+  exports: [UserListComponent, UserFormComponent, ModalUserListComponent]
 })
 export class UsersModule {}

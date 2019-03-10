@@ -1,6 +1,6 @@
 export interface User {
+    displayName?: string;
     email: string;
-    name?: string;
 }
 export class User {
 }

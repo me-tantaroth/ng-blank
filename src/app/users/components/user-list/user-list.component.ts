@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { StoreService } from 'ng-barn';
 
+import { LangsService } from '../../../langs/services/langs.service';
+
 import { User } from '../../models/user';
 
 @Component({
@@ -11,12 +13,11 @@ import { User } from '../../models/user';
 export class UserListComponent implements OnInit {
   users: User[] = [];
 
-  constructor(private store: StoreService) {
-    store.select('users');
+  constructor(private store: StoreService, private langs: LangsService) {
+    const langsNode = this.store.get('langs-node');
+
+    this.users = langsNode[this.langs.currentLang].users;
   }
 
-  ngOnInit() {
-    this.users = this.store.get();
-  }
-
+  ngOnInit() {}
 }

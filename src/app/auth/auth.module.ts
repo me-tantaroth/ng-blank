@@ -5,12 +5,14 @@ import { NgBarnModule } from 'ng-barn';
 import { MaterialModule } from '../material.module';
 import { CovalentModule } from '../covalent.module';
 import { LayoutsModule } from '../layouts/layouts.module';
+import { SharedModule } from '../shared/shared.module';
+import { UsersModule } from '../users/users.module';
 import { AuthRoutingModule } from './auth-routing.module';
+
+import { AuthService } from './services/auth.service';
 
 import { SignInComponent, SignUpComponent, SignOutComponent } from './pages';
 import { SignInFormComponent } from './components';
-
-import { AuthService } from './services/auth.service';
 
 @NgModule({
   declarations: [SignUpComponent, SignInComponent, SignInFormComponent, SignOutComponent],
@@ -22,6 +24,8 @@ import { AuthService } from './services/auth.service';
     MaterialModule,
     CovalentModule,
     LayoutsModule,
+    SharedModule,
+    UsersModule,
     AuthRoutingModule
   ],
   exports: [SignInFormComponent],

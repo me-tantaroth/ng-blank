@@ -18,13 +18,10 @@ import { environment } from '../environments/environment';
 
 import { AppComponent } from './app.component';
 import { HomeComponent, NotFoundComponent } from './pages';
+import { LangsModule } from './langs/langs.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    NotFoundComponent
-  ],
+  declarations: [AppComponent, HomeComponent, NotFoundComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -34,10 +31,25 @@ import { HomeComponent, NotFoundComponent } from './pages';
     AngularFireStorageModule, // imports firebase/storage only needed for storage features,
     NgBarnModule.forRoot({
       store: {
-        users: [{
-          displayName: 'Eduard Ramirez',
-          email: 'tantaroth@gmail.com'
-        }],
+        langs: [
+          {
+            code: 'en-US',
+            label: 'Español'
+          }
+        ],
+        'langs-node': {
+          'en-US': {
+            code: 'en-US',
+            label: 'Español',
+            users: [
+              {
+                displayName: 'Eduard Ramirez',
+                email: 'tantaroth@gmail.com'
+              }
+            ]
+          }
+        },
+        users: [],
         authentications: [],
         authenticated: {}
       }
@@ -48,9 +60,10 @@ import { HomeComponent, NotFoundComponent } from './pages';
     AppRoutingModule,
     LayoutsModule,
     AuthModule,
-    UsersModule
+    UsersModule,
+    LangsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
