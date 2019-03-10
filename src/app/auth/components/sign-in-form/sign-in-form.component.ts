@@ -44,7 +44,6 @@ export class SignInFormComponent implements OnInit {
 
     this.auth.emailSignIn(value.email, value.password).subscribe((response) => {
       if (response.status) {
-        console.log(response)
         this.store.set(value, 'authenticated');
 
         this.router.navigate(['/']);

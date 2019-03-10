@@ -14,6 +14,16 @@ export class AuthService {
 
   constructor() { }
 
+  get authenticated(): Observable<boolean> {
+    const authEmailLocal = window.localStorage.getItem('authenticated-email');
+    return new Observable(
+      observer => {
+        observer.next(!!authEmailLocal);
+        observer.complete();
+      }
+    );
+  }
+
   emailSignIn(email: string, passowrd: string): Observable<Response> {
     return new Observable(
       observer => {

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { AuthService } from '../../../auth/services/auth.service';
 
@@ -8,10 +9,12 @@ import { AuthService } from '../../../auth/services/auth.service';
   styleUrls: ['./navbar-default.component.scss']
 })
 export class NavbarDefaultComponent implements OnInit {
+  authenticated: Observable<boolean>;
 
   constructor(private auth: AuthService) { }
 
   ngOnInit() {
+    this.authenticated = this.auth.authenticated;
   }
 
   signOut() {
