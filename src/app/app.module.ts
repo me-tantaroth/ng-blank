@@ -34,13 +34,13 @@ import { LangsModule } from './langs/langs.module';
         langs: [
           {
             code: 'en-US',
-            label: 'Español'
+            label: 'English'
           }
         ],
         'langs-node': {
           'en-US': {
             code: 'en-US',
-            label: 'Español',
+            label: 'English',
             users: [
               {
                 displayName: 'Eduard Ramirez',

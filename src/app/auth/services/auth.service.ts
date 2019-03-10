@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 
-import { LangsService } from '../../langs/services/langs.service';
+import { UsersService } from '../../users/services/users.service';
 
 import { User } from '../../users/models/user';
 
@@ -19,10 +19,10 @@ interface Response {
 export class AuthService {
   users: User[] = [];
 
-  constructor(private store: StoreService, private langs: LangsService) {
+  constructor(private store: StoreService, private usersService: UsersService) {
     const langsNode = this.store.get('langs-node');
 
-    this.users = langsNode[this.langs.currentLang].users;
+    this.users = this.usersService.users;
   }
 
   get authenticated(): Observable<boolean> {

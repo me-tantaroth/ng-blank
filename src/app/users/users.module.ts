@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgBarnModule } from 'ng-barn';
 import { UsersRoutingModule } from './users-routing.module';
 import { MaterialModule } from '../material.module';
+import { CovalentModule } from '../covalent.module';
 import { LayoutsModule } from '../layouts/layouts.module';
 
 import { UsersComponent, UserComponent } from './pages';
@@ -23,6 +24,7 @@ import { UserListComponent, UserFormComponent, ModalUserListComponent } from './
     ReactiveFormsModule,
     NgBarnModule,
     MaterialModule,
+    CovalentModule,
     LayoutsModule,
     UsersRoutingModule
   ],

@@ -1,26 +1,86 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
+
+import {
+  MatFormFieldModule,
+  MatButtonModule,
+  MatListModule,
+  MatCardModule,
+  MatMenuModule,
+  MatInputModule,
+  MatButtonToggleModule,
+  MatIconModule,
+  MatProgressSpinnerModule,
+  MatSelectModule,
+  MatSlideToggleModule,
+  MatDialogModule,
+  MatSnackBarModule,
+  MatToolbarModule,
+  MatTabsModule,
+  MatSidenavModule,
+  MatTooltipModule,
+  MatRippleModule,
+  MatRadioModule,
+  MatGridListModule,
+  MatDatepickerModule,
+  MatNativeDateModule,
+  MatSliderModule,
+  MatAutocompleteModule
+} from '@angular/material';
 
 @NgModule({
   imports: [
     CommonModule,
     MatFormFieldModule,
-    MatInputModule,
     MatButtonModule,
+    MatListModule,
+    MatCardModule,
+    MatMenuModule,
+    MatInputModule,
+    MatButtonToggleModule,
     MatIconModule,
-    MatListModule
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatToolbarModule,
+    MatTabsModule,
+    MatSidenavModule,
+    MatTooltipModule,
+    MatRippleModule,
+    MatRadioModule,
+    MatGridListModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSliderModule,
+    MatAutocompleteModule
   ],
   exports: [
     MatFormFieldModule,
-    MatInputModule,
     MatButtonModule,
+    MatListModule,
+    MatCardModule,
+    MatMenuModule,
+    MatInputModule,
+    MatButtonToggleModule,
     MatIconModule,
-    MatListModule
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatToolbarModule,
+    MatTabsModule,
+    MatSidenavModule,
+    MatTooltipModule,
+    MatRippleModule,
+    MatRadioModule,
+    MatGridListModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSliderModule,
+    MatAutocompleteModule
   ]
 })
 export class MaterialModule {}

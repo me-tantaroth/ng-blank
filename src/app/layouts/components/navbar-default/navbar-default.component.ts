@@ -18,13 +18,7 @@ export class NavbarDefaultComponent implements OnInit {
   }
 
   signOut() {
-    this.auth.signOut().subscribe(
-      response => {
-        if (response.status) {
-          // CODE
-        }
-      }
-    );
+    this.auth.signOut().subscribe();
   }
 
 }

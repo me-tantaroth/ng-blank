@@ -92,13 +92,16 @@
     </mat-error>
   </mat-form-field>
 
-  <button
-    mat-raised-button
-    color="primary"
-    type="submit"
-    class="uk-align-right"
-    [disabled]="submitted"
-  >
-    Add
-  </button>
+  
+  <mat-divider></mat-divider>
+  <mat-card-actions align="right">
+      <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="submitted"
+    >
+      Add
+    </button>
+  </mat-card-actions>
 </tnt-barn-form>
