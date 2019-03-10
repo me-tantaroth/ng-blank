@@ -1,0 +1,53 @@
+<tnt-barn-form
+  [formGroup]="form"
+  (submitting)="onSubmitting($event)"
+  (submitted)="onSubmitted($event)"
+>
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+    <input
+      matInput
+      #email
+      type="email"
+      placeholder="E-mail"
+      id="email"
+      name="email"
+      formControlName="email"
+    />
+    <mat-error *ngIf="!!form.controls.email.hasError('required')">
+      E-mail is <strong>required</strong>
+    </mat-error>
+    <mat-error *ngIf="!!form.controls.email.hasError('email')">
+      E-mail is <strong>wrong</strong>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+    <input
+      matInput
+      #password
+      type="password"
+      placeholder="Password"
+      id="password"
+      name="password"
+      formControlName="password"
+    />
+    <mat-error *ngIf="!!form.controls.password.hasError('required')">
+      Password is <strong>required</strong>
+    </mat-error>
+    <mat-error *ngIf="!!form.controls.password.hasError('minlength')">
+      Password must have more than
+      <strong
+        >{{ passwordField.errors.minlength.requiredLength }} letters</strong
+      >
+    </mat-error>
+  </mat-form-field>
+
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="submitted"
+  >
+    Sign In
+  </button>
+</tnt-barn-form>

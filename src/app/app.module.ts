@@ -33,7 +33,9 @@ import { HomeComponent } from './pages';
     AngularFireStorageModule, // imports firebase/storage only needed for storage features,
     NgBarnModule.forRoot({
       store: {
-        users: []
+        users: [],
+        authentications: [],
+        authenticated: {}
       }
     }),
     UikitModule,
