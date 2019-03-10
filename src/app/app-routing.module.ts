@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 
-import { HomeComponent } from './pages';
+import { HomeComponent, NotFoundComponent } from './pages';
 
 const routes: Routes = [
   {
@@ -17,6 +17,14 @@ const routes: Routes = [
   {
     path: 'user',
     loadChildren: () => UsersModule
+  },
+  {
+    path: 'not-found',
+    component: NotFoundComponent
+  },
+  {
+    path: '**',
+    component: NotFoundComponent
   }
 ];
 

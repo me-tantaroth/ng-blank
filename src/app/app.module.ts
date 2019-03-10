@@ -17,12 +17,13 @@ import { UsersModule } from './users/users.module';
 import { environment } from '../environments/environment';
 
 import { AppComponent } from './app.component';
-import { HomeComponent } from './pages';
+import { HomeComponent, NotFoundComponent } from './pages';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
@@ -33,7 +34,10 @@ import { HomeComponent } from './pages';
     AngularFireStorageModule, // imports firebase/storage only needed for storage features,
     NgBarnModule.forRoot({
       store: {
-        users: [],
+        users: [{
+          displayName: 'Eduard Ramirez',
+          email: 'tantaroth@gmail.com'
+        }],
         authentications: [],
         authenticated: {}
       }
