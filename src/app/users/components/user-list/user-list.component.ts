@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
+import { AuthService } from '../../../auth/services/auth.service';
 import { UsersService } from '../../services/users.service';
 
 import { User } from '../../models/user';
@@ -13,7 +15,11 @@ export class UserListComponent implements OnInit {
   panelOpenState: boolean;
   users: User[] = [];
 
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private router: Router,
+    private auth: AuthService,
+    private usersService: UsersService
+  ) {}
 
   ngOnInit() {
     this.users = this.usersService.users;
@@ -29,5 +35,16 @@ export class UserListComponent implements OnInit {
     user.blocked = true;
 
     this.users[index] = user;
+  }
+
+  deleteUser(index: string, user: User) {
+    user.deleted = true;
+
+    this.users[index] = user;
+    this.auth.signOut().subscribe((response) => {
+      if (response.status) {
+        this.router.navigate(['/auth/sign-out']);
+      }
+    });
   }
 }

@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { SignInGuard } from '../auth/guards/sign-in.guard';
 
-import { UsersComponent, UserComponent } from './pages';
+import { UsersComponent, UserComponent, RecoveryComponent } from './pages';
 
 const routes: Routes = [
   {
@@ -20,6 +20,10 @@ const routes: Routes = [
     path: 'form/:id',
     component: UserComponent,
     canActivate: [SignInGuard]
+  },
+  {
+    path: 'recovery',
+    component: RecoveryComponent
   }
 ];
 

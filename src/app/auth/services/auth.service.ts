@@ -1,3 +1,4 @@
+import { Message } from './../../models/message';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
@@ -24,8 +25,24 @@ export class AuthService {
 
   get authenticated(): Observable<boolean> {
     return new Observable((observer) => {
-      observer.next(!!window.localStorage.getItem('authenticated-email'));
-      observer.complete();
+      this.getUser().subscribe((response) => {
+        console.log('Status', response.status);
+        if (response.status) {
+          console.log(response.data, response.data.blocked, response.data.deleted);
+          if (response.data && (response.data.blocked || response.data.deleted)) {
+            console.log('>> true');
+            observer.next(false);
+            observer.complete();
+          } else {
+            console.log('>> false');
+            observer.next(true);
+            observer.complete();
+          }
+        } else {
+          observer.next(false);
+          observer.complete();
+        }
+      });
     });
   }
 
@@ -38,7 +55,7 @@ export class AuthService {
     });
     return new Observable((observer) => {
       observer.next({
-        status: true,
+        status: !!results[0],
         data: results[0]
       });
     });
@@ -52,6 +69,7 @@ export class AuthService {
       if (
         results.length > 0 &&
         !results[0].blocked &&
+        !results[0].deleted &&
         results[0].emailVerified
       ) {
         window.localStorage.setItem('authenticated-email', email);
@@ -59,20 +77,38 @@ export class AuthService {
         observer.next({
           status: true
         });
+      } else if (results[0].deleted) {
+        window.localStorage.setItem('authenticated-email', email);
+        observer.next({
+          status: false,
+          error: {
+            code: 'user-deleted',
+            message: 'User Deleted'
+          }
+        });
       } else if (results[0].blocked) {
         observer.next({
           status: false,
-          error: 'User blocked'
+          error: {
+            code: 'user-blocked',
+            message: 'User blocked'
+          }
         });
       } else if (!results[0].emailVerified) {
         observer.next({
           status: false,
-          error: 'email not verified'
+          error: {
+            code: 'email-not-verified',
+            message: 'Email not verified'
+          }
         });
       } else {
         observer.next({
           status: false,
-          error: 'User not found'
+          error: {
+            code: 'user-not-found',
+            message: 'User not found'
+          }
         });
       }
       observer.complete();
@@ -98,6 +134,15 @@ export class AuthService {
           error: 'User exist'
         });
       }
+      observer.complete();
+    });
+  }
+
+  recoveryPassword(email: string): Observable<Response> {
+    return new Observable((observer) => {
+      observer.next({
+        status: true
+      });
       observer.complete();
     });
   }

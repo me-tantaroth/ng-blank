@@ -9,6 +9,7 @@ export interface User {
     aboutMe?: string;
     cite?: string;
     blocked: boolean;
+    deleted: boolean;
     createdAt: Date;
 }
 export class User {

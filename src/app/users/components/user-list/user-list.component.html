@@ -25,15 +25,26 @@
             >Verify Email</a
           >
           &nbsp;
-          <span *ngIf="user.blocked" class="uk-text-success">{{
+          <span *ngIf="user.blocked" class="uk-text-warning uk-text-bold">{{
             user.blocked ? 'Blocked' : ''
           }}</span>
           <a
             [routerLink]="['/user/form', i]"
-            class="uk-text-danger"
+            class="uk-text-warning"
             (click)="blockUser(i, user)"
             *ngIf="!user.blocked"
             >Block</a
+          >
+          &nbsp;
+          <span *ngIf="user.deleted" class="uk-text-warning uk-text-bold">{{
+            user.deleted ? 'Deleted' : ''
+          }}</span>
+          <a
+            [routerLink]="['/user/list']"
+            class="uk-text-danger"
+            (click)="deleteUser(i, user)"
+            *ngIf="!user.deleted"
+            >Delete</a
           >
         </div>
         <h4>{{ user.createdAt | date }}</h4>

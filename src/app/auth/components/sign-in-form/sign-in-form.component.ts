@@ -20,7 +20,11 @@ export class SignInFormComponent implements OnInit {
     show: false
   };
 
-  constructor(private router: Router, private store: StoreService, private auth: AuthService) {
+  constructor(
+    private router: Router,
+    private store: StoreService,
+    private auth: AuthService
+  ) {
     store.select('authentications');
   }
 
@@ -58,10 +62,14 @@ export class SignInFormComponent implements OnInit {
         this.message = {
           show: true,
           label: 'Error!',
-          sublabel: response.error,
+          sublabel: response.error.message,
           color: 'warn',
           icon: 'error'
         };
+
+        if (response.error.code === 'user-deleted') {
+          this.router.navigate(['/user/recovery']);
+        }
       }
     });
   }

@@ -7,7 +7,7 @@ import { MaterialModule } from '../material.module';
 import { CovalentModule } from '../covalent.module';
 import { LayoutsModule } from '../layouts/layouts.module';
 
-import { UsersComponent, UserComponent } from './pages';
+import { UsersComponent, UserComponent, RecoveryComponent } from './pages';
 import { UserListComponent, UserFormComponent, ModalUserListComponent } from './components';
 
 @NgModule({
@@ -16,7 +16,8 @@ import { UserListComponent, UserFormComponent, ModalUserListComponent } from './
     UsersComponent,
     UserComponent,
     UserFormComponent,
-    ModalUserListComponent
+    ModalUserListComponent,
+    RecoveryComponent
   ],
   imports: [
     CommonModule,
