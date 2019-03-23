@@ -21,7 +21,7 @@ export class LayoutAdminComponent implements OnInit {
   routes: any[] = [
     {
       icon: 'home',
-      route: '.',
+      route: '/dashboard',
       title: 'Dashboard'
     },
     {

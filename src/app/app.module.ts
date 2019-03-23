@@ -17,11 +17,16 @@ import { UsersModule } from './users/users.module';
 import { environment } from '../environments/environment';
 
 import { AppComponent } from './app.component';
-import { HomeComponent, NotFoundComponent } from './pages';
+import { HomeComponent, NotFoundComponent, DashboardComponent } from './pages';
 import { LangsModule } from './langs/langs.module';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, NotFoundComponent],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    NotFoundComponent,
+    DashboardComponent
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
