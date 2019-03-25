@@ -44,7 +44,7 @@
     </mat-error>
   </mat-form-field>
 
-  <div *ngIf="id || user">
+  <div *ngIf="id">
     <mat-form-field class="uk-width-1-1 uk-margin-small">
       <input
         matInput
@@ -130,7 +130,7 @@
     <input
       matInput
       type="password"
-      [placeholder]="(id || user ? 'Current ' : '') + 'Password'"
+      [placeholder]="(id ? 'Current ' : '') + 'Password'"
       formControlName="password"
       name="password"
       required
@@ -153,7 +153,7 @@
     </mat-error>
   </mat-form-field>
 
-  <div *ngIf="!id || user">
+  <div *ngIf="!id">
     <mat-form-field class="uk-width-1-1 uk-margin-small">
       <input
         matInput

@@ -7,11 +7,21 @@
   *ngIf="(authenticated | async)"
 >
   <div id="admin-options" class="uk-animation-slide-bottom-medium">
+      <div class="uk-margin-small uk-flex uk-flex-center">
+        <button
+          type="button"
+          mat-mini-fab
+          routerLink="/menu/list"
+          uk-tooltip="title: Menus; pos: left"
+        >
+          <mat-icon aria-label="Menus">menu</mat-icon>
+        </button>
+      </div>
     <div class="uk-margin-small uk-flex uk-flex-center">
       <button
         type="button"
         mat-mini-fab
-        routerLink="/"
+        routerLink="/slide/list"
         uk-tooltip="title: Slides; pos: left"
       >
         <mat-icon aria-label="Slides">slideshow</mat-icon>

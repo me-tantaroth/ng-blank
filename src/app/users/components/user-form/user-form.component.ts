@@ -27,7 +27,6 @@ import { Message } from '../../../models/message';
 export class UserFormComponent implements OnInit {
   @ViewChild('password') password: ElementRef;
   @Input() id: string;
-  @Input() user: User;
 
   users: Observable<User[]>;
   submitted: boolean;
@@ -88,6 +87,7 @@ export class UserFormComponent implements OnInit {
       this.usersService
         .get(this.id)
         .subscribe((userResponse: UserServiceResponse) => {
+          console.log(userResponse);
           if (userResponse) {
             const user: User = userResponse.value;
 
@@ -107,22 +107,6 @@ export class UserFormComponent implements OnInit {
           }
         })
         .unsubscribe();
-    } else if (this.user) {
-      const user: User = this.user;
-
-      this.form.patchValue({
-        displayName: user.displayName,
-        email: user.email,
-        username: user.username,
-        password: this.password.nativeElement.value,
-        confirmPassword: this.password.nativeElement.value,
-        blocked: user.blocked,
-        deleted: user.deleted,
-        phoneNumber: user.phoneNumber,
-        emailVerified: user.emailVerified,
-        cite: user.cite,
-        aboutMe: user.aboutMe
-      });
     }
   }
 

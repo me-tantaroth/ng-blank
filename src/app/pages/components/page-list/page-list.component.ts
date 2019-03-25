@@ -7,8 +7,6 @@ import { PageService } from '../../services/page.service';
 
 import { Page } from '../../models/page';
 
-import { Accents } from '../../../shared/utils/accents';
-
 @Component({
   selector: 'app-page-list',
   templateUrl: './page-list.component.html',

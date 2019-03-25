@@ -7,27 +7,27 @@ import { CovalentModule } from '../covalent.module';
 import { LayoutsModule } from '../layouts/layouts.module';
 import { SharedModule } from '../shared/shared.module';
 
-import { SlidesRoutingModule } from './slides-routing.module';
-import { SlidesComponent, SlideComponent } from './layout-content';
-import { SlideListComponent, SlideFormComponent } from './components';
+import { MenusRoutingModule } from './menus-routing.module';
+import { MenusComponent, MenuComponent } from './layout-content';
+import { MenuListComponent, MenuFormComponent } from './components';
 
 @NgModule({
   declarations: [
-    SlidesComponent,
-    SlideComponent,
-    SlideListComponent,
-    SlideFormComponent
+    MenusComponent,
+    MenuComponent,
+    MenuListComponent,
+    MenuFormComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     NgBarnModule,
-    SlidesRoutingModule,
+    MenusRoutingModule,
     MaterialModule,
     CovalentModule,
     LayoutsModule,
     SharedModule
   ]
 })
-export class SlidesModule {}
+export class MenusModule {}

@@ -1,29 +1,29 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { SlideComponent, SlidesComponent } from './layout-content';
+import { MenuComponent, MenusComponent } from './layout-content';
 
 import { SignInGuard } from '../auth/guards/sign-in.guard';
 
 const routes: Routes = [
   {
     path: 'list',
-    component: SlidesComponent,
+    component: MenusComponent,
     canActivate: [SignInGuard]
   },
   {
     path: 'list/:filter',
-    component: SlidesComponent,
+    component: MenusComponent,
     canActivate: [SignInGuard]
   },
   {
     path: 'form',
-    component: SlideComponent,
+    component: MenuComponent,
     canActivate: [SignInGuard]
   },
   {
     path: 'form/:id',
-    component: SlideComponent,
+    component: MenuComponent,
     canActivate: [SignInGuard]
   }
 ];
@@ -32,4 +32,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class SlidesRoutingModule {}
+export class MenusRoutingModule {}

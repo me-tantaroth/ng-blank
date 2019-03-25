@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-slides',
-  templateUrl: './slides.component.html',
-  styleUrls: ['./slides.component.scss']
+  selector: 'app-menus',
+  templateUrl: './menus.component.html',
+  styleUrls: ['./menus.component.scss']
 })
-export class SlidesComponent implements OnInit {
+export class MenusComponent implements OnInit {
   listFilter: string;
 
   constructor(private route: ActivatedRoute) { }

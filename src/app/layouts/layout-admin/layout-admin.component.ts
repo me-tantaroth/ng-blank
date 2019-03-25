@@ -35,8 +35,13 @@ export class LayoutAdminComponent implements OnInit {
     },
     {
       icon: 'slideshow',
-      route: '/trash',
+      route: '/slide/list',
       title: 'Slides'
+    },
+    {
+      icon: 'menu',
+      route: '/menu/list',
+      title: 'Menus'
     },
     {
       icon: 'delete',

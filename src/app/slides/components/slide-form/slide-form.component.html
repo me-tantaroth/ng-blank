@@ -1,0 +1,119 @@
+<td-message
+  *ngIf="message.show"
+  [label]="message.label"
+  [sublabel]="message.sublabel"
+  [color]="message.color"
+  [icon]="message.icon"
+  class="uk-margin"
+></td-message>
+
+<tnt-barn-form
+  [formGroup]="form"
+  (submitting)="onSubmitting($event)"
+  (submitted)="onSubmitted($event)"
+>
+  <app-file-upload
+    [imageURL]="image.value"
+    [allowed_extensions]="[
+      'png',
+      'jpg',
+      'jpeg',
+      'bmp',
+      'tif',
+      'tiff',
+      'gif',
+      'webp',
+      'heif',
+      'heic'
+    ]"
+    (filesChanged)="onFilesChanged($event)"
+  >
+    <div><mat-icon>cloud_upload</mat-icon></div>
+    <p>Arrastre su foto de perfíl aquí.</p>
+    <mat-form-field>
+      <div align="center">
+        <button mat-raised-button>Seleccionar</button>
+        <input matInput #image formControlName="image" style="display: none" />
+      </div>
+      <mat-error *ngIf="f.image.status === 'INVALID'">
+        <span *ngFor="let error of errors('image')">{{
+          errorMessages['image'][error]
+        }}</span>
+      </mat-error>
+    </mat-form-field>
+  </app-file-upload>
+
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+    <input
+      matInput
+      #title
+      placeholder="Título"
+      id="title"
+      name="title"
+      formControlName="title"
+    />
+  </mat-form-field>
+
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+    <input
+      matInput
+      #subtitle
+      placeholder="Subtítulo"
+      id="subtitle"
+      name="subtitle"
+      formControlName="subtitle"
+    />
+  </mat-form-field>
+
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+      <input
+        matInput
+        #redirect
+        placeholder="URL"
+        id="redirect"
+        name="redirect"
+        formControlName="redirect"
+      />
+    </mat-form-field>
+  
+  <div class="uk-width-1-1 uk-margin-small">
+    <section>
+      <mat-slide-toggle
+        color="accent"
+        formControlName="blocked"
+        name="blocked"
+        required
+        #blocked
+      >
+        Blocked
+      </mat-slide-toggle>
+    </section>
+  </div>
+
+  <div class="uk-width-1-1 uk-margin-small">
+    <section>
+      <mat-slide-toggle
+        color="warn"
+        formControlName="deleted"
+        name="deleted"
+        required
+        #deleted
+      >
+        Deleted
+      </mat-slide-toggle>
+    </section>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <mat-card-actions align="right" class="uk-margin-small">
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="submitted"
+    >
+      Save
+    </button>
+  </mat-card-actions>
+</tnt-barn-form>

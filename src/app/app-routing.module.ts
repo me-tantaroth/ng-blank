@@ -3,6 +3,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PagesModule } from './pages/pages.module';
+import { SlidesModule } from './slides/slides.module';
+import { MenusModule } from './menus/menus.module';
 
 import { SignInGuard } from './auth/guards/sign-in.guard';
 
@@ -33,6 +35,14 @@ const routes: Routes = [
   {
     path: 'page',
     loadChildren: () => PagesModule
+  },
+  {
+    path: 'slide',
+    loadChildren: () => SlidesModule
+  },
+  {
+    path: 'menu',
+    loadChildren: () => MenusModule
   },
   {
     path: 'trash',

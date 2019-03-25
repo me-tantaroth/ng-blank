@@ -1,0 +1,51 @@
+<div *ngIf="(menus | async).length > 0">
+  <mat-accordion>
+    <mat-expansion-panel
+      role="menu"
+      *ngFor="let menu of (menus | async); let i = index"
+      (opened)="panelOpenState = true"
+      (closed)="panelOpenState = false"
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title> {{ menu.text }} </mat-panel-title>
+        <mat-panel-description> -- </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div>
+        <div align="right" class="uk-margin-small">
+          <a [routerLink]="['/menu/form', i]" class="uk-text-primary">Edit</a>
+          &nbsp;
+          <span *ngIf="menu.blocked" class="uk-text-warning uk-text-bold">{{
+            menu.blocked ? 'Blocked' : ''
+          }}</span>
+          <a
+            [routerLink]="['/menu/list']"
+            class="uk-text-warning"
+            (click)="blockMenu(i, menu)"
+            *ngIf="!menu.blocked"
+            >Block</a
+          >
+          &nbsp;
+          <span *ngIf="menu.deleted" class="uk-text-warning uk-text-bold">{{
+            menu.deleted ? 'Deleted' : ''
+          }}</span>
+          <a
+            [routerLink]="['/trash']"
+            class="uk-text-danger"
+            (click)="deleteMenu(i, menu)"
+            *ngIf="!menu.deleted"
+            >Delete</a
+          >
+        </div>
+        <div
+          class="uk-height-small uk-background-secondary uk-background-cover uk-background-center-center uk-background-norepeat"
+          [ngStyle]="{ 'background-image': 'url(' + menu.image + ')' }"
+        ></div>
+        <h4>{{ menu.createdAt | date }}</h4>
+        <blockquote cite="#">
+          <p class="uk-margin-small-bottom">{{ menu.text || '--' }}</p>
+        </blockquote>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+<div *ngIf="(menus | async).length <= 0"><h2>Not found data</h2></div>

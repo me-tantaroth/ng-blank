@@ -71,6 +71,8 @@ import { LangsModule } from './langs/langs.module';
         },
         users: [],
         pages: [],
+        slides: [],
+        menus: [],
         authentications: [],
         authenticated: {}
       }
