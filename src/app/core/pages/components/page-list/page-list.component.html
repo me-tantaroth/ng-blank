@@ -1,0 +1,51 @@
+<div *ngIf="(pages | async).length > 0">
+  <mat-accordion>
+    <mat-expansion-panel
+      role="page"
+      *ngFor="let page of (pages | async); let i = index"
+      (opened)="panelOpenState = true"
+      (closed)="panelOpenState = false"
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title> {{ page.title }} </mat-panel-title>
+        <mat-panel-description> -- </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div>
+        <div align="right" class="uk-margin-small">
+          <a [routerLink]="['/admin/page/form', i]" class="uk-text-primary">Edit</a>
+          &nbsp;
+          <span *ngIf="page.blocked" class="uk-text-warning uk-text-bold">{{
+            page.blocked ? 'Blocked' : ''
+          }}</span>
+          <a
+            [routerLink]="['/admin/page/list']"
+            class="uk-text-warning"
+            (click)="blockPage(i, page)"
+            *ngIf="!page.blocked"
+            >Block</a
+          >
+          &nbsp;
+          <span *ngIf="page.deleted" class="uk-text-warning uk-text-bold">{{
+            page.deleted ? 'Deleted' : ''
+          }}</span>
+          <a
+            [routerLink]="['/admin/trash']"
+            class="uk-text-danger"
+            (click)="deletePage(i, page)"
+            *ngIf="!page.deleted"
+            >Delete</a
+          >
+        </div>
+        <div
+          class="uk-height-small uk-background-secondary uk-background-cover uk-background-center-center uk-background-norepeat"
+          [ngStyle]="{ 'background-image': 'url(' + page.image + ')' }"
+        ></div>
+        <h4>{{ page.createdAt | date }}</h4>
+        <blockquote cite="#">
+          <p class="uk-margin-small-bottom">{{ page.description || '--' }}</p>
+        </blockquote>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+<div *ngIf="(pages | async).length <= 0"><h2>Not found data</h2></div>

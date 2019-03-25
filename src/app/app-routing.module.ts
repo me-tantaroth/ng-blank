@@ -1,14 +1,17 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { PagesModule } from './pages/pages.module';
-import { SlidesModule } from './slides/slides.module';
-import { MenusModule } from './menus/menus.module';
+import { AdminModule } from './admin/admin.module';
 
-import { SignInGuard } from './auth/guards/sign-in.guard';
-
-import { HomeComponent, NotFoundComponent, DashboardComponent, TrashComponent } from './layout-content';
+import {
+  HomeComponent,
+  NotFoundComponent,
+  SignInComponent,
+  SignUpComponent,
+  SignOutComponent,
+  RecoveryComponent,
+  UserViewComponent,
+  PageViewComponent
+} from './view-content';
 
 const routes: Routes = [
   {
@@ -16,38 +19,51 @@ const routes: Routes = [
     component: HomeComponent
   },
   {
+    path: 'auth',
+    children: [
+      {
+        path: 'sign-in',
+        component: SignInComponent
+      },
+      {
+        path: 'sign-out',
+        component: SignOutComponent
+      },
+      {
+        path: 'sign-up',
+        component: SignUpComponent
+      },
+      {
+        path: 'recovery',
+        component: RecoveryComponent
+      }
+    ]
+  },
+  {
+    path: 'page',
+    children: [
+      {
+        path: 'view/:pageId',
+        component: PageViewComponent
+      }
+    ]
+  },
+  {
+    path: 'user',
+    children: [
+      {
+        path: 'user/view/:id',
+        component: UserViewComponent
+      }
+    ]
+  },
+  {
     path: 'not-found',
     component: NotFoundComponent
   },
   {
-    path: 'dashboard',
-    component: DashboardComponent,
-    canActivate: [SignInGuard]
-  },
-  {
-    path: 'auth',
-    loadChildren: () => AuthModule
-  },
-  {
-    path: 'user',
-    loadChildren: () => UsersModule
-  },
-  {
-    path: 'page',
-    loadChildren: () => PagesModule
-  },
-  {
-    path: 'slide',
-    loadChildren: () => SlidesModule
-  },
-  {
-    path: 'menu',
-    loadChildren: () => MenusModule
-  },
-  {
-    path: 'trash',
-    component: TrashComponent,
-    canActivate: [SignInGuard]
+    path: 'admin',
+    loadChildren: () => AdminModule
   },
   {
     path: '**',

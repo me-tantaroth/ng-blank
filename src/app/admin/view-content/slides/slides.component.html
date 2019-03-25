@@ -1,0 +1,25 @@
+<app-layout-admin>
+  <div flex-gt-sm="100">
+    <div class="uk-container">
+      <mat-card>
+        <mat-card-title>Slides</mat-card-title>
+        <mat-card-subtitle>usage stats for our slides</mat-card-subtitle>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <div align="right">
+            <button
+              routerLink="/admin/slide/form"
+              routerLinkActive="router-link-active"
+              mat-raised-button
+              color="primary"
+            >
+              New
+            </button>
+          </div>
+          <br />
+          <app-slide-list [filter]="listFilter"></app-slide-list>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</app-layout-admin>

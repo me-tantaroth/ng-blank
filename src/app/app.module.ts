@@ -10,29 +10,39 @@ import { MaterialModule } from './material.module';
 import { CovalentModule } from './covalent.module';
 import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
-import { LayoutsModule } from './layouts/layouts.module';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { PagesModule } from './pages/pages.module';
+import { AdminModule } from './admin/admin.module';
+import { CoreModule } from './core/core.module';
 
 import { environment } from '../environments/environment';
 
+import { LayoutDefaultComponent } from './layouts/layout-default/layout-default.component';
+import { NavbarDefaultComponent } from './layouts/components';
 import { AppComponent } from './app.component';
 import {
   HomeComponent,
   NotFoundComponent,
-  DashboardComponent,
-  TrashComponent
-} from './layout-content';
+  SignInComponent,
+  SignOutComponent,
+  SignUpComponent,
+  RecoveryComponent,
+  UserViewComponent,
+  PageViewComponent
+} from './view-content';
 import { LangsModule } from './langs/langs.module';
 
 @NgModule({
   declarations: [
     AppComponent,
+    NavbarDefaultComponent,
+    LayoutDefaultComponent,
     HomeComponent,
     NotFoundComponent,
-    DashboardComponent,
-    TrashComponent
+    SignInComponent,
+    SignOutComponent,
+    SignUpComponent,
+    RecoveryComponent,
+    UserViewComponent,
+    PageViewComponent
   ],
   imports: [
     BrowserModule,
@@ -81,10 +91,8 @@ import { LangsModule } from './langs/langs.module';
     CovalentModule,
     SharedModule,
     AppRoutingModule,
-    LayoutsModule,
-    AuthModule,
-    UsersModule,
-    PagesModule,
+    AdminModule,
+    CoreModule,
     LangsModule
   ],
   providers: [],
