@@ -38,15 +38,15 @@ export class PageListComponent implements OnInit {
     );
   }
 
-  blockPage(index: string, page: Page) {
+  blockPage(uid: string, page: Page) {
     page.blocked = true;
 
-    this.pageService.set(index, page);
+    this.pageService.set({ uid }, page);
   }
 
-  deletePage(index: string, page: Page) {
+  deletePage(uid: string, page: Page) {
     page.deleted = true;
 
-    this.pageService.set(index, page);
+    this.pageService.set({ uid }, page);
   }
 }

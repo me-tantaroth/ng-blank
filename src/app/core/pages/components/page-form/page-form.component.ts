@@ -27,7 +27,7 @@ import { Message } from '../../../../models/message';
 })
 export class PageFormComponent implements OnInit {
   @Input() page: Page;
-  @Input() id: string;
+  @Input() uid: string;
 
   events: string[] = [];
   pages: Observable<Page[]>;
@@ -86,6 +86,8 @@ export class PageFormComponent implements OnInit {
     };
 
     this.form = new FormGroup({
+      uid: new FormControl(),
+      index: new FormControl(),
       path: new FormControl(''),
       title: new FormControl('', Validators.required),
       description: new FormControl(''),
@@ -97,14 +99,17 @@ export class PageFormComponent implements OnInit {
       deleted: new FormControl(false)
     });
 
-    if (this.id) {
+    console.log('UID', this.uid);
+    if (this.uid) {
       this.pageService
-        .get(this.id)
-        .subscribe((pageResponse: PageServiceResponse) => {
-          if (pageResponse) {
-            const page: Page = pageResponse.value;
+        .filter({ uid: this.uid })
+        .subscribe((pages: Page[]) => {
+          if (pages && pages.length > 0 && pages.length === 1) {
+            const page: Page = pages[0];
 
             this.form.patchValue({
+              uid: page.uid,
+              index: page.index,
               path: page.path,
               title: page.title,
               description: page.description,
@@ -118,20 +123,6 @@ export class PageFormComponent implements OnInit {
           }
         })
         .unsubscribe();
-    } else if (this.page) {
-      const page: Page = this.page;
-
-      this.form.patchValue({
-        path: page.path,
-        title: page.title,
-        description: page.description,
-        keywords: page.keywords,
-        content: page.content,
-        image: page.image,
-        postedAt: page.postedAt,
-        blocked: page.blocked,
-        deleted: page.deleted
-      });
     }
 
     $.FroalaEditor.DefineIcon('alert', { NAME: 'info' });
@@ -192,9 +183,9 @@ export class PageFormComponent implements OnInit {
 
     console.log('VALUE', value);
 
-    if (this.id) {
+    if (this.uid) {
       this.pageService
-        .set(this.id, new Page(value))
+        .set({ uid: this.uid }, new Page(value))
         .subscribe((pageResponse: PageServiceResponse) => {
           if (pageResponse) {
             this.message = {
@@ -210,6 +201,8 @@ export class PageFormComponent implements OnInit {
         })
         .unsubscribe();
     } else {
+      value.index = event.index;
+
       this.pageService
         .push(new Page(value))
         .subscribe((pageResponse: PageServiceResponse) => {
@@ -221,6 +214,8 @@ export class PageFormComponent implements OnInit {
               color: 'accent',
               icon: 'info'
             };
+
+            this.router.navigate(['/admin/page/list']);
           }
         })
         .unsubscribe();

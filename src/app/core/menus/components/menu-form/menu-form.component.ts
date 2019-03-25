@@ -24,7 +24,7 @@ import { Message } from '../../../../models/message';
 })
 export class MenuFormComponent implements OnInit {
   @Input() menu: Menu;
-  @Input() id: string;
+  @Input() uid: string;
 
   events: string[] = [];
   menus: Observable<Menu[]>;
@@ -58,20 +58,24 @@ export class MenuFormComponent implements OnInit {
     };
 
     this.form = new FormGroup({
+      uid: new FormControl(),
+      index: new FormControl(),
       text: new FormControl('', Validators.required),
       redirect: new FormControl('', Validators.required),
       blocked: new FormControl(true),
       deleted: new FormControl(false)
     });
 
-    if (this.id) {
+    if (this.uid) {
       this.menuService
-        .get(this.id)
-        .subscribe((menuResponse: MenuServiceResponse) => {
-          if (menuResponse) {
-            const menu: Menu = menuResponse.value;
+        .filter({ uid: this.uid })
+        .subscribe((menus: Menu[]) => {
+          if (menus && menus.length > 0 && menus.length === 1) {
+            const menu: Menu = menus[0];
 
             this.form.patchValue({
+              uid: menu.uid,
+              index: menu.index,
               text: menu.text,
               redirect: menu.redirect,
               blocked: menu.blocked,
@@ -98,9 +102,10 @@ export class MenuFormComponent implements OnInit {
 
     const value = event[event.index];
 
-    if (this.id) {
+    console.log(this.uid, value);
+    if (this.uid) {
       this.menuService
-        .set(this.id, new Menu(value))
+        .set({ uid: this.uid }, new Menu(value))
         .subscribe((menuResponse: MenuServiceResponse) => {
           if (menuResponse) {
             this.message = {
@@ -116,6 +121,8 @@ export class MenuFormComponent implements OnInit {
         })
         .unsubscribe();
     } else {
+      value.index = event.index;
+
       this.menuService
         .push(new Menu(value))
         .subscribe((menuResponse: MenuServiceResponse) => {
@@ -128,6 +135,8 @@ export class MenuFormComponent implements OnInit {
               icon: 'info'
             };
           }
+
+          this.router.navigate(['/admin/menu/list']);
         })
         .unsubscribe();
     }

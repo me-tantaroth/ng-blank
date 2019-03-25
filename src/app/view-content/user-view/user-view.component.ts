@@ -7,7 +7,6 @@ import { UserService } from '../../core/users/services/users.service';
 
 import { User } from '../../core/users/models/user';
 
-
 @Component({
   selector: 'app-user-view',
   templateUrl: './user-view.component.html',
@@ -22,16 +21,16 @@ export class UserViewComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    let id = this.route.snapshot.paramMap.get('id');
+    let uid = this.route.snapshot.paramMap.get('uid');
 
-    if (id) {
-      this.user = this.userService.filter('uid', id);
+    if (uid) {
+      this.user = this.userService.filter({ uid }).pipe((o) => o[0]);
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          id = params.get('id');
+          uid = params.get('uid');
 
-          this.user = this.userService.filter('uid', id);
+          this.user = this.userService.filter({ uid }).pipe((o) => o[0]);
         })
         .unsubscribe();
     }

@@ -8,7 +8,7 @@ import { Page } from '../../models/page';
   styleUrls: ['./page-info.component.scss']
 })
 export class PageInfoComponent implements OnInit {
-  @Input() page: Page;
+  @Input() pages: Page[];
 
   constructor() {}
 

@@ -1,4 +1,8 @@
+import { makeid } from '../../../shared/utils';
+
 export interface Menu {
+  uid: string;
+  index: number;
   text: string;
   redirect?: string;
   blocked: boolean;
@@ -11,6 +15,9 @@ export class Menu {
   }
 
   format(menu) {
+    if (!menu.uid || menu.uid === null || menu.uid === undefined) {
+      menu.uid = 'menu-' + makeid(15);
+    }
     if (menu.blocked === null || menu.blocked === undefined) {
       menu.blocked = true;
     }

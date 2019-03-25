@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 
 import { LangsService } from '../../../langs/services/langs.service';
+import { Accents } from '../../../shared/utils/accents';
 
 import { Page } from '../models/page';
 
@@ -31,39 +32,76 @@ export class PageService {
     });
   }
 
-  item(index): Observable<Page> {
+  item(uid): Observable<Page> {
     return new Observable((observer) => {
-      observer.next(this.pages[index]);
+      observer.next(this.pages[uid]);
       observer.complete();
     });
   }
 
-  filter(key, validate): Observable<Page> {
+  filter(query): Observable<Page[]> {
     return new Observable((observer) => {
-      console.log(_.filter(this.pages, (o) => o[key] === validate));
-      observer.next(this.pages[0]);
+      observer.next(
+        _.filter(
+          this.pages,
+          (page: Page) =>
+            _.filter(Object.keys(query), (key) => {
+              console.log('>>> PAGE', page)
+              const slideValue = new Accents()
+                .removeDiacritics(page[key])
+                .toLowerCase()
+                .replace(/[^\w\s]/gi, '')
+                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
+                .replace(/ /g, '');
+              const filterValue = new Accents()
+                .removeDiacritics(query[key])
+                .toLowerCase()
+                .replace(/[^\w\s]/gi, '')
+                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
+                .replace(/ /g, '');
+
+              return slideValue.search(filterValue) >= 0;
+            }).length > 0
+        )
+      );
       observer.complete();
     });
   }
 
-  get(index?): Observable<ServiceResponse> {
+  get(uid?): Observable<ServiceResponse> {
     return new Observable((observer) => {
       observer.next({
         list: this.pages,
-        index: index || null,
-        value: index ? this.pages[index] : null
+        index: uid || null,
+        value: uid ? this.pages[uid] : null
       });
       observer.complete();
     });
   }
 
-  set(index, value: Page): Observable<ServiceResponse> {
+  set(query, data: Page): Observable<ServiceResponse> {
     return new Observable((observer) => {
-      observer.next({
-        list: this.pages,
-        index: index,
-        value: this.pages[index] = value
-      });
+      this.filter(query)
+        .subscribe((pages: Page[]) => {
+          if (pages.length > 0) {
+            this.pages = _.map(this.pages, (page: Page) => {
+              let result: Page = page;
+
+              if (page.uid === data.uid) {
+                result = data;
+              }
+
+              return result;
+            });
+          }
+
+          observer.next({
+            list: this.pages,
+            index: data.index,
+            value: data
+          });
+        })
+        .unsubscribe();
       observer.complete();
     });
   }

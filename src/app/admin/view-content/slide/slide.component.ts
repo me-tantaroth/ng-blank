@@ -7,19 +7,19 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./slide.component.scss']
 })
 export class SlideComponent implements OnInit {
-  id: string;
+  uid: string;
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
+    const uid = this.route.snapshot.paramMap.get('uid');
 
-    if (id) {
-      this.id = id;
+    if (uid) {
+      this.uid = uid;
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          this.id = params.get('id');
+          this.uid = params.get('uid');
         })
         .unsubscribe();
     }

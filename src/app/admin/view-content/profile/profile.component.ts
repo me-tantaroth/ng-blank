@@ -13,31 +13,19 @@ import { User } from '../../../core/users/models/user';
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
-  id: string;
-  user: User;
+  uid: string;
 
   constructor(private userService: UserService) {}
 
   ngOnInit() {
     if (localStorage.getItem('authenticated-email')) {
       this.userService
-        .list()
-        .pipe(
-          map((users: User[]) => _.filter(users, (user: User, index: string) => {
-              const valid: boolean =
-                user.email === localStorage.getItem('authenticated-email');
-
-              if (valid) {
-                this.id = index.toString();
-              }
-
-              return valid;
-            }))
-        )
-        .subscribe();
-      this.userService
-        .filter('email', localStorage.getItem('authenticated-email'))
-        .subscribe((user: User) => (this.user = user))
+        .filter({ email: localStorage.getItem('authenticated-email') })
+        .subscribe((users: User[]) => {
+          if (users && users.length > 0 && users.length === 1) {
+            this.uid = users[0].uid;
+          }
+        })
         .unsubscribe();
     }
   }

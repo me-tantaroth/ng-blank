@@ -12,14 +12,14 @@
       </mat-expansion-panel-header>
       <div>
         <div align="right" class="uk-margin-small">
-          <a [routerLink]="['/admin/user/form', i]" class="uk-text-primary">Edit</a>
+          <a [routerLink]="['/admin/user/form', user.uid]" class="uk-text-primary">Edit</a>
           &nbsp;
           <span *ngIf="user.emailVerified" class="uk-text-success">{{
             user.emailVerified ? 'Email Verified' : ''
           }}</span>
           <a
             class="uk-text-warning"
-            (click)="verfifyEmail(i, user)"
+            (click)="verfifyEmail(user.uid, user)"
             *ngIf="!user.emailVerified"
             >Verify Email</a
           >
@@ -30,7 +30,7 @@
           <a
             [routerLink]="['/admin/user/list']"
             class="uk-text-warning"
-            (click)="blockUser(i, user)"
+            (click)="blockUser(user.uid, user)"
             *ngIf="!user.blocked"
             >Block</a
           >
@@ -41,7 +41,7 @@
           <a
             [routerLink]="['/admin/trash']"
             class="uk-text-danger"
-            (click)="deleteUser(i, user)"
+            (click)="deleteUser(user.uid, user)"
             *ngIf="!user.deleted"
             >Delete</a
           >

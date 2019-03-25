@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 
 import { LangsService } from '../../../langs/services/langs.service';
+import { Accents } from '../../../shared/utils/accents';
 
 import { User } from '../models/user';
 
@@ -40,10 +41,30 @@ export class UserService {
     });
   }
 
-  filter(key, validate): Observable<User> {
+  filter(query): Observable<User[]> {
     return new Observable((observer) => {
-      console.log(_.filter(this.users, (o) => o[key] === validate));
-      observer.next(this.users[0]);
+      observer.next(
+        _.filter(
+          this.users,
+          (user: User) =>
+            _.filter(Object.keys(query), (key) => {
+              const slideValue = new Accents()
+                .removeDiacritics(user[key])
+                .toLowerCase()
+                .replace(/[^\w\s]/gi, '')
+                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
+                .replace(/ /g, '');
+              const filterValue = new Accents()
+                .removeDiacritics(query[key])
+                .toLowerCase()
+                .replace(/[^\w\s]/gi, '')
+                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
+                .replace(/ /g, '');
+
+              return slideValue.search(filterValue) >= 0;
+            }).length > 0
+        )
+      );
       observer.complete();
     });
   }
@@ -59,13 +80,29 @@ export class UserService {
     });
   }
 
-  set(key, value: User): Observable<ServiceResponse> {
+  set(query, data: User): Observable<ServiceResponse> {
     return new Observable((observer) => {
-      observer.next({
-        list: this.users,
-        index: key,
-        value: this.users[key] = value
-      });
+      this.filter(query)
+        .subscribe((users: User[]) => {
+          if (users.length > 0) {
+            this.users = _.map(this.users, (user: User) => {
+              let result: User = user;
+
+              if (user.uid === data.uid) {
+                result = data;
+              }
+
+              return result;
+            });
+          }
+
+          observer.next({
+            list: this.users,
+            index: data.index,
+            value: data
+          });
+        })
+        .unsubscribe();
       observer.complete();
     });
   }

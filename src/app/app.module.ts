@@ -65,6 +65,8 @@ import { LangsModule } from './langs/langs.module';
             label: 'English',
             users: [
               {
+                uid: 'user-Kajsdhuasud231',
+                index: 0,
                 displayName: 'Eduard Ramirez',
                 username: 'tantaroth',
                 email: 'tantaroth@gmail.com',

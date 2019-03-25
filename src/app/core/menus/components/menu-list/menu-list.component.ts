@@ -38,15 +38,15 @@ export class MenuListComponent implements OnInit {
     );
   }
 
-  blockMenu(index: string, menu: Menu) {
+  blockMenu(uid: string, menu: Menu) {
     menu.blocked = true;
 
-    this.menuService.set(index, menu);
+    this.menuService.set({ uid }, menu);
   }
 
-  deleteMenu(index: string, menu: Menu) {
+  deleteMenu(uid: string, menu: Menu) {
     menu.deleted = true;
 
-    this.menuService.set(index, menu);
+    this.menuService.set({ uid }, menu);
   }
 }

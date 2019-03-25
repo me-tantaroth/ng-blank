@@ -1,11 +1,11 @@
-<div *ngIf="page">
+<div *ngIf="pages[0]">
   <div
     class="uk-background-center-center uk-background-cover uk-background-no-repeat uk-background-primary uk-height-large"
-    [ngStyle]="{ backgroundImage: 'url(' + page.image + ')' }"
+    [ngStyle]="{ backgroundImage: 'url(' + pages[0].image + ')' }"
   ></div>
 
-  <h2>{{ page.title }}</h2>
-  <p>{{ page.description }}</p>
+  <h2>{{ pages[0].title }}</h2>
+  <p>{{ pages[0].description }}</p>
 
-  <div [innerHtml]="page.content"></div>
+  <div [innerHtml]="pages[0].content"></div>
 </div>

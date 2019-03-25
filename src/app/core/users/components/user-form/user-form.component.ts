@@ -26,7 +26,7 @@ import { Message } from '../../../../models/message';
 })
 export class UserFormComponent implements OnInit {
   @ViewChild('password') password: ElementRef;
-  @Input() id: string;
+  @Input() uid: string;
 
   users: Observable<User[]>;
   submitted: boolean;
@@ -53,6 +53,8 @@ export class UserFormComponent implements OnInit {
     this.users = this.usersService.list();
 
     this.form = new FormGroup({
+      uid: new FormControl(),
+      index: new FormControl(),
       displayName: new FormControl(''),
       email: new FormControl('', [
         Validators.required,
@@ -83,15 +85,17 @@ export class UserFormComponent implements OnInit {
       emailVerified: new FormControl(false)
     });
 
-    if (this.id) {
+    if (this.uid) {
+      console.log({ uid: this.uid }, '????????????');
       this.usersService
-        .get(this.id)
-        .subscribe((userResponse: UserServiceResponse) => {
-          console.log(userResponse);
-          if (userResponse) {
-            const user: User = userResponse.value;
+        .filter({ uid: this.uid })
+        .subscribe((users: User[]) => {
+          if (users && users.length > 0 && users.length === 1) {
+            const user: User = users[0];
 
             this.form.patchValue({
+              uid: user.uid,
+              index: user.index,
               displayName: user.displayName,
               email: user.email,
               username: user.username,
@@ -115,7 +119,7 @@ export class UserFormComponent implements OnInit {
   }
 
   addConfirmPassword(passwordValue) {
-    if (this.id) {
+    if (this.uid) {
       this.form.patchValue({
         confirmPassword: passwordValue
       });
@@ -129,12 +133,12 @@ export class UserFormComponent implements OnInit {
 
     const value = event[event.index];
 
-    if (this.id) {
+    if (this.uid) {
       delete value.password;
       delete value.confirmPassword;
 
       this.usersService
-        .set(this.id, new User(value))
+        .set({ uid: this.uid }, new User(value))
         .subscribe((userResponse: UserServiceResponse) => {
           if (userResponse) {
             this.message = {

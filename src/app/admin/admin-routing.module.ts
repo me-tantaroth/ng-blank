@@ -45,7 +45,7 @@ const routes: Routes = [
         component: UserComponent
       },
       {
-        path: 'form/:id',
+        path: 'form/:uid',
         component: UserComponent
       },
       {
@@ -71,7 +71,7 @@ const routes: Routes = [
         component: SlideComponent
       },
       {
-        path: 'form/:id',
+        path: 'form/:uid',
         component: SlideComponent
       }
     ]
@@ -96,7 +96,7 @@ const routes: Routes = [
         canActivate: [SignInGuard]
       },
       {
-        path: 'form/:id',
+        path: 'form/:uid',
         component: PageComponent,
         canActivate: [SignInGuard]
       }
@@ -122,7 +122,7 @@ const routes: Routes = [
         canActivate: [SignInGuard]
       },
       {
-        path: 'form/:id',
+        path: 'form/:uid',
         component: MenuComponent,
         canActivate: [SignInGuard]
       }

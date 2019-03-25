@@ -21,7 +21,7 @@ import { Message } from '../../../../models/message';
 })
 export class SlideFormComponent implements OnInit {
   @Input() slide: Slide;
-  @Input() id: string;
+  @Input() uid: string;
 
   events: string[] = [];
   slides: Observable<Slide[]>;
@@ -55,6 +55,8 @@ export class SlideFormComponent implements OnInit {
     };
 
     this.form = new FormGroup({
+      uid: new FormControl(),
+      index: new FormControl(),
       title: new FormControl('', Validators.required),
       subtitle: new FormControl(''),
       redirect: new FormControl(''),
@@ -63,15 +65,16 @@ export class SlideFormComponent implements OnInit {
       deleted: new FormControl(false)
     });
 
-    console.log(this.id);
-    if (this.id) {
+    if (this.uid) {
       this.slideService
-        .get(this.id)
-        .subscribe((slideResponse: SlideServiceResponse) => {
-          if (slideResponse) {
-            const slide: Slide = slideResponse.value;
+        .filter({ uid: this.uid })
+        .subscribe((slides: Slide[]) => {
+          if (slides && slides.length > 0 && slides.length === 1) {
+            const slide: Slide = slides[0];
 
             this.form.patchValue({
+              uid: slide.uid,
+              index: slide.index,
               title: slide.title,
               subtitle: slide.subtitle,
               redirect: slide.redirect,
@@ -79,6 +82,8 @@ export class SlideFormComponent implements OnInit {
               blocked: slide.blocked,
               deleted: slide.deleted
             });
+          } else {
+            console.error('>> Debe haber un solo dato en la respuesta');
           }
         })
         .unsubscribe();
@@ -112,9 +117,9 @@ export class SlideFormComponent implements OnInit {
 
     const value = event[event.index];
 
-    if (this.id) {
+    if (this.uid) {
       this.slideService
-        .set(this.id, new Slide(value))
+        .set({ uid: this.uid }, new Slide(value))
         .subscribe((slideResponse: SlideServiceResponse) => {
           if (slideResponse) {
             this.message = {
@@ -130,6 +135,8 @@ export class SlideFormComponent implements OnInit {
         })
         .unsubscribe();
     } else {
+      value.index = event.index;
+
       this.slideService
         .push(new Slide(value))
         .subscribe((slideResponse: SlideServiceResponse) => {
@@ -141,17 +148,20 @@ export class SlideFormComponent implements OnInit {
               color: 'accent',
               icon: 'info'
             };
+
+            this.router.navigate(['/admin/slide/list']);
           }
         })
         .unsubscribe();
     }
+    this.reset();
   }
   onSubmitted(event: boolean) {
+    console.log('>> SLIDE FORM SUBMITTING', event);
     this.submitted = true;
 
     if (event) {
       this.submitted = false;
-      this.reset();
     } else {
       this.submitted = false;
     }

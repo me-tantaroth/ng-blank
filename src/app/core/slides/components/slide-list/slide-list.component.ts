@@ -38,15 +38,15 @@ export class SlideListComponent implements OnInit {
     );
   }
 
-  blockSlide(index: string, slide: Slide) {
+  blockSlide(uid: string, slide: Slide) {
     slide.blocked = true;
 
-    this.slideService.set(index, slide);
+    this.slideService.set({ uid }, slide);
   }
 
-  deleteSlide(index: string, slide: Slide) {
+  deleteSlide(uid: string, slide: Slide) {
     slide.deleted = true;
 
-    this.slideService.set(index, slide);
+    this.slideService.set({ uid }, slide);
   }
 }

@@ -21,11 +21,11 @@ export class UserListComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private usersService: UserService
+    private userService: UserService
   ) {}
 
   ngOnInit() {
-    this.users = this.usersService.list().pipe(
+    this.users = this.userService.list().pipe(
       map((users: User[]) =>
         _.filter(users, (o) => {
           let match: boolean;
@@ -42,24 +42,21 @@ export class UserListComponent implements OnInit {
     );
   }
 
-  verfifyEmail(index: string, user: User) {
+  verfifyEmail(uid: string, user: User) {
     user.emailVerified = true;
 
-    this.usersService.set(index, user);
+    this.userService.set({ uid }, user);
   }
 
-  blockUser(index: string, user: User) {
+  blockUser(uid: string, user: User) {
     user.blocked = true;
 
-    this.usersService.set(index, user);
+    this.userService.set({ uid }, user);
   }
 
-  deleteUser(index: string, user: User) {
+  deleteUser(uid: string, user: User) {
     user.deleted = true;
 
-    this.usersService
-      .set(index, user)
-      .subscribe()
-      .unsubscribe();
+    this.userService.set({ uid }, user);
   }
 }

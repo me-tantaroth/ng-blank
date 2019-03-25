@@ -57,7 +57,7 @@ export class LayoutAdminComponent implements OnInit {
     },
     {
       icon: 'tune',
-      route: '/user/profile',
+      route: '/admin/user/profile',
       title: 'Account settings'
     },
     {

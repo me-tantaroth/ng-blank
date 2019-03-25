@@ -1,4 +1,8 @@
+import { makeid } from '../../../shared/utils';
+
 export interface Slide {
+  uid: string;
+  index: number;
   title?: string;
   subtitle?: string;
   redirect?: string;
@@ -13,6 +17,9 @@ export class Slide {
   }
 
   format(slide) {
+    if (!slide.uid || slide.uid === null || slide.uid === undefined) {
+      slide.uid = 'slide-' + makeid(15);
+    }
     if (slide.blocked === null || slide.blocked === undefined) {
       slide.blocked = true;
     }

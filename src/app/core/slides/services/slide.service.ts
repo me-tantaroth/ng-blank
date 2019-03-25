@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 
 import { LangsService } from '../../../langs/services/langs.service';
+import { Accents } from '../../../shared/utils/accents';
 
 import { Slide } from '../models/slide';
 
@@ -32,39 +33,75 @@ export class SlideService {
     });
   }
 
-  item(index): Observable<Slide> {
+  item(uid): Observable<Slide> {
     return new Observable((observer) => {
-      observer.next(this.slides[index]);
+      observer.next(this.slides[uid]);
       observer.complete();
     });
   }
 
-  filter(key, validate): Observable<Slide> {
+  filter(query): Observable<Slide[]> {
     return new Observable((observer) => {
-      console.log(_.filter(this.slides, (o) => o[key] === validate));
-      observer.next(this.slides[0]);
+      observer.next(
+        _.filter(
+          this.slides,
+          (slide: Slide) =>
+            _.filter(Object.keys(query), (key) => {
+              const slideValue = new Accents()
+                .removeDiacritics(slide[key])
+                .toLowerCase()
+                .replace(/[^\w\s]/gi, '')
+                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
+                .replace(/ /g, '');
+              const filterValue = new Accents()
+                .removeDiacritics(query[key])
+                .toLowerCase()
+                .replace(/[^\w\s]/gi, '')
+                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
+                .replace(/ /g, '');
+
+              return slideValue.search(filterValue) >= 0;
+            }).length > 0
+        )
+      );
       observer.complete();
     });
   }
 
-  get(index?): Observable<ServiceResponse> {
+  get(uid?): Observable<ServiceResponse> {
     return new Observable((observer) => {
       observer.next({
         list: this.slides,
-        index: index || null,
-        value: index ? this.slides[index] : null
+        index: uid || null,
+        value: uid ? this.slides[uid] : null
       });
       observer.complete();
     });
   }
 
-  set(index, value: Slide): Observable<ServiceResponse> {
+  set(query, data: Slide): Observable<ServiceResponse> {
     return new Observable((observer) => {
-      observer.next({
-        list: this.slides,
-        index: index,
-        value: this.slides[index] = value
-      });
+      this.filter(query)
+        .subscribe((slides: Slide[]) => {
+          if (slides.length > 0) {
+            this.slides = _.map(this.slides, (slide: Slide) => {
+              let result: Slide = slide;
+
+              if (slide.uid === data.uid) {
+                result = data;
+              }
+
+              return result;
+            });
+          }
+
+          observer.next({
+            list: this.slides,
+            index: data.index,
+            value: data
+          });
+        })
+        .unsubscribe();
       observer.complete();
     });
   }

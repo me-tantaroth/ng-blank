@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 
 import { LangsService } from '../../../langs/services/langs.service';
+import { Accents } from '../../../shared/utils/accents';
 
 import { Menu } from '../models/menu';
 
@@ -39,10 +40,30 @@ export class MenuService {
     });
   }
 
-  filter(key, validate): Observable<Menu> {
+  filter(query): Observable<Menu[]> {
     return new Observable((observer) => {
-      console.log(_.filter(this.menus, (o) => o[key] === validate));
-      observer.next(this.menus[0]);
+      observer.next(
+        _.filter(
+          this.menus,
+          (menu: Menu) =>
+            _.filter(Object.keys(query), (key) => {
+              const slideValue = new Accents()
+                .removeDiacritics(menu[key])
+                .toLowerCase()
+                .replace(/[^\w\s]/gi, '')
+                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
+                .replace(/ /g, '');
+              const filterValue = new Accents()
+                .removeDiacritics(query[key])
+                .toLowerCase()
+                .replace(/[^\w\s]/gi, '')
+                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
+                .replace(/ /g, '');
+
+              return slideValue.search(filterValue) >= 0;
+            }).length > 0
+        )
+      );
       observer.complete();
     });
   }
@@ -58,13 +79,29 @@ export class MenuService {
     });
   }
 
-  set(index, value: Menu): Observable<ServiceResponse> {
+  set(query, data: Menu): Observable<ServiceResponse> {
     return new Observable((observer) => {
-      observer.next({
-        list: this.menus,
-        index: index,
-        value: this.menus[index] = value
-      });
+      this.filter(query)
+        .subscribe((menus: Menu[]) => {
+          if (menus.length > 0) {
+            this.menus = _.map(this.menus, (menu: Menu) => {
+              let result: Menu = menu;
+
+              if (menu.uid === data.uid) {
+                result = data;
+              }
+
+              return result;
+            });
+          }
+
+          observer.next({
+            list: this.menus,
+            index: data.index,
+            value: data
+          });
+        })
+        .unsubscribe();
       observer.complete();
     });
   }

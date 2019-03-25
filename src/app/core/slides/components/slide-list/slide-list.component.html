@@ -12,7 +12,7 @@
       </mat-expansion-panel-header>
       <div>
         <div align="right" class="uk-margin-small">
-          <a [routerLink]="['/admin/slide/form', i]" class="uk-text-primary">Edit</a>
+          <a [routerLink]="['/admin/slide/form', slide.uid]" class="uk-text-primary">Edit</a>
           &nbsp;
           <span *ngIf="slide.blocked" class="uk-text-warning uk-text-bold">{{
             slide.blocked ? 'Blocked' : ''
@@ -20,7 +20,7 @@
           <a
             [routerLink]="['/admin/slide/list']"
             class="uk-text-warning"
-            (click)="blockSlide(i, slide)"
+            (click)="blockSlide(slide.uid, slide)"
             *ngIf="!slide.blocked"
             >Block</a
           >
@@ -31,7 +31,7 @@
           <a
             [routerLink]="['/admin/trash']"
             class="uk-text-danger"
-            (click)="deleteSlide(i, slide)"
+            (click)="deleteSlide(slide.uid, slide)"
             *ngIf="!slide.deleted"
             >Delete</a
           >

@@ -13,7 +13,7 @@ import { Page } from '../../core/pages/models/page';
   styleUrls: ['./page-view.component.scss']
 })
 export class PageViewComponent implements OnInit {
-  page: Observable<Page>;
+  pages: Observable<Page[]>;
 
   constructor(
     private route: ActivatedRoute,
@@ -21,16 +21,16 @@ export class PageViewComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    let id = this.route.snapshot.paramMap.get('id');
+    let uid = this.route.snapshot.paramMap.get('uid');
 
-    if (id) {
-      this.page = this.pageService.filter('uid', id);
+    if (uid) {
+      this.pages = this.pageService.filter({uid});
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          id = params.get('id');
+          uid = params.get('uid');
 
-          this.page = this.pageService.filter('uid', id);
+          this.pages = this.pageService.filter({uid});
         })
         .unsubscribe();
     }

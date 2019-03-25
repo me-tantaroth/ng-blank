@@ -1,24 +1,14 @@
 import { environment } from '../../../../environments/environment';
 
-import { Accents } from '../../../shared/utils/accents';
+import { makeid, Accents } from '../../../shared/utils';
 
 export interface Theme {
   color: string;
 }
 
-function makeid(length) {
-  let text = '';
-  const possible =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (let i = 0; i < length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
-
 export interface Page {
   uid: string;
+  index: number;
   path: string;
   alias: string[];
   author: string;
@@ -42,7 +32,7 @@ export class Page {
 
   format(page): Page {
     if (!page.uid || page.uid === null || page.uid === undefined) {
-      page.uid = makeid(15);
+      page.uid = 'page-' + makeid(15);
     }
     if (!page.path || page.path === null || page.path === undefined) {
       page.path = makeid(15);

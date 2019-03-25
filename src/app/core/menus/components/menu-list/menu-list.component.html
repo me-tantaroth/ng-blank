@@ -12,7 +12,7 @@
       </mat-expansion-panel-header>
       <div>
         <div align="right" class="uk-margin-small">
-          <a [routerLink]="['/admin/menu/form', i]" class="uk-text-primary">Edit</a>
+          <a [routerLink]="['/admin/menu/form', menu.uid]" class="uk-text-primary">Edit</a>
           &nbsp;
           <span *ngIf="menu.blocked" class="uk-text-warning uk-text-bold">{{
             menu.blocked ? 'Blocked' : ''
@@ -20,7 +20,7 @@
           <a
             [routerLink]="['/admin/menu/list']"
             class="uk-text-warning"
-            (click)="blockMenu(i, menu)"
+            (click)="blockMenu(menu.uid, menu)"
             *ngIf="!menu.blocked"
             >Block</a
           >
@@ -31,7 +31,7 @@
           <a
             [routerLink]="['/admin/trash']"
             class="uk-text-danger"
-            (click)="deleteMenu(i, menu)"
+            (click)="deleteMenu(menu.uid, menu)"
             *ngIf="!menu.deleted"
             >Delete</a
           >
