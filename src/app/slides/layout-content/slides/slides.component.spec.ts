@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModalUserListComponent } from './modal-user-list.component';
+import { SlidesComponent } from './slides.component';
 
-describe('ModalUserListComponent', () => {
-  let component: ModalUserListComponent;
-  let fixture: ComponentFixture<ModalUserListComponent>;
+describe('SlidesComponent', () => {
+  let component: SlidesComponent;
+  let fixture: ComponentFixture<SlidesComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ModalUserListComponent ]
+      declarations: [ SlidesComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ModalUserListComponent);
+    fixture = TestBed.createComponent(SlidesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

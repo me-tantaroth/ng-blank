@@ -6,11 +6,16 @@ import { SignInGuard } from '../auth/guards/sign-in.guard';
 import {
   UsersComponent,
   UserComponent,
+  UserViewComponent,
   RecoveryComponent,
   ProfileComponent
 } from './layout-content';
 
 const routes: Routes = [
+  {
+    path: 'view/:id',
+    component: UserViewComponent
+  },
   {
     path: 'list',
     component: UsersComponent,

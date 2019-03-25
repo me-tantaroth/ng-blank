@@ -8,18 +8,16 @@ import { MaterialModule } from '../material.module';
 import { CovalentModule } from '../covalent.module';
 import { LayoutsModule } from '../layouts/layouts.module';
 import { SharedModule } from '../shared/shared.module';
-import { UsersModule } from '../users/users.module';
 
 import {
   PagesComponent,
   PageComponent,
-  ViewContentComponent
+  PageViewComponent
 } from './layout-content';
 import {
   PageListComponent,
   PageFormComponent,
-  ModalPageListComponent,
-  PageDetailComponent
+  PageInfoComponent
 } from './components';
 
 @NgModule({
@@ -28,9 +26,8 @@ import {
     PageListComponent,
     PageFormComponent,
     PageComponent,
-    ModalPageListComponent,
-    ViewContentComponent,
-    PageDetailComponent
+    PageInfoComponent,
+    PageViewComponent
   ],
   imports: [
     CommonModule,
@@ -43,9 +40,8 @@ import {
     CovalentModule,
     LayoutsModule,
     PagesRoutingModule,
-    SharedModule,
-    UsersModule
+    SharedModule
   ],
-  exports: [PageListComponent, PageFormComponent, ModalPageListComponent]
+  exports: []
 })
 export class PagesModule {}

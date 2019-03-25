@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModalPageListComponent } from './modal-page-list.component';
+import { PageInfoComponent } from './page-info.component';
 
-describe('ModalPageListComponent', () => {
-  let component: ModalPageListComponent;
-  let fixture: ComponentFixture<ModalPageListComponent>;
+describe('PageInfoComponent', () => {
+  let component: PageInfoComponent;
+  let fixture: ComponentFixture<PageInfoComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ModalPageListComponent ]
+      declarations: [ PageInfoComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ModalPageListComponent);
+    fixture = TestBed.createComponent(PageInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

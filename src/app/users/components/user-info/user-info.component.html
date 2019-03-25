@@ -1,0 +1,11 @@
+<div *ngIf="user">
+  <div
+    class="uk-background-center-center uk-background-cover uk-background-no-repeat uk-background-primary uk-height-large"
+    [ngStyle]="{ backgroundImage: 'url(' + user.cover + ')' }"
+  ></div>
+
+  <h2>{{ user.displayName }}</h2>
+  <p>{{ user.cite }}</p>
+
+  <div [innerHtml]="user.aboutMe"></div>
+</div>

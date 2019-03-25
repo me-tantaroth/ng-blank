@@ -3,12 +3,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { SignInGuard } from '../auth/guards/sign-in.guard';
 
-import { PagesComponent, PageComponent, ViewContentComponent } from './layout-content';
+import { PagesComponent, PageComponent, PageViewComponent } from './layout-content';
 
 const routes: Routes = [
   {
     path: 'view/:pageId',
-    component: ViewContentComponent
+    component: PageViewComponent
   },
   {
     path: 'list',

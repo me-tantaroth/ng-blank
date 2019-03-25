@@ -10,13 +10,14 @@ import { LayoutsModule } from '../layouts/layouts.module';
 import {
   UsersComponent,
   UserComponent,
+  UserViewComponent,
   RecoveryComponent,
   ProfileComponent
 } from './layout-content';
 import {
   UserListComponent,
   UserFormComponent,
-  ModalUserListComponent
+  UserInfoComponent
 } from './components';
 
 @NgModule({
@@ -25,9 +26,10 @@ import {
     UsersComponent,
     UserComponent,
     UserFormComponent,
-    ModalUserListComponent,
     RecoveryComponent,
-    ProfileComponent
+    ProfileComponent,
+    UserViewComponent,
+    UserInfoComponent
   ],
   imports: [
     CommonModule,
@@ -39,6 +41,6 @@ import {
     LayoutsModule,
     UsersRoutingModule
   ],
-  exports: [UserListComponent, UserFormComponent, ModalUserListComponent]
+  exports: [UserListComponent, UserFormComponent]
 })
 export class UsersModule {}
