@@ -24,7 +24,7 @@ export class SignInGuard implements CanActivate {
         if (!authenticated) {
           this.router.navigate(['/not-found']);
         }
-      });
+      }).unsubscribe();
       return authObservable;
     });
   }

@@ -7,8 +7,17 @@ import { MaterialModule } from '../material.module';
 import { CovalentModule } from '../covalent.module';
 import { LayoutsModule } from '../layouts/layouts.module';
 
-import { UsersComponent, UserComponent, RecoveryComponent } from './pages';
-import { UserListComponent, UserFormComponent, ModalUserListComponent } from './components';
+import {
+  UsersComponent,
+  UserComponent,
+  RecoveryComponent,
+  ProfileComponent
+} from './layout-content';
+import {
+  UserListComponent,
+  UserFormComponent,
+  ModalUserListComponent
+} from './components';
 
 @NgModule({
   declarations: [
@@ -17,7 +26,8 @@ import { UserListComponent, UserFormComponent, ModalUserListComponent } from './
     UserComponent,
     UserFormComponent,
     ModalUserListComponent,
-    RecoveryComponent
+    RecoveryComponent,
+    ProfileComponent
   ],
   imports: [
     CommonModule,

@@ -3,9 +3,16 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
+import { Observable } from 'rxjs';
 
-import { UsersService } from '../../services/users.service';
-import { AuthService } from '../../../auth/services/auth.service';
+import {
+  UserService,
+  ServiceResponse as UserServiceResponse
+} from '../../services/users.service';
+import {
+  AuthService,
+  ServiceResponse as AuthServiceResponse
+} from '../../../auth/services/auth.service';
 
 import { ConfirmPasswordValidator } from '../../../shared/validators/confirm-password-validator';
 
@@ -18,11 +25,11 @@ import { Message } from '../../../models/message';
   styleUrls: ['./user-form.component.scss']
 })
 export class UserFormComponent implements OnInit {
-  @ViewChild('password')
-  password: ElementRef;
-  @Input() userId: string;
+  @ViewChild('password') password: ElementRef;
+  @Input() id: string;
+  @Input() user: User;
 
-  users: User[] = [];
+  users: Observable<User[]>;
   submitted: boolean;
   form: FormGroup;
   editing: boolean;
@@ -32,11 +39,10 @@ export class UserFormComponent implements OnInit {
 
   constructor(
     private store: StoreService,
-    private usersService: UsersService,
-    private auth: AuthService,
+    private usersService: UserService,
+    private authService: AuthService,
     private router: Router
   ) {
-    this.users = usersService.users;
     store.select('users');
   }
 
@@ -45,6 +51,8 @@ export class UserFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.users = this.usersService.list();
+
     this.form = new FormGroup({
       displayName: new FormControl(''),
       email: new FormControl('', [
@@ -72,11 +80,35 @@ export class UserFormComponent implements OnInit {
       cite: new FormControl(''),
       aboutMe: new FormControl(''),
       blocked: new FormControl(false),
+      deleted: new FormControl(false),
       emailVerified: new FormControl(false)
     });
 
-    if (this.userId && this.users[this.userId]) {
-      const user = this.users[this.userId];
+    if (this.id) {
+      this.usersService
+        .get(this.id)
+        .subscribe((userResponse: UserServiceResponse) => {
+          if (userResponse) {
+            const user: User = userResponse.value;
+
+            this.form.patchValue({
+              displayName: user.displayName,
+              email: user.email,
+              username: user.username,
+              password: this.password.nativeElement.value,
+              confirmPassword: this.password.nativeElement.value,
+              blocked: user.blocked,
+              deleted: user.deleted,
+              phoneNumber: user.phoneNumber,
+              emailVerified: user.emailVerified,
+              cite: user.cite,
+              aboutMe: user.aboutMe
+            });
+          }
+        })
+        .unsubscribe();
+    } else if (this.user) {
+      const user: User = this.user;
 
       this.form.patchValue({
         displayName: user.displayName,
@@ -85,6 +117,7 @@ export class UserFormComponent implements OnInit {
         password: this.password.nativeElement.value,
         confirmPassword: this.password.nativeElement.value,
         blocked: user.blocked,
+        deleted: user.deleted,
         phoneNumber: user.phoneNumber,
         emailVerified: user.emailVerified,
         cite: user.cite,
@@ -98,7 +131,7 @@ export class UserFormComponent implements OnInit {
   }
 
   addConfirmPassword(passwordValue) {
-    if (this.userId) {
+    if (this.id) {
       this.form.patchValue({
         confirmPassword: passwordValue
       });
@@ -112,56 +145,76 @@ export class UserFormComponent implements OnInit {
 
     const value = event[event.index];
 
-    if (this.userId) {
+    if (this.id) {
       delete value.password;
       delete value.confirmPassword;
 
-      this.users[this.userId] = value;
-
-      this.message = {
-        show: true,
-        label: 'Info',
-        sublabel: 'User edited',
-        color: 'accent',
-        icon: 'info'
-      };
-
-      this.router.navigate(['/user/list']);
-    } else {
-      value.createdAt = new Date();
-
-      this.auth
-        .emailSignUp(value.email, value.password)
-        .subscribe((response) => {
-          if (response.status) {
-            delete value.password;
-            delete value.confirmPassword;
-
-            this.users.push(value);
-
+      this.usersService
+        .set(this.id, new User(value))
+        .subscribe((userResponse: UserServiceResponse) => {
+          if (userResponse) {
             this.message = {
               show: true,
               label: 'Info',
-              sublabel: 'User created',
+              sublabel: 'User edited',
               color: 'accent',
               icon: 'info'
             };
 
-            this.auth.signOut().subscribe((responseSignOut) => {
-              if (responseSignOut.status) {
-                this.router.navigate(['/auth/sign-in']);
-              }
-            });
+            this.router.navigate(['/user/list']);
+          }
+        })
+        .unsubscribe();
+    } else {
+      const password = value.confirmPassword;
+
+      delete value.password;
+      delete value.confirmPassword;
+
+      this.authService
+        .emailSignUp(value.email, password)
+        .subscribe((authResponse: AuthServiceResponse) => {
+          if (authResponse.status) {
+            this.usersService
+              .push(new User(value))
+              .subscribe((userResponse: UserServiceResponse) => {
+                if (userResponse) {
+                  this.message = {
+                    show: true,
+                    label: 'Info',
+                    sublabel: 'User created',
+                    color: 'accent',
+                    icon: 'info'
+                  };
+
+                  this.authService
+                    .signOut()
+                    .subscribe((signOutResponse: AuthServiceResponse) => {
+                      if (signOutResponse.status) {
+                        this.authService
+                          .emailSignIn(value.email, password)
+                          .subscribe((signInReponse: AuthServiceResponse) => {
+                            if (signInReponse.status) {
+                              this.router.navigate(['/auth/sign-in']);
+                            }
+                          })
+                          .unsubscribe();
+                      }
+                    });
+                }
+              })
+              .unsubscribe();
           } else {
             this.message = {
               show: true,
               label: 'Error!',
-              sublabel: response.error,
+              sublabel: authResponse.error,
               color: 'warn',
               icon: 'error'
             };
           }
-        });
+        })
+        .unsubscribe();
     }
   }
   onSubmitted(event: boolean) {

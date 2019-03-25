@@ -18,9 +18,11 @@ export function ConfirmPasswordValidator(passwordControlName: string) {
           'matchOtherValidator(): other control is not found in parent group'
         );
       }
-      passwordControl.valueChanges.subscribe(() => {
-        confirmPasswordControl.updateValueAndValidity();
-      });
+      passwordControl.valueChanges
+        .subscribe(() => {
+          confirmPasswordControl.updateValueAndValidity();
+        })
+        .unsubscribe();
     }
 
     if (!passwordControl) {

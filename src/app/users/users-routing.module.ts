@@ -3,11 +3,21 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { SignInGuard } from '../auth/guards/sign-in.guard';
 
-import { UsersComponent, UserComponent, RecoveryComponent } from './pages';
+import {
+  UsersComponent,
+  UserComponent,
+  RecoveryComponent,
+  ProfileComponent
+} from './layout-content';
 
 const routes: Routes = [
   {
     path: 'list',
+    component: UsersComponent,
+    canActivate: [SignInGuard]
+  },
+  {
+    path: 'list/:filter',
     component: UsersComponent,
     canActivate: [SignInGuard]
   },
@@ -19,6 +29,11 @@ const routes: Routes = [
   {
     path: 'form/:id',
     component: UserComponent,
+    canActivate: [SignInGuard]
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
     canActivate: [SignInGuard]
   },
   {

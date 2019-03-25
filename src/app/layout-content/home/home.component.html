@@ -1,0 +1,11 @@
+<app-layout-default>
+  <app-modal-page-list></app-modal-page-list>
+  <app-modal-user-list></app-modal-user-list>
+  <h1>Welcome!</h1>
+
+  <div *ngIf="pages">
+    <div *ngFor="let page of pages | async">
+      <a [routerLink]="['/page/view', page.uid]">Ir a la pagina de {{ page.title }}</a>
+    </div>
+  </div>
+</app-layout-default>

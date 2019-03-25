@@ -19,10 +19,13 @@ export class LayoutDefaultComponent implements OnInit {
   }
 
   signOut() {
-    this.auth.signOut().subscribe((status) => {
-      if (status) {
-        this.router.navigate(['/auth/sign-out']);
-      }
-    });
+    this.auth
+      .signOut()
+      .subscribe((status) => {
+        if (status) {
+          this.router.navigate(['/auth/sign-out']);
+        }
+      })
+      .unsubscribe();
   }
 }

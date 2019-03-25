@@ -49,29 +49,32 @@ export class SignInFormComponent implements OnInit {
   onSubmitting(event: any) {
     const value = event[event.index];
 
-    this.auth.emailSignIn(value.email, value.password).subscribe((response) => {
-      if (response.status) {
-        this.store.set(value, 'authenticated');
+    this.auth
+      .emailSignIn(value.email, value.password)
+      .subscribe((response) => {
+        if (response.status) {
+          this.store.set(value, 'authenticated');
 
-        this.message = {
-          show: false
-        };
+          this.message = {
+            show: false
+          };
 
-        this.router.navigate(['/']);
-      } else {
-        this.message = {
-          show: true,
-          label: 'Error!',
-          sublabel: response.error.message,
-          color: 'warn',
-          icon: 'error'
-        };
+          this.router.navigate(['/']);
+        } else {
+          this.message = {
+            show: true,
+            label: 'Error!',
+            sublabel: response.error.message,
+            color: 'warn',
+            icon: 'error'
+          };
 
-        if (response.error.code === 'user-deleted') {
-          this.router.navigate(['/user/recovery']);
+          if (response.error.code === 'user-deleted') {
+            this.router.navigate(['/user/recovery']);
+          }
         }
-      }
-    });
+      })
+      .unsubscribe();
   }
   onSubmitted(event: boolean) {
     this.submitted = true;

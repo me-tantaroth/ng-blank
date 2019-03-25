@@ -1,8 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, Input } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import * as _ from 'lodash';
 
-import { AuthService } from '../../../auth/services/auth.service';
-import { UsersService } from '../../services/users.service';
+import {
+  AuthService,
+  ServiceResponse as AuthServiceResponse
+} from '../../../auth/services/auth.service';
+import {
+  UserService,
+  ServiceResponse as UserServiceResponse
+} from '../../services/users.service';
 
 import { User } from '../../models/user';
 
@@ -12,39 +20,59 @@ import { User } from '../../models/user';
   styleUrls: ['./user-list.component.scss']
 })
 export class UserListComponent implements OnInit {
+  @Input() filter: string;
+
   panelOpenState: boolean;
-  users: User[] = [];
+  users: Observable<User[]>;
 
   constructor(
-    private router: Router,
-    private auth: AuthService,
-    private usersService: UsersService
+    private authService: AuthService,
+    private usersService: UserService
   ) {}
 
   ngOnInit() {
-    this.users = this.usersService.users;
+    this.users = this.usersService.list().pipe(
+      map((users: User[]) =>
+        _.filter(users, (o) => {
+          let match: boolean;
+
+          if (this.filter) {
+            match = o[this.filter] === !!this.filter;
+          } else {
+            match = o.deleted === false;
+          }
+
+          return match;
+        })
+      )
+    );
   }
 
   verfifyEmail(index: string, user: User) {
     user.emailVerified = true;
 
-    this.users[index] = user;
+    this.usersService.set(index, user);
   }
 
   blockUser(index: string, user: User) {
     user.blocked = true;
 
-    this.users[index] = user;
+    this.usersService.set(index, user);
   }
 
   deleteUser(index: string, user: User) {
     user.deleted = true;
 
-    this.users[index] = user;
-    this.auth.signOut().subscribe((response) => {
-      if (response.status) {
-        this.router.navigate(['/auth/sign-out']);
-      }
-    });
+    this.usersService
+      .set(index, user)
+      .subscribe((userResponse: UserServiceResponse) => {
+        if (userResponse) {
+          this.authService
+            .signOut()
+            .subscribe()
+            .unsubscribe();
+        }
+      })
+      .unsubscribe();
   }
 }

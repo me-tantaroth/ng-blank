@@ -7,11 +7,12 @@ import { CovalentModule } from '../covalent.module';
 import { LayoutsModule } from '../layouts/layouts.module';
 import { SharedModule } from '../shared/shared.module';
 import { UsersModule } from '../users/users.module';
+import { PagesModule } from '../pages/pages.module';
 import { AuthRoutingModule } from './auth-routing.module';
 
 import { AuthService } from './services/auth.service';
 
-import { SignInComponent, SignUpComponent, SignOutComponent } from './pages';
+import { SignInComponent, SignUpComponent, SignOutComponent } from './layout-content';
 import { SignInFormComponent } from './components';
 
 @NgModule({
@@ -26,6 +27,7 @@ import { SignInFormComponent } from './components';
     LayoutsModule,
     SharedModule,
     UsersModule,
+    PagesModule,
     AuthRoutingModule
   ],
   exports: [SignInFormComponent],

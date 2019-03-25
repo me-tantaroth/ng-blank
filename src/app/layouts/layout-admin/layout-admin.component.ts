@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';
@@ -14,7 +13,7 @@ import { User } from '../../users/models/user';
   styleUrls: ['./layout-admin.component.scss']
 })
 export class LayoutAdminComponent implements OnInit {
-  name = 'AFROUP';
+  name = 'NG Blank';
 
   user: User;
 
@@ -28,6 +27,21 @@ export class LayoutAdminComponent implements OnInit {
       icon: 'people',
       route: '/user/list',
       title: 'Users'
+    },
+    {
+      icon: 'insert_drive_file',
+      route: '/page/list',
+      title: 'Pages'
+    },
+    {
+      icon: 'slideshow',
+      route: '/trash',
+      title: 'Slides'
+    },
+    {
+      icon: 'delete',
+      route: '/trash',
+      title: 'Trash'
     }
   ];
   usermenu: any[] = [
@@ -38,7 +52,7 @@ export class LayoutAdminComponent implements OnInit {
     },
     {
       icon: 'tune',
-      route: '.',
+      route: '/user/profile',
       title: 'Account settings'
     },
     {
@@ -84,6 +98,6 @@ export class LayoutAdminComponent implements OnInit {
           this.user = response.data;
         }
       }
-    );
+    ).unsubscribe();
   }
 }

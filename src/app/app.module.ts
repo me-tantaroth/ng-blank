@@ -13,11 +13,17 @@ import { AppRoutingModule } from './app-routing.module';
 import { LayoutsModule } from './layouts/layouts.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { PagesModule } from './pages/pages.module';
 
 import { environment } from '../environments/environment';
 
 import { AppComponent } from './app.component';
-import { HomeComponent, NotFoundComponent, DashboardComponent } from './pages';
+import {
+  HomeComponent,
+  NotFoundComponent,
+  DashboardComponent,
+  TrashComponent
+} from './layout-content';
 import { LangsModule } from './langs/langs.module';
 
 @NgModule({
@@ -25,7 +31,8 @@ import { LangsModule } from './langs/langs.module';
     AppComponent,
     HomeComponent,
     NotFoundComponent,
-    DashboardComponent
+    DashboardComponent,
+    TrashComponent
   ],
   imports: [
     BrowserModule,
@@ -55,6 +62,7 @@ import { LangsModule } from './langs/langs.module';
                 aboutMe: 'Hola, soy Eduard Ramirez!',
                 phoneNumber: 3150339393,
                 blocked: false,
+                deleted: false,
                 emailVerified: true,
                 createdAt: new Date()
               }
@@ -62,6 +70,7 @@ import { LangsModule } from './langs/langs.module';
           }
         },
         users: [],
+        pages: [],
         authentications: [],
         authenticated: {}
       }
@@ -73,6 +82,7 @@ import { LangsModule } from './langs/langs.module';
     LayoutsModule,
     AuthModule,
     UsersModule,
+    PagesModule,
     LangsModule
   ],
   providers: [],

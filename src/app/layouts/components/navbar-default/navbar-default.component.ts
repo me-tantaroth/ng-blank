@@ -18,7 +18,7 @@ export class NavbarDefaultComponent implements OnInit {
   }
 
   signOut() {
-    this.auth.signOut().subscribe();
+    this.auth.signOut().subscribe().unsubscribe();
   }
 
 }
