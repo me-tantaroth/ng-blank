@@ -1,18 +1,41 @@
-<div *ngIf="(menus | async).length > 0">
+<ul class="uk-breadcrumb" *ngIf="pathMenu && pathMenu.length > 0">
+  <li *ngFor="let path of pathMenu">
+    <a (click)="backMenu(path)">{{ path.text }}</a>
+  </li>
+</ul>
+<div align="right">
+  <button
+    (click)="newSubmenu('/admin/menu/form', currentMenu)"
+    mat-raised-button
+    color="primary"
+  >
+    New
+  </button>
+</div>
+<br />
+<div *ngIf="(menuList | async).length > 0">
   <mat-accordion>
     <mat-expansion-panel
       role="menu"
-      *ngFor="let menu of (menus | async); let i = index"
+      *ngFor="let menu of (menuList | async); let i = index"
       (opened)="panelOpenState = true"
       (closed)="panelOpenState = false"
     >
       <mat-expansion-panel-header>
         <mat-panel-title> {{ menu.text }} </mat-panel-title>
-        <mat-panel-description> -- </mat-panel-description>
+        <mat-panel-description>
+          {{ menu.createdAt | date }}
+        </mat-panel-description>
       </mat-expansion-panel-header>
       <div>
         <div align="right" class="uk-margin-small">
-          <a [routerLink]="['/admin/menu/form', menu.uid]" class="uk-text-primary">Edit</a>
+          <a (click)="submenuList(menu, menuList)" class="uk-text-success">Submenu</a>
+          &nbsp;
+          <a
+            [routerLink]="['/admin/menu/form', menu.uid]"
+            class="uk-text-primary"
+            >Edit</a
+          >
           &nbsp;
           <span *ngIf="menu.blocked" class="uk-text-warning uk-text-bold">{{
             menu.blocked ? 'Blocked' : ''
@@ -36,16 +59,8 @@
             >Delete</a
           >
         </div>
-        <div
-          class="uk-height-small uk-background-secondary uk-background-cover uk-background-center-center uk-background-norepeat"
-          [ngStyle]="{ 'background-image': 'url(' + menu.image + ')' }"
-        ></div>
-        <h4>{{ menu.createdAt | date }}</h4>
-        <blockquote cite="#">
-          <p class="uk-margin-small-bottom">{{ menu.text || '--' }}</p>
-        </blockquote>
       </div>
     </mat-expansion-panel>
   </mat-accordion>
 </div>
-<div *ngIf="(menus | async).length <= 0"><h2>Not found data</h2></div>
+<div *ngIf="(menuList | async).length <= 0"><h2>Not found data</h2></div>

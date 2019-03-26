@@ -6,17 +6,6 @@
         <mat-card-subtitle>usage stats for our menuss</mat-card-subtitle>
         <mat-divider></mat-divider>
         <mat-card-content>
-          <div align="right">
-            <button
-              routerLink="/admin/menu/form"
-              routerLinkActive="router-link-active"
-              mat-raised-button
-              color="primary"
-            >
-              New
-            </button>
-          </div>
-          <br />
           <app-menu-list [filter]="listFilter"></app-menu-list>
         </mat-card-content>
       </mat-card>

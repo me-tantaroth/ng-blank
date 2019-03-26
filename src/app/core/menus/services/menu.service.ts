@@ -68,6 +68,26 @@ export class MenuService {
     });
   }
 
+  filterWithPath(path: string): Observable<Menu> {
+    return new Observable((observer) => {
+      const splitPath: string[] = path.split('|');
+
+      splitPath.shift();
+
+      const cursors = splitPath.map(o => `['${ o }']`).join('');
+
+      const menuList: Menu[] = this.menus;
+      let result: Menu;
+
+      const updateAction = `result = menuList${ cursors }`;
+
+      eval(updateAction);
+
+      observer.next(result);
+      observer.complete();
+    });
+  }
+
   get(index?): Observable<ServiceResponse> {
     return new Observable((observer) => {
       observer.next({
@@ -102,6 +122,33 @@ export class MenuService {
           });
         })
         .unsubscribe();
+      observer.complete();
+    });
+  }
+
+  pushWithPath(path: string, value: Menu): Observable<ServiceResponse> {
+    return new Observable((observer) => {
+      const splitPath: string[] = path.split('|');
+
+      splitPath.shift();
+
+      const cursors = splitPath.map(o => `['${ o }']`).join('');
+
+      const menuList: Menu[] = this.menus;
+
+      const updateAction = `menuList${ cursors }.submenu.push(value)`;
+
+      console.log('>>>>>>>>>>>>> CODE', updateAction);
+
+      console.log('>>>>>>>>>>>> RESULT', menuList);
+
+      eval(updateAction);
+
+      observer.next({
+        list: this.menus = menuList,
+        index: this.menus.length - 1,
+        value
+      });
       observer.complete();
     });
   }

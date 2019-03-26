@@ -3,11 +3,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import * as _moment from 'moment';
 import { Observable } from 'rxjs';
-
-declare var $: any;
 
 import {
   MenuService,
@@ -25,6 +22,7 @@ import { Message } from '../../../../models/message';
 export class MenuFormComponent implements OnInit {
   @Input() menu: Menu;
   @Input() uid: string;
+  @Input() path: string;
 
   events: string[] = [];
   menus: Observable<Menu[]>;
@@ -66,7 +64,8 @@ export class MenuFormComponent implements OnInit {
       deleted: new FormControl(false)
     });
 
-    if (this.uid) {
+    console.log('?????', this.uid, this.path);
+    if (this.uid && !this.path) {
       this.menuService
         .filter({ uid: this.uid })
         .subscribe((menus: Menu[]) => {
@@ -77,10 +76,25 @@ export class MenuFormComponent implements OnInit {
               uid: menu.uid,
               index: menu.index,
               text: menu.text,
+              path: menu.path,
+              root: menu.root,
+              backText: menu.backText,
+              backNode: menu.backNode,
+              submenu: menu.submenu,
               redirect: menu.redirect,
               blocked: menu.blocked,
               deleted: menu.deleted
             });
+          }
+        })
+        .unsubscribe();
+    } else if (this.path) {
+      this.menuService
+        .filterWithPath(this.path)
+        .subscribe((menu: Menu) => {
+          console.log('¡¡¡¡¡¡¡¡¡¡¡¡¡---->', menu)
+          if (menu) {
+            this.menu = menu;
           }
         })
         .unsubscribe();
@@ -96,16 +110,16 @@ export class MenuFormComponent implements OnInit {
   }
 
   onSubmitting(event: any) {
+    console.log(event);
     this.message = {
       show: false
     };
 
-    const value = event[event.index];
+    const value = new Menu(event[event.index]);
 
-    console.log(this.uid, value);
-    if (this.uid) {
+    if (this.uid && !this.path) {
       this.menuService
-        .set({ uid: this.uid }, new Menu(value))
+        .set({ uid: this.uid }, value)
         .subscribe((menuResponse: MenuServiceResponse) => {
           if (menuResponse) {
             this.message = {
@@ -121,27 +135,63 @@ export class MenuFormComponent implements OnInit {
         })
         .unsubscribe();
     } else {
-      value.index = event.index;
-
       this.menuService
-        .push(new Menu(value))
-        .subscribe((menuResponse: MenuServiceResponse) => {
-          if (menuResponse) {
-            this.message = {
-              show: true,
-              label: 'Info',
-              sublabel: 'Menu creado',
-              color: 'accent',
-              icon: 'info'
-            };
-          }
+        .list()
+        .subscribe((menuList: Menu[]) => {
+          console.log('+++++++++++++', value);
+          console.log('============>', menuList)
+          if (this.menu) {
+            value.index = this.menu.submenu.length;
+            value.path = this.menu.path + '|submenu|' + value.index;
+            value.backText = this.menu.text;
+            console.log('============>', this.menu.path, this.menu.submenu, value)
+            value.backNode = this.menu.submenu;
 
-          this.router.navigate(['/admin/menu/list']);
+            this.menuService
+              .pushWithPath(this.menu.path, value)
+              .subscribe((menuResponse: MenuServiceResponse) => {
+                if (menuResponse) {
+                  this.message = {
+                    show: true,
+                    label: 'Info',
+                    sublabel: 'Menu creado',
+                    color: 'accent',
+                    icon: 'info'
+                  };
+                }
+
+                this.router.navigate(['/admin/menu/list']);
+              })
+              .unsubscribe();
+          } else {
+            value.index = event.index;
+            value.path = '|' + value.index;
+            value.backNode = [];
+            value.root = true;
+
+            this.menuService
+              .push(value)
+              .subscribe((menuResponse: MenuServiceResponse) => {
+                if (menuResponse) {
+                  this.message = {
+                    show: true,
+                    label: 'Info',
+                    sublabel: 'Menu creado',
+                    color: 'accent',
+                    icon: 'info'
+                  };
+                }
+
+                this.router.navigate(['/admin/menu/list']);
+              })
+              .unsubscribe();
+          }
         })
         .unsubscribe();
     }
   }
   onSubmitted(event: boolean) {
+    console.log('SUBMIT', event);
     this.submitted = true;
 
     if (event) {
