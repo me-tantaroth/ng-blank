@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { StoreService } from 'ng-barn';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 import { LangsService } from '../../../langs/services/langs.service';
@@ -10,7 +11,6 @@ import { Menu } from '../models/menu';
 
 export interface ServiceResponse {
   list: Menu[];
-  index: number;
   value: Menu;
 }
 
@@ -18,25 +18,82 @@ export interface ServiceResponse {
   providedIn: 'root'
 })
 export class MenuService {
-  private menus: Menu[] = [];
+  private menu: Menu[] = [];
+  private menuDelete: Menu[] = [];
 
   constructor(private store: StoreService, private langs: LangsService) {
     const langsNode = this.store.get('langs-node');
 
-    this.menus = langsNode[this.langs.currentLang].menus || [];
+    this.menu = langsNode[this.langs.currentLang].menu || [];
   }
 
   list(): Observable<Menu[]> {
     return new Observable((observer) => {
-      observer.next(this.menus);
+      observer.next(this.menu);
       observer.complete();
+    });
+  }
+
+  listWithPath(path: string): Observable<Menu[]> {
+    return new Observable((observer) => {
+      const splitPath: string[] = path.split('|');
+
+      splitPath.shift();
+
+      const cursors = splitPath.map((o) => `['${o}']`).join('');
+      const menuList: Menu[] = this.menu;
+      let result: Menu[];
+      const updateAction = `result = menuList${cursors}.menu`;
+
+      eval(updateAction);
+
+      if (result) {
+        observer.next(result);
+        observer.complete();
+      } else {
+        this.filter({ path })
+          .subscribe((menu: Menu[]) => {
+            observer.next(menu);
+            observer.complete();
+          })
+          .unsubscribe();
+      }
     });
   }
 
   item(index): Observable<Menu> {
     return new Observable((observer) => {
-      observer.next(this.menus[index]);
+      observer.next(this.menu[index]);
       observer.complete();
+    });
+  }
+
+  itemWithPath(path: string): Observable<Menu> {
+    return new Observable((observer) => {
+      const splitPath: string[] = path.split('|');
+
+      splitPath.shift();
+
+      const cursors = splitPath.map((o) => `['${o}']`).join('');
+      const menuList: Menu[] = this.menu;
+      let result: Menu;
+      const updateAction = `result = menuList${cursors}`;
+
+      eval(updateAction);
+
+      if (result) {
+        observer.next(result);
+        observer.complete();
+      } else {
+        this.filter({ path })
+          .pipe(map((o) => (o.length === 1 ? o[0] : undefined)))
+          .subscribe((menu: Menu) => {
+            console.log('?????', menu);
+            observer.next(menu);
+            observer.complete();
+          })
+          .unsubscribe();
+      }
     });
   }
 
@@ -44,17 +101,17 @@ export class MenuService {
     return new Observable((observer) => {
       observer.next(
         _.filter(
-          this.menus,
+          this.menu,
           (menu: Menu) =>
             _.filter(Object.keys(query), (key) => {
               const slideValue = new Accents()
-                .removeDiacritics(menu[key])
+                .removeDiacritics(menu[key].toString())
                 .toLowerCase()
                 .replace(/[^\w\s]/gi, '')
                 .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
                 .replace(/ /g, '');
               const filterValue = new Accents()
-                .removeDiacritics(query[key])
+                .removeDiacritics(query[key].toString())
                 .toLowerCase()
                 .replace(/[^\w\s]/gi, '')
                 .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
@@ -68,32 +125,60 @@ export class MenuService {
     });
   }
 
-  filterWithPath(path: string): Observable<Menu> {
+  filterWithPath(path: string, query): Observable<Menu[]> {
     return new Observable((observer) => {
       const splitPath: string[] = path.split('|');
 
       splitPath.shift();
 
-      const cursors = splitPath.map(o => `['${ o }']`).join('');
-
-      const menuList: Menu[] = this.menus;
-      let result: Menu;
-
-      const updateAction = `result = menuList${ cursors }`;
+      const cursors = splitPath.map((o) => `['${o}']`).join('');
+      const menuList: Menu[] = this.menu;
+      let result: Menu[];
+      const updateAction = `result = menuList${cursors}.menu`;
 
       eval(updateAction);
 
-      observer.next(result);
-      observer.complete();
+      if (result) {
+        observer.next(
+          _.filter(
+            result,
+            (menu: Menu) =>
+              _.filter(Object.keys(query), (key) => {
+                const slideValue = new Accents()
+                  .removeDiacritics(menu[key].toString())
+                  .toLowerCase()
+                  .replace(/[^\w\s]/gi, '')
+                  .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
+                  .replace(/ /g, '');
+                const filterValue = new Accents()
+                  .removeDiacritics(query[key].toString())
+                  .toLowerCase()
+                  .replace(/[^\w\s]/gi, '')
+                  .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
+                  .replace(/ /g, '');
+
+                  console.log('------------------------->', slideValue,  filterValue)
+                return slideValue.search(filterValue) >= 0;
+              }).length > 0
+          )
+        );
+        observer.complete();
+      } else {
+        this.filter({ path })
+          .pipe(map((o) => (o.length === 1 ? o[0] : undefined)))
+          .subscribe((menu: Menu) => {
+            console.log('?????', menu);
+          })
+          .unsubscribe();
+      }
     });
   }
 
   get(index?): Observable<ServiceResponse> {
     return new Observable((observer) => {
       observer.next({
-        list: this.menus,
-        index: index || null,
-        value: index ? this.menus[index] : null
+        list: this.menu,
+        value: index ? this.menu[index] : null
       });
       observer.complete();
     });
@@ -102,26 +187,53 @@ export class MenuService {
   set(query, data: Menu): Observable<ServiceResponse> {
     return new Observable((observer) => {
       this.filter(query)
-        .subscribe((menus: Menu[]) => {
-          if (menus.length > 0) {
-            this.menus = _.map(this.menus, (menu: Menu) => {
+        .subscribe((menu: Menu[]) => {
+          if (menu.length > 0) {
+            this.menu = _.map(this.menu, (menu: Menu) => {
               let result: Menu = menu;
-
-              if (menu.uid === data.uid) {
-                result = data;
-              }
 
               return result;
             });
           }
 
           observer.next({
-            list: this.menus,
-            index: data.index,
+            list: this.menu,
             value: data
           });
         })
         .unsubscribe();
+      observer.complete();
+    });
+  }
+
+  setWithPath(path: string, value: Menu): Observable<ServiceResponse> {
+    return new Observable((observer) => {
+      const splitPath: string[] = path.split('|');
+
+      splitPath.shift();
+
+      const cursors = splitPath.map((o) => `['${o}']`).join('');
+      const menuList: Menu[] = this.menu;
+      const updateAction = `menuList${cursors} = value`;
+
+      eval(updateAction);
+
+      observer.next({
+        list: this.menu = menuList,
+        value
+      });
+      observer.complete();
+    });
+  }
+
+  push(value: Menu): Observable<ServiceResponse> {
+    return new Observable((observer) => {
+      this.menu.push(value);
+
+      observer.next({
+        list: this.menu,
+        value
+      });
       observer.complete();
     });
   }
@@ -132,11 +244,9 @@ export class MenuService {
 
       splitPath.shift();
 
-      const cursors = splitPath.map(o => `['${ o }']`).join('');
-
-      const menuList: Menu[] = this.menus;
-
-      const updateAction = `menuList${ cursors }.submenu.push(value)`;
+      const cursors = splitPath.map((o) => `['${o}']`).join('');
+      const menuList: Menu[] = this.menu;
+      const updateAction = `menuList${cursors}.menu.push(value)`;
 
       console.log('>>>>>>>>>>>>> CODE', updateAction);
 
@@ -145,21 +255,7 @@ export class MenuService {
       eval(updateAction);
 
       observer.next({
-        list: this.menus = menuList,
-        index: this.menus.length - 1,
-        value
-      });
-      observer.complete();
-    });
-  }
-
-  push(value: Menu): Observable<ServiceResponse> {
-    return new Observable((observer) => {
-      this.menus.push(value);
-
-      observer.next({
-        list: this.menus,
-        index: this.menus.length - 1,
+        list: this.menu = menuList,
         value
       });
       observer.complete();

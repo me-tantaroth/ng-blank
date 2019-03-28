@@ -7,6 +7,10 @@
   class="uk-margin"
 ></td-message>
 
+<div *ngIf="action === 'add' && path">
+  <h3>Agregando submenu en {{ menu ? menu.text : 'Principal' }}</h3>
+</div>
+
 <tnt-barn-form
   [formGroup]="form"
   (submitting)="onSubmitting($event)"
@@ -24,16 +28,16 @@
   </mat-form-field>
 
   <mat-form-field class="uk-width-1-1 uk-margin-small">
-      <input
-        matInput
-        #redirect
-        placeholder="URL"
-        id="redirect"
-        name="redirect"
-        formControlName="redirect"
-      />
-    </mat-form-field>
-  
+    <input
+      matInput
+      #link
+      placeholder="URL"
+      id="link"
+      name="link"
+      formControlName="link"
+    />
+  </mat-form-field>
+
   <div class="uk-width-1-1 uk-margin-small">
     <section>
       <mat-slide-toggle

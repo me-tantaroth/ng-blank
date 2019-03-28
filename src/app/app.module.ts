@@ -78,13 +78,14 @@ import { LangsModule } from './langs/langs.module';
                 emailVerified: true,
                 createdAt: new Date()
               }
-            ]
+            ],
+            menu: []
           }
         },
         users: [],
         pages: [],
         slides: [],
-        menus: [],
+        menu: [],
         authentications: [],
         authenticated: {}
       }

@@ -1,66 +1,74 @@
-<ul class="uk-breadcrumb" *ngIf="pathMenu && pathMenu.length > 0">
-  <li *ngFor="let path of pathMenu">
-    <a (click)="backMenu(path)">{{ path.text }}</a>
-  </li>
-</ul>
+<div *ngIf="currentMenu">
+  <ul class="uk-breadcrumb">
+    <li>
+      <a (click)="onBackMenu(currentMenu)">Atrás</a>
+    </li>
+    <li>
+      <span>{{ currentMenu.text || 'Vacio' }}</span>
+    </li>
+  </ul>
+</div>
+
 <div align="right">
-  <button
-    (click)="newSubmenu('/admin/menu/form', currentMenu)"
-    mat-raised-button
-    color="primary"
-  >
+  <button (click)="onAddMenu(currentMenu)" mat-raised-button color="primary">
     New
   </button>
 </div>
 <br />
-<div *ngIf="(menuList | async).length > 0">
-  <mat-accordion>
-    <mat-expansion-panel
-      role="menu"
-      *ngFor="let menu of (menuList | async); let i = index"
-      (opened)="panelOpenState = true"
-      (closed)="panelOpenState = false"
-    >
-      <mat-expansion-panel-header>
-        <mat-panel-title> {{ menu.text }} </mat-panel-title>
-        <mat-panel-description>
-          {{ menu.createdAt | date }}
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-      <div>
-        <div align="right" class="uk-margin-small">
-          <a (click)="submenuList(menu, menuList)" class="uk-text-success">Submenu</a>
-          &nbsp;
-          <a
-            [routerLink]="['/admin/menu/form', menu.uid]"
-            class="uk-text-primary"
-            >Edit</a
-          >
-          &nbsp;
-          <span *ngIf="menu.blocked" class="uk-text-warning uk-text-bold">{{
-            menu.blocked ? 'Blocked' : ''
-          }}</span>
-          <a
-            [routerLink]="['/admin/menu/list']"
-            class="uk-text-warning"
-            (click)="blockMenu(menu.uid, menu)"
-            *ngIf="!menu.blocked"
-            >Block</a
-          >
-          &nbsp;
-          <span *ngIf="menu.deleted" class="uk-text-warning uk-text-bold">{{
-            menu.deleted ? 'Deleted' : ''
-          }}</span>
-          <a
-            [routerLink]="['/admin/trash']"
-            class="uk-text-danger"
-            (click)="deleteMenu(menu.uid, menu)"
-            *ngIf="!menu.deleted"
-            >Delete</a
-          >
+<div *ngIf="(menuList | async)">
+  <div *ngIf="(menuList | async).length > 0">
+    <mat-accordion>
+      <mat-expansion-panel
+        role="menu"
+        *ngFor="let menu of (menuList | async); let i = index"
+        (opened)="panelOpenState = true"
+        (closed)="panelOpenState = false"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> {{ menu.text }} </mat-panel-title>
+          <mat-panel-description>
+            {{ menu.createdAt | date }}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div>
+          <div align="right" class="uk-margin-small">
+            <a
+              [routerLink]="['/admin/menu/list/' + (filter || ''), menu.path]"
+              class="uk-text-success"
+              >Submenu</a
+            >
+            &nbsp;
+            <a
+              [routerLink]="['/admin/menu/form/edit', menu.path]"
+              class="uk-text-primary"
+              >Edit</a
+            >
+            &nbsp;
+            <span *ngIf="menu.blocked" class="uk-text-warning uk-text-bold">{{
+              menu.blocked ? 'Blocked' : ''
+            }}</span>
+            <a
+              class="uk-text-warning"
+              (click)="onBlockMenu(menu)"
+              *ngIf="!menu.blocked"
+              >Block</a
+            >
+            &nbsp;
+            <span *ngIf="menu.deleted" class="uk-text-danger uk-text-bold">{{
+              menu.deleted ? 'Deleted' : ''
+            }}</span>
+            <a
+              [routerLink]="['/admin/trash']"
+              class="uk-text-danger"
+              (click)="onDeleteMenu(menu)"
+              *ngIf="!menu.deleted"
+              >Delete</a
+            >
+          </div>
         </div>
-      </div>
-    </mat-expansion-panel>
-  </mat-accordion>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+  <div *ngIf="(menuList | async).length <= 0"><h2>Not found data</h2></div>
 </div>
-<div *ngIf="(menuList | async).length <= 0"><h2>Not found data</h2></div>
+<div *ngIf="!(menuList | async)"><h2>Not found data</h2></div>

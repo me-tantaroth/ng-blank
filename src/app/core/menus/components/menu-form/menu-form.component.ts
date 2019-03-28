@@ -21,7 +21,7 @@ import { Message } from '../../../../models/message';
 })
 export class MenuFormComponent implements OnInit {
   @Input() menu: Menu;
-  @Input() uid: string;
+  @Input() action: string;
   @Input() path: string;
 
   events: string[] = [];
@@ -39,7 +39,7 @@ export class MenuFormComponent implements OnInit {
     private menuService: MenuService,
     private router: Router
   ) {
-    store.select('menus');
+    store.select('menu');
   }
 
   get f(): any {
@@ -47,8 +47,6 @@ export class MenuFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.menus = this.menuService.list();
-
     this.errorMessages = {
       image: {
         required: 'La foto de perfíl es requerida.'
@@ -56,48 +54,14 @@ export class MenuFormComponent implements OnInit {
     };
 
     this.form = new FormGroup({
-      uid: new FormControl(),
-      index: new FormControl(),
       text: new FormControl('', Validators.required),
-      redirect: new FormControl('', Validators.required),
+      link: new FormControl('', Validators.required),
       blocked: new FormControl(true),
       deleted: new FormControl(false)
     });
 
-    console.log('?????', this.uid, this.path);
-    if (this.uid && !this.path) {
-      this.menuService
-        .filter({ uid: this.uid })
-        .subscribe((menus: Menu[]) => {
-          if (menus && menus.length > 0 && menus.length === 1) {
-            const menu: Menu = menus[0];
-
-            this.form.patchValue({
-              uid: menu.uid,
-              index: menu.index,
-              text: menu.text,
-              path: menu.path,
-              root: menu.root,
-              backText: menu.backText,
-              backNode: menu.backNode,
-              submenu: menu.submenu,
-              redirect: menu.redirect,
-              blocked: menu.blocked,
-              deleted: menu.deleted
-            });
-          }
-        })
-        .unsubscribe();
-    } else if (this.path) {
-      this.menuService
-        .filterWithPath(this.path)
-        .subscribe((menu: Menu) => {
-          console.log('¡¡¡¡¡¡¡¡¡¡¡¡¡---->', menu)
-          if (menu) {
-            this.menu = menu;
-          }
-        })
-        .unsubscribe();
+    if (this.action === 'edit') {
+      this.form.patchValue(this.menu);
     }
   }
 
@@ -110,84 +74,92 @@ export class MenuFormComponent implements OnInit {
   }
 
   onSubmitting(event: any) {
-    console.log(event);
     this.message = {
       show: false
     };
 
     const value = new Menu(event[event.index]);
 
-    if (this.uid && !this.path) {
-      this.menuService
-        .set({ uid: this.uid }, value)
-        .subscribe((menuResponse: MenuServiceResponse) => {
-          if (menuResponse) {
-            this.message = {
-              show: true,
-              label: 'Info',
-              sublabel: 'Menu editado',
-              color: 'accent',
-              icon: 'info'
-            };
+    if (this.action === 'add') {
+      if (this.path && this.menu) {
+        value.path = this.path + '|menu|' + this.menu.menu.length;
+        value.backPath = this.path;
 
-            this.router.navigate(['/admin/menu/list']);
-          }
-        })
-        .unsubscribe();
-    } else {
-      this.menuService
-        .list()
-        .subscribe((menuList: Menu[]) => {
-          console.log('+++++++++++++', value);
-          console.log('============>', menuList)
-          if (this.menu) {
-            value.index = this.menu.submenu.length;
-            value.path = this.menu.path + '|submenu|' + value.index;
-            value.backText = this.menu.text;
-            console.log('============>', this.menu.path, this.menu.submenu, value)
-            value.backNode = this.menu.submenu;
+        this.menuService
+          .pushWithPath(this.path, value)
+          .subscribe((menuResponse: MenuServiceResponse) => {
+            if (menuResponse) {
+              this.message = {
+                show: true,
+                label: 'Info',
+                sublabel: 'Menu creado',
+                color: 'accent',
+                icon: 'info'
+              };
+            }
 
-            this.menuService
-              .pushWithPath(this.menu.path, value)
-              .subscribe((menuResponse: MenuServiceResponse) => {
-                if (menuResponse) {
-                  this.message = {
-                    show: true,
-                    label: 'Info',
-                    sublabel: 'Menu creado',
-                    color: 'accent',
-                    icon: 'info'
-                  };
-                }
+            this.router.navigate(['/admin/menu/list/path', this.path]);
+          })
+          .unsubscribe();
+      } else {
+        this.menuService
+          .list()
+          .subscribe((menuList: Menu[]) => {
+            if (!!menuList) {
+              value.root = true;
+              value.path = '|' + menuList.length;
 
-                this.router.navigate(['/admin/menu/list']);
-              })
-              .unsubscribe();
-          } else {
-            value.index = event.index;
-            value.path = '|' + value.index;
-            value.backNode = [];
-            value.root = true;
+              this.menuService
+                .push(value)
+                .subscribe((menuResponse: MenuServiceResponse) => {
+                  if (menuResponse) {
+                    this.message = {
+                      show: true,
+                      label: 'Info',
+                      sublabel: 'Menu creado',
+                      color: 'accent',
+                      icon: 'info'
+                    };
+                  }
 
-            this.menuService
-              .push(value)
-              .subscribe((menuResponse: MenuServiceResponse) => {
-                if (menuResponse) {
-                  this.message = {
-                    show: true,
-                    label: 'Info',
-                    sublabel: 'Menu creado',
-                    color: 'accent',
-                    icon: 'info'
-                  };
-                }
+                  this.router.navigate(['/admin/menu/list']);
+                })
+                .unsubscribe();
+            }
+          })
+          .unsubscribe();
+      }
+    } else if (this.action === 'edit') {
+      if (this.path && this.menu) {
+        this.menu.text = value.text;
+        this.menu.link = value.link;
+        this.menu.blocked = value.blocked;
+        this.menu.deleted = value.deleted;
 
-                this.router.navigate(['/admin/menu/list']);
-              })
-              .unsubscribe();
-          }
-        })
-        .unsubscribe();
+        this.menuService
+          .setWithPath(this.path, this.menu)
+          .subscribe((menuResponse: MenuServiceResponse) => {
+            if (menuResponse) {
+              this.message = {
+                show: true,
+                label: 'Info',
+                sublabel: 'Menu editado',
+                color: 'accent',
+                icon: 'info'
+              };
+            }
+
+            if (this.menu.root) {
+              this.router.navigate(['/admin/menu/list']);
+            } else {
+              this.router.navigate([
+                '/admin/menu/list/path',
+                this.menu.backPath
+              ]);
+            }
+          })
+          .unsubscribe();
+      }
     }
   }
   onSubmitted(event: boolean) {

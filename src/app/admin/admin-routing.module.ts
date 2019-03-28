@@ -117,17 +117,22 @@ const routes: Routes = [
         canActivate: [SignInGuard]
       },
       {
+        path: 'list/:filter/:value',
+        component: MenusComponent,
+        canActivate: [SignInGuard]
+      },
+      {
         path: 'form',
         component: MenuComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'form/:uid',
+        path: 'form/:action',
         component: MenuComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'form/:uid/:path',
+        path: 'form/:action/:path',
         component: MenuComponent,
         canActivate: [SignInGuard]
       }

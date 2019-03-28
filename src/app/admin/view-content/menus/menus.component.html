@@ -2,11 +2,14 @@
   <div flex-gt-sm="100">
     <div class="uk-container">
       <mat-card>
-        <mat-card-title>Menus</mat-card-title>
-        <mat-card-subtitle>usage stats for our menuss</mat-card-subtitle>
+        <mat-card-title>Lista de menú</mat-card-title>
+        <mat-card-subtitle>usage stats for our menu</mat-card-subtitle>
         <mat-divider></mat-divider>
         <mat-card-content>
-          <app-menu-list [filter]="listFilter"></app-menu-list>
+          <app-menu-list
+            [filter]="paramFilter"
+            [value]="paramValue"
+          ></app-menu-list>
         </mat-card-content>
       </mat-card>
     </div>

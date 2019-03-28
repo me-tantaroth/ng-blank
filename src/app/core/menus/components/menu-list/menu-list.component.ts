@@ -1,18 +1,14 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivationEnd } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 import * as _ from 'lodash';
 
-import { MenuService } from '../../services/menu.service';
+import {
+  MenuService,
+  ServiceResponse as MenuServiceResponse
+} from '../../services/menu.service';
 
 import { Menu } from '../../models/menu';
-
-interface Path {
-  text: string;
-  currentMenu: Menu;
-  backMenu: Menu[];
-}
 
 @Component({
   selector: 'app-menu-list',
@@ -21,79 +17,114 @@ interface Path {
 })
 export class MenuListComponent implements OnInit {
   @Input() filter: string;
+  @Input() value: string;
 
   currentMenu: Menu;
-  pathMenu: Path[] = [];
-  panelOpenState: boolean;
   menuList: Observable<Menu[]>;
-  menuListAll: Menu[];
+  backMenu: Observable<Menu[]>;
 
-  constructor(private menuService: MenuService, private router: Router) {}
+  constructor(private menuService: MenuService, private router: Router) {
+    router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (
+          !!data.snapshot.params.filter &&
+          data.snapshot.params.filter === 'path' &&
+          !!data.snapshot.params.value
+        ) {
+          this.filter = data.snapshot.params.filter;
+          this.value = data.snapshot.params.value;
+
+          this.menuService
+            .itemWithPath(this.value)
+            .subscribe((menu) => {
+              console.log('## MENU', menu);
+              this.currentMenu = menu;
+              this.menuList = of(menu.menu);
+            })
+            .unsubscribe();
+        }
+      }
+    });
+  }
 
   ngOnInit() {
-    this.menuList = this.menuService.list().pipe(
-      map((menuList: Menu[]) =>
-        _.filter(menuList, (o) => {
-          let match: boolean;
-
-          if (this.filter) {
-            match = o[this.filter] === !!this.filter;
-          } else {
-            match = o.deleted === false;
-          }
-
-          return match;
+    if (!!this.filter && this.filter === 'path' && !!this.value) {
+      console.log('## FILTER PATH');
+      this.menuService
+        .itemWithPath(this.value)
+        .subscribe((menu) => {
+          console.log('## MENU', menu);
+          this.currentMenu = menu;
         })
-      )
-    );
+        .unsubscribe();
+      this.menuList = this.menuService.filterWithPath(this.value, {
+        deleted: false
+      });
+    } else if (!!this.filter && this.filter === 'deleted') {
+      console.log('## FILTER DELETED');
 
-    this.menuList
-      .subscribe((menuList: Menu[]) => (this.menuListAll = menuList))
+      if (!!this.value) {
+        this.menuList = this.menuService.listWithPath(this.value);
+      } else {
+        this.menuList = this.menuService.list();
+      }
+    } else {
+      console.log('## ONLY NOT DELETED');
+      this.menuList = this.menuService.filter({
+        deleted: false
+      });
+    }
+  }
+
+  onAddMenu(menu: Menu) {
+    if (menu) {
+      if (!!this.filter && this.filter === 'path' && !!this.value) {
+        this.router.navigate(['/admin/menu/form/add', this.value]);
+      } else {
+        this.router.navigate(['/admin/menu/form/add']);
+      }
+    } else {
+      this.router.navigate(['/admin/menu/form/add']);
+    }
+  }
+
+  onBackMenu(menu: Menu) {
+    if (menu) {
+      if (menu.root) {
+        this.router.navigate(['/admin/menu/list' + (this.filter || '')]);
+      } else {
+        this.router.navigate([
+          '/admin/menu/list' + (this.filter || ''),
+          'path',
+          menu.backPath || ''
+        ]);
+      }
+    }
+  }
+
+  onBlockMenu(menu: Menu) {
+    menu.blocked = true;
+
+    this.menuService
+      .setWithPath(menu.path, menu)
+      .subscribe((response: MenuServiceResponse) => {
+        if (response && response.list) {
+          this.menuList = of(response.list);
+        }
+      })
       .unsubscribe();
   }
 
-  submenuList(menu: Menu, menuList: Menu[]) {
-    console.log(menu);
-    this.pathMenu.push({
-      text: menu.backText,
-      currentMenu: menu,
-      backMenu: menu.backNode.length > 0 ? menu.backNode : this.menuListAll
-    });
-
-    this.currentMenu = menu;
-
-    this.menuList = of(menu.submenu);
-  }
-
-  newSubmenu(path, currentMenu: Menu) {
-    console.log(currentMenu);
-    if ((currentMenu && !currentMenu.path) || !currentMenu) {
-      this.router.navigate([path]);
-    } else {
-      this.router.navigate([path, currentMenu.uid, currentMenu.path]);
-    }
-  }
-
-  backMenu(path: Path) {
-    this.pathMenu.pop();
-
-    console.log(path);
-    if (path.currentMenu.backNode.length === 0) {
-      this.currentMenu = null;
-    }
-
-    this.menuList = of(path.backMenu);
-  }
-
-  blockMenu(uid: string, menu: Menu) {
-    menu.blocked = true;
-
-    this.menuService.set({ uid }, menu);
-  }
-
-  deleteMenu(uid: string, menu: Menu) {
+  onDeleteMenu(menu: Menu) {
     menu.deleted = true;
 
-    this.menuService.set({ uid }, menu);
+    this.menuService
+      .setWithPath(menu.path, menu)
+      .subscribe((response: MenuServiceResponse) => {
+        if (response && response.list) {
+          this.menuList = of(response.list);
+        }
+      })
+      .unsubscribe();
   }
 }

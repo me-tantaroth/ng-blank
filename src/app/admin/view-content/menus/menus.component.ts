@@ -7,19 +7,32 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./menus.component.scss']
 })
 export class MenusComponent implements OnInit {
-  listFilter: string;
+  paramFilter: string;
+  paramValue: string;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
-    const listFilter = this.route.snapshot.paramMap.get('filter');
+    const paramFilter = this.route.snapshot.paramMap.get('filter');
 
-    if (listFilter) {
-      this.listFilter = listFilter;
+    if (paramFilter) {
+      this.paramFilter = paramFilter;
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          this.listFilter = params.get('filter');
+          this.paramFilter = params.get('filter');
+        })
+        .unsubscribe();
+    }
+
+    const paramValue = this.route.snapshot.paramMap.get('value');
+
+    if (paramValue) {
+      this.paramValue = paramValue;
+    } else {
+      this.route.paramMap
+        .subscribe((params) => {
+          this.paramValue = params.get('value');
         })
         .unsubscribe();
     }
