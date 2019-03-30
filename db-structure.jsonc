@@ -9,6 +9,7 @@
         "dbPath": "/lang/es",
         "blocked": false,
         "deleted": false,
+        "deletedCount": 0,
         "createdAt": "new Date()",
         "user": {
           "-user-item-1": {
@@ -22,6 +23,7 @@
             "dbPath": "/lang/es/user/-user-item-1",
             "blocked": false,
             "deleted": false,
+            "deletedCount": 0,
             "createdAt": "new Date()"
           }
         },
@@ -36,6 +38,7 @@
             "dbPath": "/lang/es/slide/-slide-item-1",
             "blocked": false,
             "deleted": true,
+            "deletedCount": 1,
             "createdAt": "new Date()"
           }
         },
@@ -58,6 +61,7 @@
             "dbPath": "/lang/es/page/-page-item-1",
             "blocked": false,
             "deleted": true,
+            "deletedCount": 1,
             "createdAt": "new Date()"
           }
         },
@@ -78,6 +82,7 @@
                 "dbPath": "/lang/es/menu/-menu-item-1/menu/-menu-item-1-1",
                 "blocked": false,
                 "deleted": false,
+                "deletedCount": 0,
                 "createdAt": "new Date()"
               }
             },
@@ -87,6 +92,7 @@
             "dbPath": "/lang/es/menu/-menu-item-1",
             "blocked": false,
             "deleted": false,
+            "deletedCount": 0,
             "createdAt": "new Date()"
           }
         }
@@ -111,6 +117,7 @@
         "dbPath": "/lang/es/page/-page-item-1",
         "blocked": false,
         "deleted": true,
+        "deletedCount": 1,
         "createdAt": "new Date()"
       },
       "-slide-item-1": {
@@ -123,6 +130,7 @@
         "dbPath": "/lang/es/slide/-slide-item-1",
         "blocked": false,
         "deleted": true,
+        "deletedCount": 1,
         "createdAt": "new Date()"
       }
     }
