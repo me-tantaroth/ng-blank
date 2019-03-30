@@ -43,7 +43,7 @@ const routes: Routes = [
     path: 'page',
     children: [
       {
-        path: 'view/:pageId',
+        path: 'view/:path',
         component: PageViewComponent
       }
     ]

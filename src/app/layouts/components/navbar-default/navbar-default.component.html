@@ -1,16 +1,15 @@
-<nav class="uk-navbar-container" uk-navbar="mode: click">
+<nav class="uk-navbar-container" uk-navbar>
   <div class="uk-navbar-left">
     <ul class="uk-navbar-nav">
       <li class="uk-active"><a routerLink="/">NG Blank</a></li>
       <li *ngFor="let item of (menu | async)">
-        <a href="#">{{ item.text || 'Link' }}</a>
+        <a [routerLink]="[item.link]">{{ item.text || 'Link' }}</a>
         <div
           class="uk-navbar-dropdown"
           *ngIf="item.menu && item.menu.length && item.menu.length > 0"
         >
           <ul class="uk-nav uk-navbar-dropdown-nav" [innerHTML]="submenu(item.menu)"></ul>
         </div>
-        <!-- <div class="uk-navbar-dropdown" *ngIf="item.menu && item.menu.length && item.menu.length > 0" [innerHTML]="submenu(item.menu)"></div> -->
       </li>
       <li *ngIf="!(authenticated | async)">
         <a routerLink="/auth/sign-in">Sign In</a>

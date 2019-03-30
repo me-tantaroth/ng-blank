@@ -21,16 +21,16 @@ export class PageViewComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    let uid = this.route.snapshot.paramMap.get('uid');
+    let path = this.route.snapshot.paramMap.get('path');
 
-    if (uid) {
-      this.pages = this.pageService.filter({uid});
+    if (path) {
+      this.pages = this.pageService.filter({path});
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          uid = params.get('uid');
+          path = params.get('path');
 
-          this.pages = this.pageService.filter({uid});
+          this.pages = this.pageService.filter({path});
         })
         .unsubscribe();
     }

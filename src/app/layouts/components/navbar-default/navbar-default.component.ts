@@ -33,7 +33,7 @@ export class NavbarDefaultComponent implements OnInit {
     if (menu && menu.length && menu.length > 0) {
       for (let item of menu) {
         html += `<li>`;
-          html += `<a href="#">${item.text}</a>`;
+          html += `<a href="${item.link}">${item.text}</a>`;
           if (item.menu && item.menu.length && item.menu.length > 0) {
             html += '<div class="uk-navbar-dropdown">';
               html += '<ul class="uk-nav uk-navbar-dropdown-nav">';

@@ -60,6 +60,8 @@ export class PageService {
                 .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
                 .replace(/ /g, '');
 
+                console.log('!!!!------------>', slideValue, '**', filterValue)
+
               return slideValue.search(filterValue) >= 0;
             }).length > 0
         )
