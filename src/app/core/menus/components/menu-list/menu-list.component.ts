@@ -69,6 +69,8 @@ export class MenuListComponent implements OnInit {
         this.menuList = this.menuService.list();
       }
     } else {
+      this.filter = 'path';
+
       console.log('## ONLY NOT DELETED');
       this.menuList = this.menuService.filter({
         deleted: false
@@ -91,11 +93,10 @@ export class MenuListComponent implements OnInit {
   onBackMenu(menu: Menu) {
     if (menu) {
       if (menu.root) {
-        this.router.navigate(['/admin/menu/list' + (this.filter || '')]);
+        this.router.navigate(['/admin/menu/list/' + (this.filter || '')]);
       } else {
         this.router.navigate([
-          '/admin/menu/list' + (this.filter || ''),
-          'path',
+          '/admin/menu/list/' + (this.filter || ''),
           menu.backPath || ''
         ]);
       }
