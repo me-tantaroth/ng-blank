@@ -18,7 +18,9 @@ import {
   PagesComponent,
   PageComponent,
   MenuComponent,
-  MenusComponent
+  MenusComponent,
+  FileComponent,
+  FilesComponent
 } from './view-content';
 
 @NgModule({
@@ -33,7 +35,9 @@ import {
     PagesComponent,
     PageComponent,
     MenuComponent,
-    MenusComponent
+    MenusComponent,
+    FileComponent,
+    FilesComponent
   ],
   imports: [
     CommonModule,

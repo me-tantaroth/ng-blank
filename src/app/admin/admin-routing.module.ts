@@ -14,7 +14,9 @@ import {
   PagesComponent,
   PageComponent,
   MenuComponent,
-  MenusComponent
+  MenusComponent,
+  FileComponent,
+  FilesComponent
 } from './view-content';
 
 const routes: Routes = [
@@ -134,6 +136,42 @@ const routes: Routes = [
       {
         path: 'form/:action/:path',
         component: MenuComponent,
+        canActivate: [SignInGuard]
+      }
+    ]
+  },
+  {
+    path: 'file',
+    canActivate: [SignInGuard],
+    children: [
+      {
+        path: 'list',
+        component: FilesComponent,
+        canActivate: [SignInGuard]
+      },
+      {
+        path: 'list/:filter',
+        component: FilesComponent,
+        canActivate: [SignInGuard]
+      },
+      {
+        path: 'list/:filter/:value',
+        component: FilesComponent,
+        canActivate: [SignInGuard]
+      },
+      {
+        path: 'form',
+        component: FileComponent,
+        canActivate: [SignInGuard]
+      },
+      {
+        path: 'form/:action',
+        component: FileComponent,
+        canActivate: [SignInGuard]
+      },
+      {
+        path: 'form/:action/:path',
+        component: FileComponent,
         canActivate: [SignInGuard]
       }
     ]

@@ -44,6 +44,11 @@ export class LayoutAdminComponent implements OnInit {
       title: 'Menus'
     },
     {
+      icon: 'folder',
+      route: '/admin/file/list',
+      title: 'Folder'
+    },
+    {
       icon: 'delete',
       route: '/admin/trash',
       title: 'Trash'

@@ -79,13 +79,15 @@ import { LangsModule } from './langs/langs.module';
                 createdAt: new Date()
               }
             ],
-            menu: []
+            menu: [],
+            files: []
           }
         },
         users: [],
         pages: [],
         slides: [],
         menu: [],
+        files: [],
         authentications: [],
         authenticated: {}
       }

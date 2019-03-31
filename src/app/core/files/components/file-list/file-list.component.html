@@ -1,0 +1,109 @@
+<div *ngIf="currentFile">
+  <ul class="uk-breadcrumb">
+    <li>
+      <a (click)="onBackFile(currentFile)">Atrás</a>
+    </li>
+    <li>
+      <span>{{ currentFile.name || 'Vacio' }}</span>
+    </li>
+  </ul>
+</div>
+
+<div align="right">
+  <div class="uk-inline">
+    <button mat-raised-button color="primary">
+      Nuevo
+    </button>
+    <div uk-dropdown="mode: click" class="uk-padding-remove">
+      <mat-nav-list>
+        <a
+          href="javascript:;"
+          (click)="onAddFile('folder', currentFile)"
+          mat-list-item
+        >
+          Folder
+        </a>
+
+        <a
+          href="javascript:;"
+          (click)="onAddFile('file', currentFile)"
+          mat-list-item
+        >
+          Archivo
+        </a>
+      </mat-nav-list>
+    </div>
+  </div>
+</div>
+<br />
+<div *ngIf="(fileList | async)">
+  <div *ngIf="(fileList | async).length > 0">
+    <mat-accordion>
+      <mat-expansion-panel
+        role="file"
+        *ngFor="let file of (fileList | async); let i = index"
+        (opened)="panelOpenState = true"
+        (closed)="panelOpenState = false"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> {{ file.name }} </mat-panel-title>
+          <mat-panel-description>
+            {{ file.createdAt | date }}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div>
+          <div align="right" class="uk-margin-small">
+            <span *ngIf="file.type === 'folder'">
+              <a
+                [routerLink]="['/admin/file/list/' + (filter || ''), file.path]"
+                class="uk-text-success"
+                >Archivos</a
+              >
+              &nbsp;
+            </span>
+            <a
+              [routerLink]="[
+                '/admin/file/form/edit-' +
+                  (file.type === 'folder' ? file.type : 'file'),
+                file.path
+              ]"
+              class="uk-text-primary"
+              >Edit</a
+            >
+            &nbsp;
+            <span *ngIf="file.blocked" class="uk-text-warning uk-text-bold">{{
+              file.blocked ? 'Blocked' : ''
+            }}</span>
+            <a
+              class="uk-text-warning"
+              (click)="onBlockFile(file)"
+              *ngIf="!file.blocked"
+              >Block</a
+            >
+            &nbsp;
+            <span *ngIf="file.deleted" class="uk-text-danger uk-text-bold">{{
+              file.deleted ? 'Deleted' : ''
+            }}</span>
+            <a
+              [routerLink]="['/admin/trash']"
+              class="uk-text-danger"
+              (click)="onDeleteFile(file)"
+              *ngIf="!file.deleted"
+              >Delete</a
+            >
+          </div>
+          <div *ngIf="file.type !== 'folder'">
+            <img [src]="file.link" [alt]="file.name" [title]="file.name" />
+            <div class="uk-margin">
+              <b>Tipo:</b>
+              &nbsp;
+              <span>{{ file.type }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+  <div *ngIf="(fileList | async).length <= 0"><h2>Not found data</h2></div>
+</div>
+<div *ngIf="!(fileList | async)"><h2>Not found data</h2></div>
