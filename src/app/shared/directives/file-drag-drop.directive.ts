@@ -1,5 +1,6 @@
 import {
   Directive,
+  OnInit,
   HostListener,
   HostBinding,
   EventEmitter,
@@ -10,9 +11,10 @@ import {
 @Directive({
   selector: '[appFileDragDrop]'
 })
-export class FileDragDropDirective {
+export class FileDragDropDirective implements OnInit {
   @Input() private defaultColor: string;
   @Input() private dragColor: string;
+  @Input() private imageURL: string;
   @Input() private allowed_extensions: Array<string> = [];
   @Output() private filesChangeEmiter: EventEmitter<
     File[]
@@ -22,9 +24,17 @@ export class FileDragDropDirective {
   > = new EventEmitter();
   @HostBinding('style.color') private color;
   @HostBinding('style.borderColor') private borderColor;
-  @HostBinding('style.background') private background;
+  @HostBinding('style.backgroundColor') private backgroundColor;
+  @HostBinding('style.backgroundImage') private backgroundImage;
 
   constructor() {}
+
+  ngOnInit() {
+    console.log('## FILE DIRECIVE', this.imageURL);
+    if (this.imageURL) {
+      this.backgroundImage = `url(${this.imageURL})`;
+    }
+  }
 
   @HostListener('click', ['$event']) public onClick(evt: any) {
     evt.preventDefault();
@@ -46,7 +56,7 @@ export class FileDragDropDirective {
     evt.preventDefault();
     evt.stopPropagation();
     this.borderColor = this.dragColor;
-    this.background = '#fafafa';
+    this.backgroundColor = '#fafafa';
     this.color = '#5f5f5';
   }
 
@@ -54,7 +64,7 @@ export class FileDragDropDirective {
     evt.preventDefault();
     evt.stopPropagation();
     this.borderColor = this.defaultColor;
-    this.background = '#eee';
+    this.backgroundColor = '#eee';
     this.color = '#222';
   }
 
@@ -62,7 +72,7 @@ export class FileDragDropDirective {
     evt.preventDefault();
     evt.stopPropagation();
     this.borderColor = this.defaultColor;
-    this.background = '#eee';
+    this.backgroundColor = '#eee';
     this.color = '#5f5f5';
     this.previewImage(evt.dataTransfer.files);
   }
@@ -73,7 +83,7 @@ export class FileDragDropDirective {
     const invalid_files: Array<File> = [];
 
     reader.onload = (event: any) => {
-      this.background = `url(${event.target.result})`;
+      this.backgroundImage = `url(${event.target.result})`;
     };
 
     if (files.length > 0) {
