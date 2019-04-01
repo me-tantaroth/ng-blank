@@ -57,7 +57,7 @@ export class SlideFormComponent implements OnInit {
     this.form = new FormGroup({
       uid: new FormControl(),
       index: new FormControl(),
-      title: new FormControl('', Validators.required),
+      title: new FormControl(''),
       subtitle: new FormControl(''),
       redirect: new FormControl(''),
       image: new FormControl('', Validators.required),

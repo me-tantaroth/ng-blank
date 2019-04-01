@@ -6,7 +6,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./file-upload.component.scss']
 })
 export class FileUploadComponent implements OnInit {
-  @Input() allowed_extensions: string[];
+  @Input() allowed_extensions: string;
   @Input() imageURL: string;
   @Output() private filesChanged: EventEmitter<File[]> = new EventEmitter();
   @Output() private filesInvalid: EventEmitter<File[]> = new EventEmitter();

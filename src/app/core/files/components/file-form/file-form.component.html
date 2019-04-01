@@ -8,7 +8,10 @@
 ></td-message>
 
 <div *ngIf="(action === 'add-file' || action === 'add-folder') && path">
-  <h3>Agregando {{ action === 'add-file' ? 'archivo': 'sub carpeta' }} en {{ file ? file.name : 'Principal' }}</h3>
+  <h3>
+    Agregando {{ action === 'add-file' ? 'archivo' : 'sub carpeta' }} en
+    {{ file ? file.name : 'Principal' }}
+  </h3>
 </div>
 
 <tnt-barn-form
@@ -19,18 +22,7 @@
   <div *ngIf="action === 'add-file' || action === 'edit-file'">
     <app-file-upload
       [imageURL]="file && file.link"
-      [allowed_extensions]="[
-        'png',
-        'jpg',
-        'jpeg',
-        'bmp',
-        'tif',
-        'tiff',
-        'gif',
-        'webp',
-        'heif',
-        'heic'
-      ]"
+      allowed_extensions="*"
       (filesChanged)="onFilesChanged($event)"
     >
       <div><mat-icon>cloud_upload</mat-icon></div>

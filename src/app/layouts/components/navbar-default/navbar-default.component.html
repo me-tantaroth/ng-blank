@@ -2,6 +2,7 @@
   <div class="uk-navbar-left">
     <ul class="uk-navbar-nav">
       <li class="uk-active"><a routerLink="/">NG Blank</a></li>
+      <li><a routerLink="/files">Archivos</a></li>
       <li *ngFor="let item of (menu | async)">
         <a [routerLink]="[item.link]">{{ item.text || 'Link' }}</a>
         <div

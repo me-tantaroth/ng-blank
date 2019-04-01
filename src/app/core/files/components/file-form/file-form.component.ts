@@ -80,22 +80,33 @@ export class FileFormComponent implements OnInit {
     if (files && files.length && files.length > 0) {
       const file = files[0];
 
-      const reader = new FileReader();
+      console.log(file);
+      if (file.type.search('image/') > 0) {
+        const reader = new FileReader();
 
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
 
-      reader.onload = (event: any) => {
+        reader.onload = (event: any) => {
+          // UPLOAD FILE TO FIRESTORAGE
+          // GET DOWNLOAD URL AND ADD THIS URL TO FORM LINK
+          this.form.patchValue({
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            lastModifiedDate: file.lastModifiedDate,
+            link: event.target.result
+          });
+        };
+      } else {
         // UPLOAD FILE TO FIRESTORAGE
         // GET DOWNLOAD URL AND ADD THIS URL TO FORM LINK
-        console.log(file);
         this.form.patchValue({
           name: file.name,
           type: file.type,
           size: file.size,
-          lastModifiedDate: file.lastModifiedDate,
-          link: event.target.result
+          lastModifiedDate: file.lastModifiedDate
         });
-      };
+      }
     }
   }
 

@@ -1,9 +1,7 @@
 <app-layout-default>
-  <h1>Welcome!</h1>
+  <app-slideshow-plugin></app-slideshow-plugin>
 
-  <div *ngIf="pages">
-    <div *ngFor="let page of pages | async">
-      <a [routerLink]="['/page/view', page.uid]">Ir a la pagina de {{ page.title }}</a>
-    </div>
+  <div *ngIf="(pages | async)[0]">
+    <div [innerHtml]="(pages | async)[0].content | safe: 'html'"></div>
   </div>
 </app-layout-default>

@@ -40,9 +40,10 @@ export class FileDragDropDirective implements OnInit {
     evt.preventDefault();
     evt.stopPropagation();
 
-    const file = document.createElement('input');
+    const file: any = document.createElement('input');
 
     file.type = 'file';
+    file.accept = this.allowed_extensions;
     file.style.display = 'none';
     file.addEventListener('change', (evtChanged: any) => {
       this.previewImage(evtChanged.target.files);
@@ -90,13 +91,11 @@ export class FileDragDropDirective implements OnInit {
       for (const file of files) {
         const ext = file.name.split('.')[file.name.split('.').length - 1];
 
-        reader.readAsDataURL(file);
-
-        if (this.allowed_extensions.lastIndexOf(ext) !== -1) {
-          valid_files.push(file);
-        } else {
-          invalid_files.push(file);
+        if (file.type.search('image/') >= 0) {
+          reader.readAsDataURL(file);
         }
+
+        valid_files.push(file);
       }
       this.filesChangeEmiter.emit(valid_files);
       this.filesInvalidEmiter.emit(invalid_files);

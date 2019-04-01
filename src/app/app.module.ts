@@ -5,6 +5,7 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
+import { LangsModule } from './langs/langs.module';
 import { NgBarnModule } from 'ng-barn';
 import { MaterialModule } from './material.module';
 import { CovalentModule } from './covalent.module';
@@ -26,9 +27,13 @@ import {
   SignUpComponent,
   RecoveryComponent,
   UserViewComponent,
-  PageViewComponent
+  PageViewComponent,
+  FilesComponent
 } from './view-content';
-import { LangsModule } from './langs/langs.module';
+import {
+  FileListPluginComponent,
+  SlideshowPluginComponent
+} from './components';
 
 @NgModule({
   declarations: [
@@ -42,7 +47,12 @@ import { LangsModule } from './langs/langs.module';
     SignUpComponent,
     RecoveryComponent,
     UserViewComponent,
-    PageViewComponent
+    PageViewComponent,
+    FilesComponent,
+    FileListPluginComponent,
+    SlideshowPluginComponent,
+    FileListPluginComponent,
+    SlideshowPluginComponent
   ],
   imports: [
     BrowserModule,

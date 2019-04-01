@@ -10,13 +10,31 @@ import {
   SignOutComponent,
   RecoveryComponent,
   UserViewComponent,
-  PageViewComponent
+  PageViewComponent,
+  FilesComponent
 } from './view-content';
 
 const routes: Routes = [
   {
     path: '',
     component: HomeComponent
+  },
+  {
+    path: 'files',
+    children: [
+      {
+        path: '',
+        component: FilesComponent
+      },
+      {
+        path: ':filter',
+        component: FilesComponent
+      },
+      {
+        path: ':filter/:value',
+        component: FilesComponent
+      }
+    ]
   },
   {
     path: 'auth',
@@ -44,6 +62,10 @@ const routes: Routes = [
     children: [
       {
         path: 'view/:path',
+        component: PageViewComponent
+      },
+      {
+        path: 'view/:path/:filter/:value',
         component: PageViewComponent
       }
     ]

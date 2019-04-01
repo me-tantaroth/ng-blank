@@ -13,18 +13,7 @@
 >
   <app-file-upload
     [imageURL]="image.value"
-    [allowed_extensions]="[
-      'png',
-      'jpg',
-      'jpeg',
-      'bmp',
-      'tif',
-      'tiff',
-      'gif',
-      'webp',
-      'heif',
-      'heic'
-    ]"
+    allowed_extensions="image/*"
     (filesChanged)="onFilesChanged($event)"
   >
     <div><mat-icon>cloud_upload</mat-icon></div>
@@ -108,6 +97,7 @@
       #content
       id="content"
       name="content"
+      #froalaEditor
       [froalaEditor]="optionsEditor"
       formControlName="content"
     ></textarea>

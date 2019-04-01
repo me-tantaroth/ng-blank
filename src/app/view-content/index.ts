@@ -6,4 +6,5 @@ export { SignUpComponent } from './sign-up/sign-up.component';
 export { RecoveryComponent } from './recovery/recovery.component';
 export { UserViewComponent } from './user-view/user-view.component';
 export { PageViewComponent } from './page-view/page-view.component';
+export { FilesComponent } from './files/files.component';
 

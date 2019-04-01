@@ -7,5 +7,5 @@
   <h2>{{ pages[0].title }}</h2>
   <p>{{ pages[0].description }}</p>
 
-  <div [innerHtml]="pages[0].content"></div>
+  <div [innerHtml]="pages[0].content | safe: 'html'"></div>
 </div>

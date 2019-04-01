@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StoreService } from 'ng-barn';
@@ -26,6 +26,7 @@ import { Message } from '../../../../models/message';
   providers: []
 })
 export class PageFormComponent implements OnInit {
+  @ViewChild('froalaEditor') froalaEditor;
   @Input() page: Page;
   @Input() uid: string;
 
@@ -39,29 +40,62 @@ export class PageFormComponent implements OnInit {
   };
   errorMessages: any;
   optionsEditor: Object = {
+    htmlAllowedTags: ['.*'],
     charCounterCount: true,
-    toolbarButtons: ['bold', 'italic', 'underline', 'paragraphFormat', 'alert'],
-    toolbarButtonsXS: [
+    toolbarButtons: [
+      'fullscreen',
       'bold',
       'italic',
       'underline',
+      'strikeThrough',
+      'subscript',
+      'superscript',
+      '|',
+      'fontFamily',
+      'fontSize',
+      'color',
+      'inlineClass',
+      'inlineStyle',
+      'paragraphStyle',
+      'lineHeight',
+      '|',
       'paragraphFormat',
-      'alert'
+      'align',
+      'formatOL',
+      'formatUL',
+      'outdent',
+      'indent',
+      'quote',
+      '-',
+      'insertLink',
+      'insertImage',
+      'insertVideo',
+      'embedly',
+      'insertFile',
+      'insertTable',
+      '|',
+      'emoticons',
+      'fontAwesome',
+      'specialCharacters',
+      'insertHR',
+      'selectAll',
+      'clearFormatting',
+      'html',
+      '|',
+      'print',
+      'getPDF',
+      'spellChecker',
+      'help',
+      '|',
+      'undo',
+      'redo',
+      'customHTML'
     ],
-    toolbarButtonsSM: [
-      'bold',
-      'italic',
-      'underline',
-      'paragraphFormat',
-      'alert'
-    ],
-    toolbarButtonsMD: [
-      'bold',
-      'italic',
-      'underline',
-      'paragraphFormat',
-      'alert'
-    ]
+    events: {
+      'froalaEditor.contentChanged': function(e, editor) {
+        // CODE
+      }
+    }
   };
 
   constructor(
@@ -99,7 +133,6 @@ export class PageFormComponent implements OnInit {
       deleted: new FormControl(false)
     });
 
-    console.log('UID', this.uid);
     if (this.uid) {
       this.pageService
         .filter({ uid: this.uid })
@@ -125,15 +158,35 @@ export class PageFormComponent implements OnInit {
         .unsubscribe();
     }
 
-    $.FroalaEditor.DefineIcon('alert', { NAME: 'info' });
-    $.FroalaEditor.RegisterCommand('alert', {
+    $.FroalaEditor.DefineIcon('customHTML', { NAME: 'code' });
+    $.FroalaEditor.RegisterCommand('customHTML', {
       title: 'Hello',
       focus: false,
       undo: false,
       refreshAfterCallback: false,
 
       callback: () => {
-        alert('Hello!');
+        $(this.froalaEditor.nativeElement).froalaEditor(
+          'html.set',
+          '<p>asdsad</p><prueba>sassdf</prueba>',
+          false
+        );
+
+        $.FroalaEditor.MODULES.data = (p) => {
+          const w: any = window;
+          p.events.on('html.set', () => {
+            alert('HTML SET');
+            var e=p.el.querySelector('[data-f-id="pbf"]');
+            e&&w(e).remove()
+          });
+        };
+
+        console.log(
+          $.FroalaEditor.MODULES,
+          this.froalaEditor.nativeElement,
+          '***',
+          $(this.froalaEditor.nativeElement).froalaEditor('html.get')
+        );
       }
     });
   }

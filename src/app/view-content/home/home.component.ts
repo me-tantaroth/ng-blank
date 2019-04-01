@@ -19,12 +19,12 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.pages = this.pageService
       .list()
-      .pipe(map((pages: Page[]) => _.filter(pages, (o) => !o.blocked)));
-  }
+      .pipe(
+        map((pages: Page[]) =>
+          _.filter(pages, (o) => !o.blocked && o.path === 'home')
+        )
+      );
 
-  blockPage(index: string, page: Page) {
-    page.blocked = true;
-
-    this.pageService.set(index, page);
+    this.pages.subscribe(console.log);
   }
 }
