@@ -1,0 +1,37 @@
+<nav class="uk-navbar-container" uk-navbar>
+  <div class="uk-navbar-left">
+    <ul class="uk-navbar-nav">
+      <li *ngFor="let item of (menu | async)">
+        <a [routerLink]="[item.link]">{{ item.text || 'Link' }}</a>
+        <div
+          class="uk-navbar-dropdown"
+          *ngIf="item.menu && item.menu.length && item.menu.length > 0"
+        >
+          <ul
+            class="uk-nav uk-navbar-dropdown-nav"
+            [innerHTML]="submenu(item.menu)"
+          ></ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="uk-navbar-center">
+    <ul class="uk-navbar-nav">
+      <li class="uk-active"><a routerLink="/">CORPAYANDE</a></li>
+    </ul>
+  </div>
+
+  <div class="uk-navbar-right">
+    <ul class="uk-navbar-nav">
+      <li><a routerLink="/esal">Documentos ESAL</a></li>
+      <li *ngIf="!(authenticated | async)">
+        <a routerLink="/auth/sign-in">Sign In</a>
+      </li>
+      <li *ngIf="(authenticated | async)">
+        <a routerLink="/auth/sign-out" (click)="signOut()">Sign Out</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+

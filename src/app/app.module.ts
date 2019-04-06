@@ -10,8 +10,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AdminModule } from './admin/admin.module';
 import { CoreModule } from './core/core.module';
 
-import { LayoutDefaultComponent } from './layouts/layout-default/layout-default.component';
-import { NavbarDefaultComponent, LoadLayoutComponent } from './layouts/components';
+import {
+  LayoutDefaultComponent,
+  NavbarDefaultComponent,
+  LoadLayoutComponent,
+  LayoutCorpayandeComponent,
+  NavbarCorpayandeComponent,
+  FooterCorpayandeComponent
+} from './layouts';
 import { AppComponent } from './app.component';
 import {
   HomeComponent,
@@ -34,6 +40,9 @@ import {
     AppComponent,
     NavbarDefaultComponent,
     LayoutDefaultComponent,
+    LayoutCorpayandeComponent,
+    NavbarCorpayandeComponent,
+    FooterCorpayandeComponent,
     HomeComponent,
     NotFoundComponent,
     SignInComponent,

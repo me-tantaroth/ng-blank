@@ -13,11 +13,13 @@ export class LoadLayoutComponent implements OnInit {
   @Input() template: string;
 
   @ViewChild('default') default;
+  @ViewChild('corpayande') corpayande;
 
   authenticated: Observable<boolean>;
 
   templates = {
-    default: null
+    default: null,
+    corpayande: null
   };
 
   constructor(private router: Router, private auth: AuthService) {}
@@ -26,6 +28,7 @@ export class LoadLayoutComponent implements OnInit {
     this.authenticated = this.auth.authenticated;
 
     this.templates.default = this.default;
+    this.templates.corpayande = this.corpayande;
   }
 
   signOut() {

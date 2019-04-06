@@ -2,8 +2,13 @@ import { Injectable } from '@angular/core';
 
 import { environment } from '../../../environments/environment';
 
+export interface Project {
+  uid: string;
+  name: string
+}
+
 export interface Config {
-  projectID: string;
+  project: Project;
 }
 
 @Injectable({
