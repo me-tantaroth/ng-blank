@@ -1,7 +1,7 @@
-<app-layout-default>
+<app-load-layout template="default">
   <td-message *ngIf="message.show" [label]="message.label" [sublabel]="message.sublabel" [color]="message.color" [icon]="message.icon" class="uk-margin"></td-message>
   <h1>Su cuenta se encuentra eliminada, desea recuperarla?</h1>
   <p>{{ authEmail }}</p>
   <button routerLink="/" routerLinkActive="router-link-active"  mat-raised-button>No</button> &nbsp;
   <button mat-raised-button color="primary" (click)="recovery(authEmail)">Sí, llevame!</button>
-</app-layout-default>
+</app-load-layout>
