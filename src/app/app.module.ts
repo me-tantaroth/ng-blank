@@ -17,7 +17,7 @@ import { CoreModule } from './core/core.module';
 import { environment } from '../environments/environment';
 
 import { LayoutDefaultComponent } from './layouts/layout-default/layout-default.component';
-import { NavbarDefaultComponent } from './layouts/components';
+import { NavbarDefaultComponent, LoadLayoutComponent } from './layouts/components';
 import { AppComponent } from './app.component';
 import {
   HomeComponent,
@@ -52,15 +52,12 @@ import {
     FileListPluginComponent,
     SlideshowPluginComponent,
     FileListPluginComponent,
-    SlideshowPluginComponent
+    SlideshowPluginComponent,
+    LoadLayoutComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    AngularFireModule.initializeApp(environment.firebase, 'ng-blank'), // imports firebase/app needed for everything
-    AngularFirestoreModule, // imports firebase/firestore, only needed for database features
-    AngularFireAuthModule, // imports firebase/auth, only needed for auth features,
-    AngularFireStorageModule, // imports firebase/storage only needed for storage features,
     NgBarnModule.forRoot({
       store: {
         langs: [
@@ -110,7 +107,6 @@ import {
     CoreModule,
     LangsModule
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

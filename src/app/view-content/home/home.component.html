@@ -1,7 +1,7 @@
-<app-layout-default>
+<app-load-layout template="default">
   <app-slideshow-plugin></app-slideshow-plugin>
 
   <div *ngIf="(pages | async)[0]">
     <div [innerHtml]="(pages | async)[0].content | safe: 'html'"></div>
   </div>
-</app-layout-default>
+</app-load-layout>
