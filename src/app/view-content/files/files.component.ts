@@ -1,16 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { Config, ConfigService } from '../../shared/services/config.service';
+
 @Component({
   selector: 'app-files',
   templateUrl: './files.component.html',
   styleUrls: ['./files.component.scss']
 })
 export class FilesComponent implements OnInit {
+  config: Config;
   paramFilter: string;
   paramValue: string;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private configService: ConfigService,
+    private route: ActivatedRoute
+  ) {
+    this.config = this.configService.get();
+  }
 
   ngOnInit() {
     const paramFilter = this.route.snapshot.paramMap.get('filter');

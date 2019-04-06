@@ -1,4 +1,4 @@
-<app-load-layout template="default">
+<app-load-layout [template]="config.projectID">
   <h1>Files</h1>
 
   <app-file-list-plugin [filter]="paramFilter" [value]="paramValue"></app-file-list-plugin>

@@ -1,4 +1,4 @@
-<app-load-layout template="default">
+<app-load-layout [template]="config.projectID">
   <td-message *ngIf="message.show" [label]="message.label" [sublabel]="message.sublabel" [color]="message.color" [icon]="message.icon" class="uk-margin"></td-message>
   <h1>Su cuenta se encuentra eliminada, desea recuperarla?</h1>
   <p>{{ authEmail }}</p>
