@@ -13,8 +13,8 @@ export class AppComponent {
   constructor(private configService: ConfigService) {
     this.configService.set({
       project: {
-        uid: 'corpayande',
-        name: 'Corpayande'
+        uid: 'default',
+        name: ''
       }
     });
   }

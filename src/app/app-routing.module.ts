@@ -20,6 +20,23 @@ const routes: Routes = [
     component: HomeComponent
   },
   {
+    path: 'esal',
+    children: [
+      {
+        path: '',
+        component: FilesComponent
+      },
+      {
+        path: ':filter',
+        component: FilesComponent
+      },
+      {
+        path: ':filter/:value',
+        component: FilesComponent
+      }
+    ]
+  },
+  {
     path: 'files',
     children: [
       {

@@ -4,4 +4,8 @@
   <div *ngIf="(pages | async)[0]">
     <div [innerHtml]="(pages | async)[0].content | safe: 'html'"></div>
   </div>
+
+  <div class="uk-section uk-container uk-background-primary">
+    <h2>Hola</h2>
+  </div>
 </app-load-layout>
