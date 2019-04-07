@@ -12,131 +12,97 @@
         "deletedCount": 0,
         "createdAt": "new Date()",
         "user": {
-          "-user-item-1": {
-            "uid": "-user-item-1",
-            "cover": "",
-            "photoURL": "",
-            "display": "Eduard Ramirez",
-            "username": "tantaroth",
-            "email": "tantaroth@gmail.com",
-            "emailVerified": true,
-            "dbPath": "/lang/es/user/-user-item-1",
-            "blocked": false,
-            "deleted": false,
-            "deletedCount": 0,
-            "createdAt": "new Date()"
+          "enabled": { 
+            "-user-item-1": {
+              "uid": "-user-item-1",
+              "cover": "",
+              "photoURL": "",
+              "display": "Eduard Ramirez",
+              "username": "tantaroth",
+              "email": "tantaroth@gmail.com",
+              "emailVerified": true,
+              "dbPath": "/lang/es/user/-user-item-1",
+              "blocked": false,
+              "deleted": false,
+              "deletedCount": 0,
+              "createdAt": "new Date()"
+            }
           }
         },
         "slide": {
-          "-slide-item-1": {
-            "uid": "-slide-item-1",
-            "title": "Afro Power",
-            "image": "",
-            "subtitle": "Orgullo, defensa y conciencia",
-            "url": "/yudis-rivas",
-            "externalURL": false,
-            "dbPath": "/lang/es/slide/-slide-item-1",
-            "blocked": false,
-            "deleted": true,
-            "deletedCount": 1,
-            "createdAt": "new Date()"
+          "enabled": { 
+            "-slide-item-1": {
+              "uid": "-slide-item-1",
+              "title": "Afro Power",
+              "image": "",
+              "subtitle": "Orgullo, defensa y conciencia",
+              "url": "/yudis-rivas",
+              "externalURL": false,
+              "dbPath": "/lang/es/slide/-slide-item-1",
+              "blocked": false,
+              "deleted": false,
+              "deletedCount": 1,
+              "createdAt": "new Date()"
+            }
           }
         },
         "page": {
-          "-page-item-1": {
-            "uid": "-page-item-1",
-            "principalPath": "",
-            "alias": ["home"],
-            "title": "Home",
-            "description": "Is the afroup website",
-            "keywords": "home, afroup",
-            "content": "<h1>Home works!</h1>",
-            "author": "/lang/es/user/-user-item-1",
-            "cover": "",
-            "theme": {
-              "color": "black"
-            },
-            "type": "article",
-            "views": 0,
-            "dbPath": "/lang/es/page/-page-item-1",
-            "blocked": false,
-            "deleted": true,
-            "deletedCount": 1,
-            "createdAt": "new Date()"
+          "enabled": { 
+            "-page-item-1": {
+              "uid": "-page-item-1",
+              "principalPath": "",
+              "alias": ["home"],
+              "title": "Home",
+              "description": "Is the afroup website",
+              "keywords": "home, afroup",
+              "content": "<h1>Home works!</h1>",
+              "author": "/lang/es/user/-user-item-1",
+              "cover": "",
+              "theme": {
+                "color": "black"
+              },
+              "type": "article",
+              "views": 0,
+              "dbPath": "/lang/es/page/-page-item-1",
+              "blocked": false,
+              "deleted": false,
+              "deletedCount": 1,
+              "createdAt": "new Date()"
+            }
           }
         },
         "menu": {
-          "-menu-item-1": {
-            "uid": "-menu-item-1",
-            "text": "Home",
-            "backPath": "/lang/es/menu",
-            "menu": {
-              "-menu-item-1-1": {
-                "uid": "-menu-item-1",
-                "text": "Proyectos",
-                "backPath": "/lang/es/menu/-menu-item-1",
-                "menu": {},
-                "url": "https://portafol.io/afroup",
-                "external": true,
-                "root": true,
-                "dbPath": "/lang/es/menu/-menu-item-1/menu/-menu-item-1-1",
-                "blocked": false,
-                "deleted": false,
-                "deletedCount": 0,
-                "createdAt": "new Date()"
-              }
-            },
-            "url": "/home",
-            "external": false,
-            "root": true,
-            "dbPath": "/lang/es/menu/-menu-item-1",
-            "blocked": false,
-            "deleted": false,
-            "deletedCount": 0,
-            "createdAt": "new Date()"
+          "enabled": { 
+            "-menu-item-1": {
+              "uid": "-menu-item-1",
+              "text": "Home",
+              "backPath": "/lang/es/menu",
+              "menu": {
+                "-menu-item-1-1": {
+                  "uid": "-menu-item-1",
+                  "text": "Proyectos",
+                  "backPath": "/lang/es/menu/-menu-item-1",
+                  "menu": {},
+                  "url": "https://portafol.io/afroup",
+                  "external": true,
+                  "root": true,
+                  "dbPath": "/lang/es/menu/-menu-item-1/menu/-menu-item-1-1",
+                  "blocked": false,
+                  "deleted": false,
+                  "deletedCount": 0,
+                  "createdAt": "new Date()"
+                }
+              },
+              "url": "/home",
+              "external": false,
+              "root": true,
+              "dbPath": "/lang/es/menu/-menu-item-1",
+              "blocked": false,
+              "deleted": false,
+              "deletedCount": 0,
+              "createdAt": "new Date()"
+            }
           }
-        }
-      }
-    },
-    "deleted": {
-      "page": {
-        "-page-item-1": {
-          "uid": "-page-item-1",
-          "principalPath": "",
-          "alias": ["home"],
-          "title": "Home",
-          "description": "Is the afroup website",
-          "keywords": "home, afroup",
-          "content": "<h1>Home works!</h1>",
-          "author": "/lang/es/user/-user-item-1",
-          "cover": "",
-          "theme": {
-            "color": "black"
-          },
-          "type": "article",
-          "views": 0,
-          "dbPath": "/lang/es/page/-page-item-1",
-          "restorePath": "/lang/es/page/-page-item-1",
-          "blocked": false,
-          "deleted": true,
-          "deletedCount": 1,
-          "createdAt": "new Date()"
-        }
-      },
-      "slide": {
-        "-slide-item-1": {
-          "uid": "-slide-item-1",
-          "title": "Afro Power",
-          "image": "",
-          "subtitle": "Orgullo, defensa y conciencia",
-          "url": "/yudis-rivas",
-          "externalURL": false,
-          "dbPath": "/lang/es/slide/-slide-item-1",
-          "restorePath": "/lang/es/page/-page-item-1",
-          "blocked": false,
-          "deleted": true,
-          "deletedCount": 1,
-          "createdAt": "new Date()"
         }
       }
     }

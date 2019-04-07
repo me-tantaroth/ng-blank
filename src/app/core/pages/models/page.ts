@@ -102,3 +102,7 @@ export class Page {
     return page;
   }
 }
+
+export interface Pages {
+  [key: string]: Page;
+}

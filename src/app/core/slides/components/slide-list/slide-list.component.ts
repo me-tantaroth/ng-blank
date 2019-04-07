@@ -1,11 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { first } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 import { SlideService } from '../../services/slide.service';
 
-import { Slide } from '../../models/slide';
+import { Slide, Slides } from '../../models/slide';
 
 @Component({
   selector: 'app-slide-list',
@@ -15,38 +15,97 @@ import { Slide } from '../../models/slide';
 export class SlideListComponent implements OnInit {
   @Input() filter: string;
 
+  ObjectKeys = Object.keys;
   panelOpenState: boolean;
-  slides: Observable<Slide[]>;
+  slides: Observable<Slides>;
 
   constructor(private slideService: SlideService) {}
 
   ngOnInit() {
-    this.slides = this.slideService.list().pipe(
-      map((slides: Slide[]) =>
-        _.filter(slides, (o) => {
-          let match: boolean;
+    this.filter = this.filter || 'enabled';
 
-          if (this.filter) {
-            match = o[this.filter] === !!this.filter;
-          } else {
-            match = o.deleted === false;
-          }
-
-          return match;
-        })
-      )
-    );
+    this.slides = this.slideService.list('|' + this.filter);
   }
 
-  blockSlide(uid: string, slide: Slide) {
+  blockSlide(path: string, slide: Slide) {
     slide.blocked = true;
 
-    this.slideService.set({ uid }, slide);
+    this.slideService
+      .setItem(path, slide)
+      .pipe(first())
+      .subscribe((status: boolean) => {
+        if (status) {
+          this.slideService
+            .removeItem('|enabled|' + slide.uid)
+            .pipe(first())
+            .subscribe((statusEnabled: boolean) => {
+              if (statusEnabled) {
+                this.slides = this.slideService.list('|enabled');
+              }
+            });
+        }
+      });
   }
 
-  deleteSlide(uid: string, slide: Slide) {
-    slide.deleted = true;
+  unBlockSlide(path: string, slide: Slide) {
+    slide.blocked = false;
 
-    this.slideService.set({ uid }, slide);
+    this.slideService
+      .setItem(path, slide)
+      .pipe(first())
+      .subscribe((status: boolean) => {
+        if (status) {
+          this.slideService
+            .removeItem('|blocked|' + slide.uid)
+            .pipe(first())
+            .subscribe((statusRemoved: boolean) => {
+              if (statusRemoved) {
+                this.slides = this.slideService.list('|blocked');
+              }
+            });
+        }
+      });
+  }
+
+  deleteSlide(path: string, slide: Slide) {
+    if (confirm(`Seguro que desea eliminar a '${slide.title}'?`)) {
+      slide.deleted = true;
+
+      this.slideService
+        .setItem(path, slide)
+        .pipe(first())
+        .subscribe((status: boolean) => {
+          if (status) {
+            this.slideService
+              .removeItem('|enabled|' + slide.uid)
+              .pipe(first())
+              .subscribe((statusEnabled: boolean) => {
+                if (statusEnabled) {
+                  this.slides = this.slideService.list('|enabled');
+                }
+              });
+          }
+        });
+    }
+  }
+
+  unDeletedSlide(path: string, slide: Slide) {
+    slide.deleted = false;
+
+    this.slideService
+      .setItem(path, slide)
+      .pipe(first())
+      .subscribe((status: boolean) => {
+        if (status) {
+          this.slideService
+            .removeItem('|deleted|' + slide.uid)
+            .pipe(first())
+            .subscribe((statusDeleted: boolean) => {
+              if (statusDeleted) {
+                this.slides = this.slideService.list('|deleted');
+              }
+            });
+        }
+      });
   }
 }

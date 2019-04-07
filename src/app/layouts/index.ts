@@ -10,3 +10,8 @@ export {
   NavbarCorpayandeComponent,
   FooterCorpayandeComponent
 } from './layout-corpayande';
+
+export const LAYOUTS: object = {
+  default: true,
+  corpayande: true
+};

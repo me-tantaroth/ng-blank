@@ -13,7 +13,7 @@
   (submitted)="onSubmitted($event)"
 >
   <app-file-upload
-    [imageURL]="image.value"
+    [imageURL]="f.image.value"
     allowed_extensions="image/*"
     (filesChanged)="onFilesChanged($event)"
   >
@@ -55,40 +55,26 @@
   </mat-form-field>
 
   <mat-form-field class="uk-width-1-1 uk-margin-small">
-      <input
-        matInput
-        #redirect
-        placeholder="URL"
-        id="redirect"
-        name="redirect"
-        formControlName="redirect"
-      />
-    </mat-form-field>
-  
-  <div class="uk-width-1-1 uk-margin-small">
-    <section>
-      <mat-slide-toggle
-        color="accent"
-        formControlName="blocked"
-        name="blocked"
-        required
-        #blocked
-      >
-        Blocked
-      </mat-slide-toggle>
-    </section>
-  </div>
+    <input
+      matInput
+      #url
+      placeholder="URL"
+      id="url"
+      name="url"
+      formControlName="url"
+    />
+  </mat-form-field>
 
   <div class="uk-width-1-1 uk-margin-small">
     <section>
       <mat-slide-toggle
-        color="warn"
-        formControlName="deleted"
-        name="deleted"
+        color="accent"
+        formControlName="externalURL"
+        name="externalURL"
         required
-        #deleted
+        #externalURL
       >
-        Deleted
+        Abrir URL en otra ventana
       </mat-slide-toggle>
     </section>
   </div>

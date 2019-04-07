@@ -5,7 +5,9 @@
 export const environment = {
   production: false,
   project: {
-    id: 'default'
+    uid: 'default',
+    layout: 'default',
+    lang: 'es'
   },
   theme: {
     color: 'purple'

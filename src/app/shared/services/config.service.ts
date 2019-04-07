@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
 export interface Project {
-  uid: string;
-  name: string
+  uid?: string;
+  layout?: string;
+  lang?: string;
 }
 
 export interface Config {
-  project: Project;
+  project?: Project;
 }
 
 @Injectable({

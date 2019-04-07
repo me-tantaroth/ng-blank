@@ -36,3 +36,7 @@ export class File {
     return file;
   }
 }
+
+export interface Files {
+  [key: string]: File;
+}

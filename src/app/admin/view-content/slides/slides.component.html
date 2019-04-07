@@ -16,6 +16,19 @@
               New
             </button>
           </div>
+          <div>
+            <a routerLink="/admin/slide/list" class="uk-text-success"
+              >Slides Activos</a
+            >
+            &nbsp;
+            <a routerLink="/admin/slide/list/blocked" class="uk-text-warning"
+              >Slides bloqueados</a
+            >
+            &nbsp;
+            <a routerLink="/admin/slide/list/deleted" class="uk-text-danger"
+              >Slides eliminados</a
+            >
+          </div>
           <br />
           <app-slide-list [filter]="listFilter"></app-slide-list>
         </mat-card-content>

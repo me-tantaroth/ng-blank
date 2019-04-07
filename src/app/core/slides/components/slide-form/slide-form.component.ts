@@ -5,13 +5,11 @@ import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 import * as _moment from 'moment';
 import { Observable } from 'rxjs';
+import { first } from 'rxjs/operators';
 
-import {
-  SlideService,
-  ServiceResponse as SlideServiceResponse
-} from '../../services/slide.service';
+import { SlideService } from '../../services/slide.service';
 
-import { Slide } from '../../models/slide';
+import { Slide, Slides } from '../../models/slide';
 import { Message } from '../../../../models/message';
 
 @Component({
@@ -24,7 +22,7 @@ export class SlideFormComponent implements OnInit {
   @Input() uid: string;
 
   events: string[] = [];
-  slides: Observable<Slide[]>;
+  slides: Observable<Slides>;
   submitted: boolean;
   form: FormGroup;
   editing: boolean;
@@ -38,7 +36,7 @@ export class SlideFormComponent implements OnInit {
     private slideService: SlideService,
     private router: Router
   ) {
-    store.select('slides');
+    this.store.select('slides');
   }
 
   get f(): any {
@@ -56,34 +54,34 @@ export class SlideFormComponent implements OnInit {
 
     this.form = new FormGroup({
       uid: new FormControl(),
-      index: new FormControl(),
       title: new FormControl(''),
       subtitle: new FormControl(''),
-      redirect: new FormControl(''),
+      url: new FormControl(''),
       image: new FormControl('', Validators.required),
+      externalURL: new FormControl(false),
       blocked: new FormControl(true),
-      deleted: new FormControl(false)
+      deleted: new FormControl(false),
+      deletedCount: new FormControl(0)
     });
 
     if (this.uid) {
       this.slideService
-        .filter({ uid: this.uid })
-        .subscribe((slides: Slide[]) => {
-          if (slides && slides.length > 0 && slides.length === 1) {
-            const slide: Slide = slides[0];
-
+        .getItem('|' + this.uid)
+        .subscribe((slide: Slide) => {
+          if (slide) {
             this.form.patchValue({
               uid: slide.uid,
-              index: slide.index,
               title: slide.title,
               subtitle: slide.subtitle,
-              redirect: slide.redirect,
+              url: slide.url,
               image: slide.image,
+              externalURL: slide.externalURL,
               blocked: slide.blocked,
-              deleted: slide.deleted
+              deleted: slide.deleted,
+              deletedCount: slide.deletedCount
             });
           } else {
-            console.error('>> Debe haber un solo dato en la respuesta');
+            console.error('>> Not found slide item');
           }
         })
         .unsubscribe();
@@ -116,48 +114,32 @@ export class SlideFormComponent implements OnInit {
     };
 
     const value = event[event.index];
+    const slide: Slide = new Slide(value);
 
-    if (this.uid) {
-      this.slideService
-        .set({ uid: this.uid }, new Slide(value))
-        .subscribe((slideResponse: SlideServiceResponse) => {
-          if (slideResponse) {
-            this.message = {
-              show: true,
-              label: 'Info',
-              sublabel: 'Slide editado',
-              color: 'accent',
-              icon: 'info'
-            };
-
-            this.router.navigate(['/admin/slide/list']);
-          }
-        })
-        .unsubscribe();
-    } else {
-      value.index = event.index;
-
-      this.slideService
-        .push(new Slide(value))
-        .subscribe((slideResponse: SlideServiceResponse) => {
-          if (slideResponse) {
-            this.message = {
-              show: true,
-              label: 'Info',
-              sublabel: 'Slide creado',
-              color: 'accent',
-              icon: 'info'
-            };
-
-            this.router.navigate(['/admin/slide/list']);
-          }
-        })
-        .unsubscribe();
+    if (!this.uid) {
+      slide.dbPath = '|enabled';
     }
+
+    this.slideService
+      .setItem('|enabled|' + slide.uid, slide)
+      .subscribe((status: boolean) => {
+        if (status) {
+          this.message = {
+            show: true,
+            label: 'Info',
+            sublabel: 'Slide editado',
+            color: 'accent',
+            icon: 'info'
+          };
+
+          this.router.navigate(['/admin/slide/list']);
+        }
+      })
+      .unsubscribe();
+
     this.reset();
   }
   onSubmitted(event: boolean) {
-    console.log('>> SLIDE FORM SUBMITTING', event);
     this.submitted = true;
 
     if (event) {

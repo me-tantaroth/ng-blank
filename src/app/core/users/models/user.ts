@@ -61,3 +61,7 @@ export class User {
     return user;
   }
 }
+
+export interface Users {
+  [key: string]: User;
+}

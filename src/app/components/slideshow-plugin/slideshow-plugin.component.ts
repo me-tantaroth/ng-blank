@@ -21,20 +21,20 @@ export class SlideshowPluginComponent implements OnInit {
   constructor(private slideService: SlideService) {}
 
   ngOnInit() {
-    this.slides = this.slideService.list().pipe(
-      map((slides: Slide[]) =>
-        _.filter(slides, (o) => {
-          let match: boolean;
+    // this.slides = this.slideService.list().pipe(
+    //   map((slides: Slide[]) =>
+    //     _.filter(slides, (o) => {
+    //       let match: boolean;
 
-          if (this.filter) {
-            match = o[this.filter] === !!this.filter;
-          } else {
-            match = o.deleted === false;
-          }
+    //       if (this.filter) {
+    //         match = o[this.filter] === !!this.filter;
+    //       } else {
+    //         match = o.deleted === false;
+    //       }
 
-          return match;
-        })
-      )
-    );
+    //       return match;
+    //     })
+    //   )
+    // );
   }
 }

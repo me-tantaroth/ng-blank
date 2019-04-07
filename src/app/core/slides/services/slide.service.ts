@@ -3,119 +3,130 @@ import { StoreService } from 'ng-barn';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 
+import { Config, ConfigService } from '../../../shared/services/config.service';
 import { LangsService } from '../../../langs/services/langs.service';
-import { Accents } from '../../../shared/utils/accents';
 
-import { Slide } from '../models/slide';
-
-export interface ServiceResponse {
-  list: Slide[];
-  index: number;
-  value: Slide;
-}
+import { Slide, Slides } from '../models/slide';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SlideService {
-  private slides: Slide[] = [];
+  private rootPath: string;
+  private node;
+  private slides: Slides;
 
-  constructor(private store: StoreService, private langs: LangsService) {
-    const langsNode = this.store.get('langs-node');
+  constructor(
+    private configService: ConfigService,
+    private store: StoreService,
+    private langs: LangsService
+  ) {
+    const CONFIG: Config = this.configService.get();
+    const NODE = this.store.get('node');
+    const NODE_LANGS = NODE[CONFIG.project.uid].lang;
+    const NODE_SLIDES =
+      NODE_LANGS[document.documentElement.lang] ||
+      NODE_LANGS[CONFIG.project.lang].slide.enabled;
+    const LANG = NODE_LANGS[document.documentElement.lang]
+      ? document.documentElement.lang
+      : CONFIG.project.lang;
 
-    this.slides = langsNode[this.langs.currentLang].slides || [];
+    this.node = NODE;
+    this.rootPath = `|${CONFIG.project.uid}|lang|${LANG}|slide`;
+
+    this.slides = NODE_SLIDES;
   }
 
-  list(): Observable<Slide[]> {
+  list(path?: string): Observable<Slides> {
+    let result: Slides = this.slides;
+
+    if (path) {
+      const node = this.node;
+
+      const splitRootPath: string[] = this.rootPath.split('|');
+      const splitPath: string[] = path.split('|');
+
+      splitRootPath.shift();
+      splitPath.shift();
+
+      const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+      const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+      const absolutePath = cursorsRoot + cursorsPath;
+
+      const updateAction = `result = node${absolutePath};`;
+
+      eval(updateAction);
+    }
+
     return new Observable((observer) => {
-      observer.next(this.slides);
+      observer.next(result);
       observer.complete();
     });
   }
 
-  item(uid): Observable<Slide> {
+  getItem(path: string): Observable<Slide> {
+    const slides: Slides = this.slides;
+    const splitPath: string[] = path.split('|');
+
+    splitPath.shift();
+
+    const cursors = splitPath.map((o) => `['${o}']`).join('');
+    let result: Slide;
+    const updateAction = `result = slides${cursors};`;
+
+    eval(updateAction);
+
     return new Observable((observer) => {
-      observer.next(this.slides[uid]);
+      observer.next(result);
       observer.complete();
     });
   }
 
-  filter(query): Observable<Slide[]> {
-    return new Observable((observer) => {
-      observer.next(
-        _.filter(
-          this.slides,
-          (slide: Slide) =>
-            _.filter(Object.keys(query), (key) => {
-              const slideValue = new Accents()
-                .removeDiacritics(slide[key])
-                .toLowerCase()
-                .replace(/[^\w\s]/gi, '')
-                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
-                .replace(/ /g, '');
-              const filterValue = new Accents()
-                .removeDiacritics(query[key])
-                .toLowerCase()
-                .replace(/[^\w\s]/gi, '')
-                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
-                .replace(/ /g, '');
+  setItem(path: string, slide: Slide): Observable<boolean> {
+    const node = this.node;
 
-              return slideValue.search(filterValue) >= 0;
-            }).length > 0
-        )
-      );
+    slide.dbPath = this.rootPath + slide.dbPath;
+
+    const splitRootPath: string[] = this.rootPath.split('|');
+    const splitPath: string[] = path.split('|');
+
+    splitRootPath.shift();
+    splitPath.shift();
+
+    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+    const absolutePath = cursorsRoot + cursorsPath;
+    const updateAction = `node${absolutePath} = ${JSON.stringify(slide)};`;
+
+    eval(updateAction);
+
+    return new Observable((observer) => {
+      observer.next(true);
       observer.complete();
     });
   }
 
-  get(uid?): Observable<ServiceResponse> {
+  removeItem(path: string): Observable<boolean> {
+    const node = this.node;
+
+    const splitRootPath: string[] = this.rootPath.split('|');
+    const splitPath: string[] = path.split('|');
+
+    splitRootPath.shift();
+    splitPath.shift();
+
+    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+    const absolutePath = cursorsRoot + cursorsPath;
+
+    const updateAction = `delete node${absolutePath};`;
+
+    eval(updateAction);
+
     return new Observable((observer) => {
-      observer.next({
-        list: this.slides,
-        index: uid || null,
-        value: uid ? this.slides[uid] : null
-      });
+      observer.next(true);
       observer.complete();
     });
   }
 
-  set(query, data: Slide): Observable<ServiceResponse> {
-    return new Observable((observer) => {
-      this.filter(query)
-        .subscribe((slides: Slide[]) => {
-          if (slides.length > 0) {
-            this.slides = _.map(this.slides, (slide: Slide) => {
-              let result: Slide = slide;
-
-              if (slide.uid === data.uid) {
-                result = data;
-              }
-
-              return result;
-            });
-          }
-
-          observer.next({
-            list: this.slides,
-            index: data.index,
-            value: data
-          });
-        })
-        .unsubscribe();
-      observer.complete();
-    });
-  }
-
-  push(value: Slide): Observable<ServiceResponse> {
-    return new Observable((observer) => {
-      this.slides.push(value);
-
-      observer.next({
-        list: this.slides,
-        index: this.slides.length - 1,
-        value
-      });
-      observer.complete();
-    });
-  }
 }

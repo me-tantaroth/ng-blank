@@ -30,3 +30,7 @@ export class Menu {
     return menu;
   }
 }
+
+export interface Menus {
+  [key: string]: Menu;
+}
