@@ -65,14 +65,20 @@ export class SlideService {
   }
 
   getItem(path: string): Observable<Slide> {
-    const slides: Slides = this.slides;
+    let result: Slide;
+
+    const node = this.node;
+
+    const splitRootPath: string[] = this.rootPath.split('|');
     const splitPath: string[] = path.split('|');
 
+    splitRootPath.shift();
     splitPath.shift();
 
-    const cursors = splitPath.map((o) => `['${o}']`).join('');
-    let result: Slide;
-    const updateAction = `result = slides${cursors};`;
+    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+    const absolutePath = cursorsRoot + cursorsPath;
+    const updateAction = `result = node${absolutePath};`;
 
     eval(updateAction);
 
@@ -85,7 +91,7 @@ export class SlideService {
   setItem(path: string, slide: Slide): Observable<boolean> {
     const node = this.node;
 
-    slide.dbPath = this.rootPath + slide.dbPath;
+    slide.dbPath = slide.dbPath;
 
     const splitRootPath: string[] = this.rootPath.split('|');
     const splitPath: string[] = path.split('|');

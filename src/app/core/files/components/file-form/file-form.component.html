@@ -7,10 +7,10 @@
   class="uk-margin"
 ></td-message>
 
-<div *ngIf="(action === 'add-file' || action === 'add-folder') && path">
+<div *ngIf="(filter === 'add-file' || filter === 'add-folder')">
   <h3>
-    Agregando {{ action === 'add-file' ? 'archivo' : 'sub carpeta' }} en
-    {{ file ? file.name : 'Principal' }}
+    Agregando {{ filter === 'add-file' ? 'archivo' : 'sub carpeta' }} en
+    {{ file ? file.title : 'Principal' }}
   </h3>
 </div>
 
@@ -19,9 +19,9 @@
   (submitting)="onSubmitting($event)"
   (submitted)="onSubmitted($event)"
 >
-  <div *ngIf="action === 'add-file' || action === 'edit-file'">
+  <div *ngIf="filter === 'add-file' || filter === 'edit-file'">
     <app-file-upload
-      [imageURL]="file && file.link"
+      [imageURL]="file && file.url"
       allowed_extensions="*"
       (filesChanged)="onFilesChanged($event)"
     >
@@ -36,41 +36,13 @@
   <mat-form-field class="uk-width-1-1 uk-margin-small">
     <input
       matInput
-      #name
-      placeholder="Nombre"
-      id="name"
-      name="name"
-      formControlName="name"
+      #title
+      placeholder="Título"
+      id="title"
+      name="title"
+      formControlName="title"
     />
   </mat-form-field>
-
-  <div class="uk-width-1-1 uk-margin-small">
-    <section>
-      <mat-slide-toggle
-        color="accent"
-        formControlName="blocked"
-        name="blocked"
-        required
-        #blocked
-      >
-        Blocked
-      </mat-slide-toggle>
-    </section>
-  </div>
-
-  <div class="uk-width-1-1 uk-margin-small">
-    <section>
-      <mat-slide-toggle
-        color="warn"
-        formControlName="deleted"
-        name="deleted"
-        required
-        #deleted
-      >
-        Deleted
-      </mat-slide-toggle>
-    </section>
-  </div>
 
   <mat-divider></mat-divider>
 

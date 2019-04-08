@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-files',
@@ -7,34 +7,57 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./files.component.scss']
 })
 export class FilesComponent implements OnInit {
-  paramFilter: string;
-  paramValue: string;
+  filter: string;
+  value: string;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private router: Router, private route: ActivatedRoute) {
+    this.router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (!!data.snapshot.params.filter) {
+          this.filter = data.snapshot.params.filter;
+        }
+        if (!!data.snapshot.params.value) {
+          this.value = data.snapshot.params.value;
+        }
+      }
+    });
+  }
 
   ngOnInit() {
-    const paramFilter = this.route.snapshot.paramMap.get('filter');
+    const filter = this.route.snapshot.paramMap.get('filter');
 
-    if (paramFilter) {
-      this.paramFilter = paramFilter;
+    if (filter) {
+      this.filter = filter;
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          this.paramFilter = params.get('filter');
+          this.filter = params.get('filter');
         })
         .unsubscribe();
     }
 
-    const paramValue = this.route.snapshot.paramMap.get('value');
+    const value = this.route.snapshot.paramMap.get('value');
 
-    if (paramValue) {
-      this.paramValue = paramValue;
+    if (value) {
+      this.value = value;
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          this.paramValue = params.get('value');
+          this.value = params.get('value');
         })
         .unsubscribe();
+    }
+  }
+
+  onAddFile(type, file: File) {
+    if (file) {
+      if (!!this.filter && this.filter === 'path' && !!this.value) {
+        this.router.navigate(['/admin/file/form/add-' + type, this.value]);
+      } else {
+        this.router.navigate(['/admin/file/form/add-' + type]);
+      }
+    } else {
+      this.router.navigate(['/admin/file/form/add-' + type]);
     }
   }
 }

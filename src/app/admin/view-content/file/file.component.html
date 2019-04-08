@@ -6,7 +6,11 @@
         <mat-card-subtitle>usage stats for our file</mat-card-subtitle>
         <mat-divider></mat-divider>
         <mat-card-content>
-          <app-file-form [action]="action" [path]="path" [file]="file"></app-file-form>
+          <app-file-form
+            [filter]="filter"
+            [value]="value"
+            [file]="file"
+          ></app-file-form>
         </mat-card-content>
       </mat-card>
     </div>

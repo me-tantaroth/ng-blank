@@ -7,8 +7,8 @@
   class="uk-margin"
 ></td-message>
 
-<div *ngIf="action === 'add' && path">
-  <h3>Agregando submenu en {{ menu ? menu.text : 'Principal' }}</h3>
+<div *ngIf="filter === 'add' && value">
+  <h3>Agregando submenu en {{ menu ? menu.title : 'Principal' }}</h3>
 </div>
 
 <tnt-barn-form
@@ -19,22 +19,22 @@
   <mat-form-field class="uk-width-1-1 uk-margin-small">
     <input
       matInput
-      #text
+      #title
       placeholder="Título"
-      id="text"
-      name="text"
-      formControlName="text"
+      id="title"
+      name="title"
+      formControlName="title"
     />
   </mat-form-field>
 
   <mat-form-field class="uk-width-1-1 uk-margin-small">
     <input
       matInput
-      #link
+      #url
       placeholder="URL"
-      id="link"
-      name="link"
-      formControlName="link"
+      id="url"
+      name="url"
+      formControlName="url"
     />
   </mat-form-field>
 
@@ -42,26 +42,12 @@
     <section>
       <mat-slide-toggle
         color="accent"
-        formControlName="blocked"
-        name="blocked"
+        formControlName="externalURL"
+        name="externalURL"
         required
-        #blocked
+        #externalURL
       >
-        Blocked
-      </mat-slide-toggle>
-    </section>
-  </div>
-
-  <div class="uk-width-1-1 uk-margin-small">
-    <section>
-      <mat-slide-toggle
-        color="warn"
-        formControlName="deleted"
-        name="deleted"
-        required
-        #deleted
-      >
-        Deleted
+        Abrir URL en otra ventana
       </mat-slide-toggle>
     </section>
   </div>

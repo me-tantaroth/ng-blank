@@ -6,7 +6,11 @@
         <mat-card-subtitle>usage stats for our slide</mat-card-subtitle>
         <mat-divider></mat-divider>
         <mat-card-content>
-          <app-slide-form [uid]="uid"></app-slide-form>
+          <app-slide-form
+            [action]="filter"
+            [path]="path"
+            [slide]="slide"
+          ></app-slide-form>
         </mat-card-content>
       </mat-card>
     </div>

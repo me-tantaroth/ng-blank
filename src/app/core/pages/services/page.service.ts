@@ -3,120 +3,134 @@ import { StoreService } from 'ng-barn';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 
+import { Config, ConfigService } from '../../../shared/services/config.service';
 import { LangsService } from '../../../langs/services/langs.service';
-import { Accents } from '../../../shared/utils/accents';
 
-import { Page } from '../models/page';
+import { Page, Pages } from '../models/page';
 
-export interface ServiceResponse {
-  list: Page[];
-  index: number;
-  value: Page;
-}
 @Injectable({
   providedIn: 'root'
 })
 export class PageService {
-  private pages: Page[] = [];
+  private rootPath: string;
+  private node;
+  private pages: Pages;
 
-  constructor(private store: StoreService, private langs: LangsService) {
-    const langsNode = this.store.get('langs-node');
+  constructor(
+    private configService: ConfigService,
+    private store: StoreService,
+    private langs: LangsService
+  ) {
+    const CONFIG: Config = this.configService.get();
+    const NODE = this.store.get('node');
+    const NODE_LANGS = NODE[CONFIG.project.uid].lang;
+    const NODE_PAGES =
+      NODE_LANGS[document.documentElement.lang] ||
+      NODE_LANGS[CONFIG.project.lang].page.enabled;
+    const LANG = NODE_LANGS[document.documentElement.lang]
+      ? document.documentElement.lang
+      : CONFIG.project.lang;
 
-    this.pages = langsNode[this.langs.currentLang].pages || [];
+    this.node = NODE;
+    this.rootPath = `|${CONFIG.project.uid}|lang|${LANG}|page`;
+
+    this.pages = NODE_PAGES;
   }
 
-  list(): Observable<Page[]> {
+  list(path?: string): Observable<Pages> {
+    let result: Pages = this.pages;
+
+    if (path) {
+      const node = this.node;
+
+      const splitRootPath: string[] = this.rootPath.split('|');
+      const splitPath: string[] = path.split('|');
+
+      splitRootPath.shift();
+      splitPath.shift();
+
+      const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+      const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+      const absolutePath = cursorsRoot + cursorsPath;
+
+      const updateAction = `result = node${absolutePath};`;
+
+      eval(updateAction);
+    }
+
     return new Observable((observer) => {
-      observer.next(this.pages);
+      observer.next(result);
       observer.complete();
     });
   }
 
-  item(uid): Observable<Page> {
+  getItem(path: string): Observable<Page> {
+    let result: Page;
+
+    const node = this.node;
+
+    const splitRootPath: string[] = this.rootPath.split('|');
+    const splitPath: string[] = path.split('|');
+
+    splitRootPath.shift();
+    splitPath.shift();
+
+    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+    const absolutePath = cursorsRoot + cursorsPath;
+    const updateAction = `result = node${absolutePath};`;
+
+    eval(updateAction);
+
     return new Observable((observer) => {
-      observer.next(this.pages[uid]);
+      observer.next(result);
       observer.complete();
     });
   }
 
-  filter(query): Observable<Page[]> {
+  setItem(path: string, page: Page): Observable<boolean> {
+    const node = this.node;
+
+    page.dbPath = page.dbPath;
+
+    const splitRootPath: string[] = this.rootPath.split('|');
+    const splitPath: string[] = path.split('|');
+
+    splitRootPath.shift();
+    splitPath.shift();
+
+    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+    const absolutePath = cursorsRoot + cursorsPath;
+    const updateAction = `node${absolutePath} = ${JSON.stringify(page)};`;
+
+    eval(updateAction);
+
     return new Observable((observer) => {
-      observer.next(
-        _.filter(
-          this.pages,
-          (page: Page) =>
-            _.filter(Object.keys(query), (key) => {
-              console.log('>>> PAGE', page)
-              const slideValue = new Accents()
-                .removeDiacritics(page[key])
-                .toLowerCase()
-                .replace(/[^\w\s]/gi, '')
-                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
-                .replace(/ /g, '');
-              const filterValue = new Accents()
-                .removeDiacritics(query[key])
-                .toLowerCase()
-                .replace(/[^\w\s]/gi, '')
-                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
-                .replace(/ /g, '');
-
-                console.log('!!!!------------>', slideValue, '**', filterValue)
-
-              return slideValue.search(filterValue) >= 0;
-            }).length > 0
-        )
-      );
+      observer.next(true);
       observer.complete();
     });
   }
 
-  get(uid?): Observable<ServiceResponse> {
+  removeItem(path: string): Observable<boolean> {
+    const node = this.node;
+
+    const splitRootPath: string[] = this.rootPath.split('|');
+    const splitPath: string[] = path.split('|');
+
+    splitRootPath.shift();
+    splitPath.shift();
+
+    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+    const absolutePath = cursorsRoot + cursorsPath;
+
+    const updateAction = `delete node${absolutePath};`;
+
+    eval(updateAction);
+
     return new Observable((observer) => {
-      observer.next({
-        list: this.pages,
-        index: uid || null,
-        value: uid ? this.pages[uid] : null
-      });
-      observer.complete();
-    });
-  }
-
-  set(query, data: Page): Observable<ServiceResponse> {
-    return new Observable((observer) => {
-      this.filter(query)
-        .subscribe((pages: Page[]) => {
-          if (pages.length > 0) {
-            this.pages = _.map(this.pages, (page: Page) => {
-              let result: Page = page;
-
-              if (page.uid === data.uid) {
-                result = data;
-              }
-
-              return result;
-            });
-          }
-
-          observer.next({
-            list: this.pages,
-            index: data.index,
-            value: data
-          });
-        })
-        .unsubscribe();
-      observer.complete();
-    });
-  }
-
-  push(value: Page): Observable<ServiceResponse> {
-    return new Observable((observer) => {
-      this.pages.push(value);
-
-      observer.next({
-        list: this.pages,
-        index: this.pages.length - 1,
-        value
-      });
+      observer.next(true);
       observer.complete();
     });
   }

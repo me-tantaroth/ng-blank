@@ -6,13 +6,18 @@ export interface Theme {
   color: string;
 }
 
+export interface Pages {
+  [key: string]: Page;
+}
+
 export interface Page {
   uid: string;
-  index: number;
-  path: string;
+  dbPath: string;
+  backPath: string;
+  currentPath: string;
   alias: string[];
   author: string;
-  image: string;
+  cover: string;
   theme: Theme;
   title: string;
   description: string;
@@ -20,9 +25,11 @@ export interface Page {
   content: string;
   type: string;
   views: number;
+  root: boolean;
   createdAt: Date;
   postedAt: Date;
   deleted: boolean;
+  deletedCount: number;
   blocked: boolean;
 }
 export class Page {
@@ -34,11 +41,11 @@ export class Page {
     if (!page.uid || page.uid === null || page.uid === undefined) {
       page.uid = 'page-' + makeid(15);
     }
-    if (!page.path || page.path === null || page.path === undefined) {
-      page.path = makeid(15);
+    if (!page.currentPath || page.currentPath === null || page.currentPath === undefined) {
+      page.currentPath = makeid(15);
 
       if (page.title) {
-        page.path = new Accents()
+        page.currentPath = new Accents()
           .removeDiacritics(page.title)
           .toLowerCase()
           .replace(/[^\w\s]/gi, '')
@@ -101,8 +108,4 @@ export class Page {
 
     return page;
   }
-}
-
-export interface Pages {
-  [key: string]: Page;
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { first } from 'rxjs/operators';
 
 import { MenuService } from '../../../core/menus/services/menu.service';
 
@@ -12,8 +13,8 @@ import { Menu } from '../../../core/menus/models/menu';
 })
 export class MenuComponent implements OnInit {
   menu: Menu;
-  path: string;
-  action: string;
+  filter: string;
+  value: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -21,43 +22,41 @@ export class MenuComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const path = this.route.snapshot.paramMap.get('path');
+    const value = this.route.snapshot.paramMap.get('value');
 
-    if (path) {
-      this.path = path;
+    if (value) {
+      this.value = value;
 
       this.menuService
-        .itemWithPath(path)
+        .getItem(value)
         .subscribe((menu: Menu) => (this.menu = menu))
         .unsubscribe();
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          const path = params.get('path');
-          if (path) {
-            this.path = path;
+          if (params.get('value')) {
+            this.value = params.get('value');
 
             this.menuService
-              .itemWithPath(path)
-              .subscribe((menu: Menu) => (this.menu = menu))
-              .unsubscribe();
+              .getItem(value)
+              .pipe(first())
+              .subscribe((menu: Menu) => (this.menu = menu));
           }
         })
         .unsubscribe();
     }
 
-    const action = this.route.snapshot.paramMap.get('action');
+    const filter = this.route.snapshot.paramMap.get('filter');
 
-    if (action) {
-      this.action = action;
+    if (filter) {
+      this.filter = filter;
     } else {
-      this.action = 'add';
+      this.filter = 'add';
 
       this.route.paramMap
         .subscribe((params) => {
-          const action = params.get('action');
-          if (action) {
-            this.action = action;
+          if (params.get('filter')) {
+            this.filter = params.get('filter');
           }
         })
         .unsubscribe();

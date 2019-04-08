@@ -2,14 +2,50 @@
   <div flex-gt-sm="100">
     <div class="uk-container">
       <mat-card>
-        <mat-card-title>Lista de file</mat-card-title>
+        <mat-card-title>Lista de archivos</mat-card-title>
         <mat-card-subtitle>usage stats for our file</mat-card-subtitle>
         <mat-divider></mat-divider>
-        <mat-card-content>
-          <app-file-list
-            [filter]="paramFilter"
-            [value]="paramValue"
-          ></app-file-list>
+        <mat-card-content
+          ><div align="right">
+            <div class="uk-inline">
+              <button mat-raised-button color="primary">
+                Nuevo
+              </button>
+              <div uk-dropdown="mode: click" class="uk-padding-remove">
+                <mat-nav-list>
+                  <a
+                    [routerLink]="['/admin/file/form/add-folder', value || '']"
+                    mat-list-item
+                  >
+                    Folder
+                  </a>
+
+                  <a
+                    [routerLink]="['/admin/file/form/add-file', value || '']"
+                    mat-list-item
+                  >
+                    Archivo
+                  </a>
+                </mat-nav-list>
+              </div>
+            </div>
+          </div>
+          <br />
+          <!-- <div>
+            <a routerLink="/admin/file/list" class="uk-text-success"
+              >Lista de file activos</a
+            >
+            &nbsp;
+            <a routerLink="/admin/file/list/blocked" class="uk-text-warning"
+              >Lista de file bloqueados</a
+            >
+            &nbsp;
+            <a routerLink="/admin/file/list/deleted" class="uk-text-danger"
+              >Lista de file eliminados</a
+            >
+          </div>
+          <br /> -->
+          <app-file-list [filter]="filter" [value]="value"></app-file-list>
         </mat-card-content>
       </mat-card>
     </div>

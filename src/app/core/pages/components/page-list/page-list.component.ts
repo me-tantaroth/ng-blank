@@ -1,11 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Router, ActivationEnd } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 import { PageService } from '../../services/page.service';
 
-import { Page } from '../../models/page';
+import { Page, Pages } from '../../models/page';
 
 @Component({
   selector: 'app-page-list',
@@ -14,39 +15,167 @@ import { Page } from '../../models/page';
 })
 export class PageListComponent implements OnInit {
   @Input() filter: string;
+  @Input() value: string;
 
+  ObjectKeys = Object.keys;
   panelOpenState: boolean;
-  pages: Observable<Page[]>;
+  currentPage: Observable<Page>;
+  pageList: Observable<Pages>;
+  backPage: Observable<Pages>;
 
-  constructor(private pageService: PageService) {}
+  constructor(private pageService: PageService, private router: Router) {
+    router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (
+          !!data.snapshot.params.filter &&
+          data.snapshot.params.filter === 'enabled' &&
+          !!data.snapshot.params.value
+        ) {
+          this.currentPage = this.pageService.getItem(
+            data.snapshot.params.value
+          );
+          this.pageList = this.pageService.list(
+            data.snapshot.params.value + '|enabled'
+          );
+        } else {
+          if (
+            !!data.snapshot.params.filter &&
+            (data.snapshot.params.filter === 'enabled' ||
+              data.snapshot.params.filter === 'blocked' ||
+              data.snapshot.params.filter === 'deleted') &&
+            !data.snapshot.params.value
+          ) {
+            console.log('¡?¡¡¡¡¡¡¡¡', data.snapshot.params.filter);
+            this.pageList = this.pageService.list(
+              '|' + data.snapshot.params.filter
+            );
+          }
+        }
+      }
+    });
+  }
 
   ngOnInit() {
-    this.pages = this.pageService.list().pipe(
-      map((pages: Page[]) =>
-        _.filter(pages, (o) => {
-          let match: boolean;
+    if (!!this.filter && this.filter === 'enabled' && !!this.value) {
+      console.log('## FILTER PATH');
+      this.currentPage = this.pageService.getItem(this.value);
 
-          if (this.filter) {
-            match = o[this.filter] === !!this.filter;
-          } else {
-            match = o.deleted === false;
-          }
+      this.pageList = this.pageService.list(this.value + '|enabled');
+    } else {
+      this.filter = this.filter || 'enabled';
 
-          return match;
-        })
-      )
-    );
+      console.log('## ONLY NOT DELETED');
+      this.pageList = this.pageService.list('|' + this.filter);
+      this.pageList.subscribe((data) => console.log('QQQQ', data));
+    }
   }
 
-  blockPage(uid: string, page: Page) {
+  onAddPage(page: Page) {
+    if (page) {
+      if (!!this.filter && this.filter === 'path' && !!this.value) {
+        this.router.navigate(['/admin/page/form/add', this.value]);
+      } else {
+        this.router.navigate(['/admin/page/form/add']);
+      }
+    } else {
+      this.router.navigate(['/admin/page/form/add']);
+    }
+  }
+
+  onBackPage(page: Page) {
+    if (page) {
+      this.router.navigate([
+        '/admin/page/list/' + (this.filter || 'enabled'),
+        page.backPath || ''
+      ]);
+    }
+  }
+
+  onBlockPage(path: string, page: Page) {
+    const splitPath = path.split('|');
+    splitPath.shift();
+    splitPath.shift();
+
     page.blocked = true;
 
-    this.pageService.set({ uid }, page);
+    console.log('## BLOCKED', path, page, '|blocked|' + splitPath.join('|'));
+
+    this.pageService
+      .setItem('|blocked|' + splitPath.join('|'), page)
+      .pipe(first())
+      .subscribe((status: boolean) => {
+        if (status) {
+          this.pageService
+            .removeItem('|enabled|' + splitPath.join('|'))
+            .pipe(first())
+            .subscribe((statusEnabled: boolean) => {
+              if (statusEnabled) {
+                this.onBackPage(page);
+              }
+            });
+        }
+      });
   }
 
-  deletePage(uid: string, page: Page) {
-    page.deleted = true;
+  onUnBlockPage(path: string, page: Page) {
+    page.blocked = false;
 
-    this.pageService.set({ uid }, page);
+    this.pageService
+      .setItem(path, page)
+      .pipe(first())
+      .subscribe((status: boolean) => {
+        if (status) {
+          this.pageService
+            .removeItem('|blocked|' + page.uid)
+            .pipe(first())
+            .subscribe((statusRemoved: boolean) => {
+              if (statusRemoved) {
+                this.onBackPage(page);
+              }
+            });
+        }
+      });
+  }
+
+  onDeletePage(path: string, page: Page) {
+    if (confirm(`Seguro que desea eliminar a '${page.title}'?`)) {
+      page.deleted = true;
+
+      this.pageService
+        .setItem(path, page)
+        .pipe(first())
+        .subscribe((status: boolean) => {
+          if (status) {
+            this.pageService
+              .removeItem('|enabled|' + page.uid)
+              .pipe(first())
+              .subscribe((statusEnabled: boolean) => {
+                if (statusEnabled) {
+                  this.pageList = this.pageService.list('|enabled');
+                }
+              });
+          }
+        });
+    }
+  }
+
+  onUnDeletedPage(path: string, page: Page) {
+    page.deleted = false;
+
+    this.pageService
+      .setItem(path, page)
+      .pipe(first())
+      .subscribe((status: boolean) => {
+        if (status) {
+          this.pageService
+            .removeItem('|deleted|' + page.uid)
+            .pipe(first())
+            .subscribe((statusDeleted: boolean) => {
+              if (statusDeleted) {
+                this.pageList = this.pageService.list('|deleted');
+              }
+            });
+        }
+      });
   }
 }

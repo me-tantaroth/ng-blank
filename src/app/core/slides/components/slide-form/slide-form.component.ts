@@ -1,11 +1,15 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  Validators,
+  NgControlStatus
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 import * as _moment from 'moment';
 import { Observable } from 'rxjs';
-import { first } from 'rxjs/operators';
 
 import { SlideService } from '../../services/slide.service';
 
@@ -19,9 +23,9 @@ import { Message } from '../../../../models/message';
 })
 export class SlideFormComponent implements OnInit {
   @Input() slide: Slide;
-  @Input() uid: string;
+  @Input() action: string;
+  @Input() path: string;
 
-  events: string[] = [];
   slides: Observable<Slides>;
   submitted: boolean;
   form: FormGroup;
@@ -44,8 +48,6 @@ export class SlideFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.slides = this.slideService.list();
-
     this.errorMessages = {
       image: {
         required: 'La foto de perfíl es requerida.'
@@ -57,6 +59,8 @@ export class SlideFormComponent implements OnInit {
       title: new FormControl(''),
       subtitle: new FormControl(''),
       url: new FormControl(''),
+      currentPath: new FormControl(''),
+      dbPath: new FormControl(''),
       image: new FormControl('', Validators.required),
       externalURL: new FormControl(false),
       blocked: new FormControl(true),
@@ -64,27 +68,11 @@ export class SlideFormComponent implements OnInit {
       deletedCount: new FormControl(0)
     });
 
-    if (this.uid) {
-      this.slideService
-        .getItem('|' + this.uid)
-        .subscribe((slide: Slide) => {
-          if (slide) {
-            this.form.patchValue({
-              uid: slide.uid,
-              title: slide.title,
-              subtitle: slide.subtitle,
-              url: slide.url,
-              image: slide.image,
-              externalURL: slide.externalURL,
-              blocked: slide.blocked,
-              deleted: slide.deleted,
-              deletedCount: slide.deletedCount
-            });
-          } else {
-            console.error('>> Not found slide item');
-          }
-        })
-        .unsubscribe();
+    console.log(this.action);
+    if (this.action === 'edit') {
+      console.log(this.slide);
+
+      this.form.patchValue(this.slide);
     }
   }
 
@@ -116,8 +104,10 @@ export class SlideFormComponent implements OnInit {
     const value = event[event.index];
     const slide: Slide = new Slide(value);
 
-    if (!this.uid) {
+    console.log(slide);
+    if (!this.path) {
       slide.dbPath = '|enabled';
+      slide.currentPath = '|enabled' + slide.uid;
     }
 
     this.slideService
@@ -127,7 +117,7 @@ export class SlideFormComponent implements OnInit {
           this.message = {
             show: true,
             label: 'Info',
-            sublabel: 'Slide editado',
+            sublabel: 'Slide guardado',
             color: 'accent',
             icon: 'info'
           };

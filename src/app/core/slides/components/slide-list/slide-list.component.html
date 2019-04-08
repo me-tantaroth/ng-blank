@@ -29,23 +29,23 @@
           <div align="right" class="uk-margin-small">
             <span *ngIf="filter === 'enabled'">
               <a
-                [routerLink]="['/admin/slide/form', slide.uid]"
+                [routerLink]="['/admin/slide/form/edit', slide.currentPath]"
                 class="uk-text-primary"
                 >Edit</a
               >
               &nbsp;
-              <span
+              <!-- <span
                 *ngIf="slide.blocked"
                 class="uk-text-warning uk-text-bold"
                 >{{ slide.blocked ? 'Blocked' : '' }}</span
               >
               <a
                 class="uk-text-warning"
-                (click)="blockSlide('|blocked|' + slide.uid, slide)"
+                (click)="onBlockSlide('|blocked|' + slide.uid, slide)"
                 *ngIf="!slide.blocked"
                 >Bloquear</a
               >
-              &nbsp;
+              &nbsp; -->
               <span
                 *ngIf="slide.deleted"
                 class="uk-text-warning uk-text-bold"
@@ -53,7 +53,7 @@
               >
               <a
                 class="uk-text-danger"
-                (click)="deleteSlide('|deleted|' + slide.uid, slide)"
+                (click)="onDeleteSlide('|deleted|' + slide.uid, slide)"
                 *ngIf="!slide.deleted"
                 >Eliminar</a
               >
@@ -61,14 +61,14 @@
             <span *ngIf="filter === 'blocked'">
               <a
                 class="uk-text-warning uk-text-bold"
-                (click)="unBlockSlide('|enabled|' + slide.uid, slide)"
+                (click)="onUnBlockSlide('|enabled|' + slide.uid, slide)"
                 >Desbloquear</a
               >
             </span>
             <span *ngIf="filter === 'deleted'">
               <a
                 class="uk-text-danger uk-text-bold"
-                (click)="unBlockSlide('|enabled|' + slide.uid, slide)"
+                (click)="onUnDeletedSlide('|enabled|' + slide.uid, slide)"
                 >Recuperar</a
               >
             </span>

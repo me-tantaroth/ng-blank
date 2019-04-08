@@ -1,5 +1,9 @@
 import { makeid } from '../../../shared/utils';
 
+export interface Slides {
+  [key: string]: Slide;
+}
+
 export interface Slide {
   uid: string;
   image: string;
@@ -7,6 +11,7 @@ export interface Slide {
   subtitle?: string;
   url?: string;
   externalURL: boolean;
+  currentPath: string;
   dbPath: string;
   blocked: boolean;
   deleted: boolean;
@@ -43,8 +48,4 @@ export class Slide {
     }
     return slide;
   }
-}
-
-export interface Slides {
-  [key: string]: Slide;
 }

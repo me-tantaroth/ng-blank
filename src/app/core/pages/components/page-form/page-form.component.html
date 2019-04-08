@@ -12,7 +12,7 @@
   (submitted)="onSubmitted($event)"
 >
   <app-file-upload
-    [imageURL]="image.value"
+    [imageURL]="cover.value"
     allowed_extensions="image/*"
     (filesChanged)="onFilesChanged($event)"
   >
@@ -21,11 +21,11 @@
     <mat-form-field>
       <div align="center">
         <button mat-raised-button>Seleccionar</button>
-        <input matInput #image formControlName="image" style="display: none" />
+        <input matInput #cover formControlName="cover" style="display: none" />
       </div>
-      <mat-error *ngIf="f.image.status === 'INVALID'">
-        <span *ngFor="let error of errors('image')">{{
-          errorMessages['image'][error]
+      <mat-error *ngIf="f.cover.status === 'INVALID'">
+        <span *ngFor="let error of errors('cover')">{{
+          errorMessages['cover'][error]
         }}</span>
       </mat-error>
     </mat-form-field>
@@ -61,11 +61,11 @@
   <mat-form-field class="uk-width-1-1 uk-margin-small">
     <input
       matInput
-      #path
+      #principalPath
       placeholder="Ruta"
-      id="path"
-      name="path"
-      formControlName="path"
+      id="principalPath"
+      name="principalPath"
+      formControlName="principalPath"
     />
   </mat-form-field>
 
@@ -102,34 +102,6 @@
       formControlName="content"
     ></textarea>
   </mat-form-field>
-
-  <div class="uk-width-1-1 uk-margin-small">
-    <section>
-      <mat-slide-toggle
-        color="accent"
-        formControlName="blocked"
-        name="blocked"
-        required
-        #blocked
-      >
-        Blocked
-      </mat-slide-toggle>
-    </section>
-  </div>
-
-  <div class="uk-width-1-1 uk-margin-small">
-    <section>
-      <mat-slide-toggle
-        color="warn"
-        formControlName="deleted"
-        name="deleted"
-        required
-        #deleted
-      >
-        Deleted
-      </mat-slide-toggle>
-    </section>
-  </div>
 
   <mat-divider></mat-divider>
 

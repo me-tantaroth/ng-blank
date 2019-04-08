@@ -6,7 +6,11 @@
         <mat-card-subtitle>usage stats for our page manager</mat-card-subtitle>
         <mat-divider></mat-divider>
         <mat-card-content>
-          <app-page-form [uid]="uid"></app-page-form>
+          <app-page-form
+            [filter]="filter"
+            [value]="value"
+            [page]="page"
+          ></app-page-form>
         </mat-card-content>
       </mat-card>
     </div>

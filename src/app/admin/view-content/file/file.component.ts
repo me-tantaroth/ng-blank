@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { map } from 'rxjs/operators';
+import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
+import { first } from 'rxjs/operators';
 
 import { FileService } from '../../../core/files/services/file.service';
 
@@ -13,67 +13,63 @@ import { File } from '../../../core/files/models/file';
 })
 export class FileComponent implements OnInit {
   file: File;
-  path: string;
-  action: string;
+  filter: string;
+  value: string;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private fileService: FileService
-  ) {}
+  ) {
+    this.router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (!!data.snapshot.params.filter) {
+          this.filter = data.snapshot.params.filter;
+        }
+        if (!!data.snapshot.params.value) {
+          this.value = data.snapshot.params.value;
+        }
+      }
+    });
+  }
 
   ngOnInit() {
-    const path = this.route.snapshot.paramMap.get('path');
+    const value = this.route.snapshot.paramMap.get('value');
 
-    console.log('>>>>>>>>>> path', path)
-    if (path) {
-      this.path = path;
+    if (value) {
+      this.value = value;
 
       this.fileService
-        .itemWithPath(path)
+        .getItem(value)
         .subscribe((file: File) => (this.file = file))
         .unsubscribe();
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          const path = params.get('path');
-
-          if (path) {
-            this.path = path;
+          if (params.get('value')) {
+            this.value = params.get('value');
 
             this.fileService
-              .itemWithPath(path)
-              .pipe(
-                map(
-                  o => {
-                    console.log(o);
-
-                    return o;
-                  }
-                )
-              )
-              .subscribe((file: File) => {
-                console.log('>>>>>> file', file);
-                return this.file = file;})
-              .unsubscribe();
+              .getItem(value)
+              .pipe(first())
+              .subscribe((file: File) => (this.file = file));
           }
         })
         .unsubscribe();
     }
 
-    const action = this.route.snapshot.paramMap.get('action');
+    const filter = this.route.snapshot.paramMap.get('filter');
+    console.log('¡?==?=?=?', filter);
 
-    console.log('>>>>>>>>>> action', action)
-    if (action) {
-      this.action = action;
+    if (filter) {
+      this.filter = filter;
     } else {
-      this.action = 'add';
+      this.filter = 'add';
 
       this.route.paramMap
         .subscribe((params) => {
-          const action = params.get('action');
-
-          if (action) {
-            this.action = action;
+          if (params.get('filter')) {
+            this.filter = params.get('filter');
           }
         })
         .unsubscribe();

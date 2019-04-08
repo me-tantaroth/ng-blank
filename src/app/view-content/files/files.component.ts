@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-
-import { Config, ConfigService } from '../../shared/services/config.service';
+import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-files',
@@ -9,38 +7,44 @@ import { Config, ConfigService } from '../../shared/services/config.service';
   styleUrls: ['./files.component.scss']
 })
 export class FilesComponent implements OnInit {
-  config: Config;
-  paramFilter: string;
-  paramValue: string;
+  filter: string;
+  value: string;
 
-  constructor(
-    private configService: ConfigService,
-    private route: ActivatedRoute
-  ) {
-    this.config = this.configService.get();
+  constructor(private route: ActivatedRoute, private router: Router) {
+    router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (!!data.snapshot.params.filter) {
+          this.filter = data.snapshot.params.filter;
+        }
+        if (!!data.snapshot.params.value) {
+          this.value = data.snapshot.params.value;
+        }
+      }
+    });
   }
 
   ngOnInit() {
-    const paramFilter = this.route.snapshot.paramMap.get('filter');
+    const filter = this.route.snapshot.paramMap.get('filter');
 
-    if (paramFilter) {
-      this.paramFilter = paramFilter;
+    if (filter) {
+      this.filter = filter;
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          this.paramFilter = params.get('filter');
+          this.filter = params.get('filter');
         })
         .unsubscribe();
     }
 
-    const paramValue = this.route.snapshot.paramMap.get('value');
+    const value = this.route.snapshot.paramMap.get('value');
 
-    if (paramValue) {
-      this.paramValue = paramValue;
+    if (value) {
+      console.log('## VALUE', value);
+      this.value = value;
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          this.paramValue = params.get('value');
+          this.value = params.get('value');
         })
         .unsubscribe();
     }

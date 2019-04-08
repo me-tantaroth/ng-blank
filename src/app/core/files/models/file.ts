@@ -1,17 +1,25 @@
 import { makeid } from '../../../shared/utils';
 
+export interface Files {
+  [key: string]: File;
+}
+
 export interface File {
-  name: string;
-  path: string;
+  uid: string;
+  title: string;
+  currentPath: string;
   backPath: string;
+  dbPath?: string;
   type: string;
   size?: number;
   lastModifiedDate?: Date;
-  file: File[];
-  link?: string;
+  enabled?: Files;
+  url?: string;
+  externalURL: boolean;
   root?: boolean;
   blocked: boolean;
   deleted: boolean;
+  deletedCount: number;
   createdAt: Date;
 }
 export class File {
@@ -20,11 +28,14 @@ export class File {
   }
 
   format(file) {
+    if (!file.uid || file.uid === null || file.uid === undefined) {
+      file.uid = 'file-' + makeid(15);
+    }
     if (!file.type || file.type === null || file.type === undefined) {
       file.type = 'folder';
     }
-    if (!file.file || file.file === null || file.file === undefined) {
-      file.file = [];
+    if (!file.enabled || file.enabled === null || file.enabled === undefined) {
+      file.enabled = {};
     }
     if (
       !file.createdAt ||
@@ -35,8 +46,4 @@ export class File {
     }
     return file;
   }
-}
-
-export interface Files {
-  [key: string]: File;
 }

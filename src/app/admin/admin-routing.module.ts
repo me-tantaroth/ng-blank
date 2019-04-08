@@ -69,11 +69,19 @@ const routes: Routes = [
         component: SlidesComponent
       },
       {
+        path: 'list/:filter/:value',
+        component: SlidesComponent
+      },
+      {
         path: 'form',
         component: SlideComponent
       },
       {
-        path: 'form/:uid',
+        path: 'form/:filter/:value',
+        component: SlideComponent
+      },
+      {
+        path: 'form/:filter/:value',
         component: SlideComponent
       }
     ]
@@ -93,12 +101,22 @@ const routes: Routes = [
         canActivate: [SignInGuard]
       },
       {
+        path: 'list/:filter/:value',
+        component: PagesComponent,
+        canActivate: [SignInGuard]
+      },
+      {
         path: 'form',
         component: PageComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'form/:uid',
+        path: 'form/:filter',
+        component: PageComponent,
+        canActivate: [SignInGuard]
+      },
+      {
+        path: 'form/:filter/:value',
         component: PageComponent,
         canActivate: [SignInGuard]
       }
@@ -129,12 +147,12 @@ const routes: Routes = [
         canActivate: [SignInGuard]
       },
       {
-        path: 'form/:action',
+        path: 'form/:filter',
         component: MenuComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'form/:action/:path',
+        path: 'form/:filter/:value',
         component: MenuComponent,
         canActivate: [SignInGuard]
       }
@@ -165,12 +183,12 @@ const routes: Routes = [
         canActivate: [SignInGuard]
       },
       {
-        path: 'form/:action',
+        path: 'form/:filter',
         component: FileComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'form/:action/:path',
+        path: 'form/:filter/:value',
         component: FileComponent,
         canActivate: [SignInGuard]
       }

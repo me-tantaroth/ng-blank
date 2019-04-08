@@ -1,74 +1,116 @@
-<div *ngIf="currentMenu">
-  <ul class="uk-breadcrumb">
-    <li>
-      <a (click)="onBackMenu(currentMenu)">Atrás</a>
-    </li>
-    <li>
-      <span>{{ currentMenu.text || 'Vacio' }}</span>
-    </li>
-  </ul>
-</div>
-
-<div align="right">
-  <button (click)="onAddMenu(currentMenu)" mat-raised-button color="primary">
-    New
-  </button>
-</div>
-<br />
-<div *ngIf="(menuList | async)">
-  <div *ngIf="(menuList | async).length > 0">
-    <mat-accordion>
-      <mat-expansion-panel
-        role="menu"
-        *ngFor="let menu of (menuList | async); let i = index"
-        (opened)="panelOpenState = true"
-        (closed)="panelOpenState = false"
-      >
-        <mat-expansion-panel-header>
-          <mat-panel-title> {{ menu.text }} </mat-panel-title>
-          <mat-panel-description>
-            {{ menu.createdAt | date }}
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-        <div>
-          <div align="right" class="uk-margin-small">
-            <a
-              [routerLink]="['/admin/menu/list/' + (filter || ''), menu.path]"
-              class="uk-text-success"
-              >Submenu</a
-            >
-            &nbsp;
-            <a
-              [routerLink]="['/admin/menu/form/edit', menu.path]"
-              class="uk-text-primary"
-              >Edit</a
-            >
-            &nbsp;
-            <span *ngIf="menu.blocked" class="uk-text-warning uk-text-bold">{{
-              menu.blocked ? 'Blocked' : ''
-            }}</span>
-            <a
-              class="uk-text-warning"
-              (click)="onBlockMenu(menu)"
-              *ngIf="!menu.blocked"
-              >Block</a
-            >
-            &nbsp;
-            <span *ngIf="menu.deleted" class="uk-text-danger uk-text-bold">{{
-              menu.deleted ? 'Deleted' : ''
-            }}</span>
-            <a
-              [routerLink]="['/admin/trash']"
-              class="uk-text-danger"
-              (click)="onDeleteMenu(menu)"
-              *ngIf="!menu.deleted"
-              >Delete</a
-            >
-          </div>
-        </div>
-      </mat-expansion-panel>
-    </mat-accordion>
+<ng-template
+  let-currentMenu
+  [ngTemplateOutletContext]="{ $implicit: currentMenu | async }"
+  [ngTemplateOutlet]="currentMenuT"
+  #currentMenuT
+>
+  <div *ngIf="currentMenu">
+    <ul class="uk-breadcrumb">
+      <li>
+        <a (click)="onBackMenu(currentMenu)">Atrás</a>
+      </li>
+      <li>
+        <span>{{ currentMenu.title || '--' }}</span>
+      </li>
+    </ul>
   </div>
-  <div *ngIf="(menuList | async).length <= 0"><h2>Not found data</h2></div>
+</ng-template>
+
+<div *ngIf="(menuList | async) && ObjectKeys(menuList | async).length > 0">
+  <mat-accordion>
+    <mat-expansion-panel
+      role="menu"
+      *ngFor="let key of ObjectKeys(menuList | async)"
+      (opened)="panelOpenState = true"
+      (closed)="panelOpenState = false"
+    >
+      <mat-expansion-panel-header>
+        <ng-template
+          let-menu
+          [ngTemplateOutletContext]="{ $implicit: (menuList | async) }"
+          [ngTemplateOutlet]="menuT"
+          #menuT
+        >
+          <mat-panel-title> {{ menu[key].title || '--' }} </mat-panel-title>
+          <mat-panel-description>
+            {{ menu[key].createdAt | date }}
+          </mat-panel-description>
+        </ng-template>
+      </mat-expansion-panel-header>
+      <div>
+        <ng-template
+          let-menu
+          [ngTemplateOutletContext]="{ $implicit: menuList | async }"
+          [ngTemplateOutlet]="menuDetailT"
+          #menuDetailT
+        >
+          <div align="right" class="uk-margin-small">
+            <span *ngIf="filter === 'enabled'">
+              <a
+                [routerLink]="[
+                  '/admin/menu/list/enabled/',
+                  menu[key].currentPath
+                ]"
+                class="uk-text-success"
+                >Submenu</a
+              >
+              &nbsp;
+              <a
+                [routerLink]="['/admin/menu/form/edit', menu[key].currentPath]"
+                class="uk-text-primary"
+                >Editar</a
+              >
+              &nbsp;
+              <!-- <span
+                *ngIf="menu[key].blocked"
+                class="uk-text-warning uk-text-bold"
+                >{{ menu[key].blocked ? 'Blocked' : '' }}</span
+              >
+              <a
+                class="uk-text-warning"
+                (click)="onBlockMenu(menu[key].currentPath, menu[key])"
+                *ngIf="!menu[key].blocked"
+                >Bloquear</a
+              >
+              &nbsp; -->
+              <span
+                *ngIf="menu[key].deleted"
+                class="uk-text-warning uk-text-bold"
+                >{{ menu[key].deleted ? 'Deleted' : '' }}</span
+              >
+              <a
+                class="uk-text-danger"
+                (click)="onDeleteMenu('|deleted|' + menu[key].uid, menu[key])"
+                *ngIf="!menu[key].deleted"
+                >Eliminar</a
+              >
+            </span>
+            <span *ngIf="filter === 'blocked'">
+              <a
+                class="uk-text-warning uk-text-bold"
+                (click)="onUnBlockMenu('|enabled|' + menu[key].uid, menu[key])"
+                >Desbloquear</a
+              >
+            </span>
+            <span *ngIf="filter === 'deleted'">
+              <a
+                class="uk-text-danger uk-text-bold"
+                (click)="onUnBlockMenu('|enabled|' + menu[key].uid, menu[key])"
+                >Recuperar</a
+              >
+            </span>
+          </div>
+          <h3>Redirigir a: {{ menu[key].url }}</h3>
+        </ng-template>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
 </div>
-<div *ngIf="!(menuList | async)"><h2>Not found data</h2></div>
+<div
+  *ngIf="
+    !(menuList | async) ||
+    ((menuList | async) && ObjectKeys(menuList | async).length === 0)
+  "
+>
+  <h2>Not found data</h2>
+</div>

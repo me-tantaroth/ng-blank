@@ -1,52 +1,124 @@
-<div *ngIf="(pages | async).length > 0">
+<ng-template
+  let-currentPage
+  [ngTemplateOutletContext]="{ $implicit: currentPage | async }"
+  [ngTemplateOutlet]="currentPageT"
+  #currentPageT
+>
+  <div *ngIf="currentPage">
+    <ul class="uk-breadcrumb">
+      <li>
+        <a (click)="onBackPage(currentPage)">Atrás</a>
+      </li>
+      <li>
+        <span>{{ currentPage.title || '--' }}</span>
+      </li>
+    </ul>
+  </div>
+</ng-template>
+
+<div *ngIf="(pageList | async) && ObjectKeys(pageList | async).length > 0">
   <mat-accordion>
     <mat-expansion-panel
       role="page"
-      *ngFor="let page of (pages | async); let i = index"
+      *ngFor="let key of ObjectKeys(pageList | async)"
       (opened)="panelOpenState = true"
       (closed)="panelOpenState = false"
     >
       <mat-expansion-panel-header>
-        <mat-panel-title> {{ page.title }} </mat-panel-title>
-        <mat-panel-description> -- </mat-panel-description>
+        <ng-template
+          let-page
+          [ngTemplateOutletContext]="{ $implicit: pageList | async }"
+          [ngTemplateOutlet]="pageT"
+          #pageT
+        >
+          <mat-panel-title> {{ page[key].title || '--' }} </mat-panel-title>
+          <mat-panel-description>
+            {{ page[key].createdAt | date }}
+          </mat-panel-description>
+        </ng-template>
       </mat-expansion-panel-header>
       <div>
-        <div align="right" class="uk-margin-small">
-          <a [routerLink]="['/page/view/', page.path]">Preview</a> &nbsp;
-          <a [routerLink]="['/admin/page/form', page.uid]" class="uk-text-primary">Edit</a>
-          &nbsp;
-          <span *ngIf="page.blocked" class="uk-text-warning uk-text-bold">{{
-            page.blocked ? 'Blocked' : ''
-          }}</span>
-          <a
-            [routerLink]="['/admin/page/list']"
-            class="uk-text-warning"
-            (click)="blockPage(page.uid, page)"
-            *ngIf="!page.blocked"
-            >Block</a
-          >
-          &nbsp;
-          <span *ngIf="page.deleted" class="uk-text-warning uk-text-bold">{{
-            page.deleted ? 'Deleted' : ''
-          }}</span>
-          <a
-            [routerLink]="['/admin/trash']"
-            class="uk-text-danger"
-            (click)="deletePage(page.uid, page)"
-            *ngIf="!page.deleted"
-            >Delete</a
-          >
-        </div>
-        <div
-          class="uk-height-small uk-background-secondary uk-background-cover uk-background-center-center uk-background-norepeat"
-          [ngStyle]="{ 'background-image': 'url(' + page.image + ')' }"
-        ></div>
-        <h4>{{ page.createdAt | date }}</h4>
-        <blockquote cite="#">
-          <p class="uk-margin-small-bottom">{{ page.description || '--' }}</p>
-        </blockquote>
+        <ng-template
+          let-page
+          [ngTemplateOutletContext]="{ $implicit: pageList | async }"
+          [ngTemplateOutlet]="pageDetailT"
+          #pageDetailT
+        >
+          <div align="right" class="uk-margin-small">
+            <span *ngIf="filter === 'enabled'">
+              <a [routerLink]="['/page/view/', page.path]">Preview</a> &nbsp;
+              <!-- <a
+                [routerLink]="[
+                  '/admin/page/list/enabled/',
+                  page[key].currentPath
+                ]"
+                class="uk-text-success"
+                >Subpage</a
+              >
+              &nbsp; -->
+              <a
+                [routerLink]="['/admin/page/form/edit', page[key].currentPath]"
+                class="uk-text-primary"
+                >Editar</a
+              >
+              &nbsp;
+              <!-- <span
+                *ngIf="page[key].blocked"
+                class="uk-text-warning uk-text-bold"
+                >{{ page[key].blocked ? 'Blocked' : '' }}</span
+              >
+              <a
+                class="uk-text-warning"
+                (click)="onBlockPage(page[key].currentPath, page[key])"
+                *ngIf="!page[key].blocked"
+                >Bloquear</a
+              >
+              &nbsp; -->
+              <span
+                *ngIf="page[key].deleted"
+                class="uk-text-warning uk-text-bold"
+                >{{ page[key].deleted ? 'Deleted' : '' }}</span
+              >
+              <a
+                class="uk-text-danger"
+                (click)="onDeletePage('|deleted|' + page[key].uid, page[key])"
+                *ngIf="!page[key].deleted"
+                >Eliminar</a
+              >
+            </span>
+            <span *ngIf="filter === 'blocked'">
+              <a
+                class="uk-text-warning uk-text-bold"
+                (click)="onUnBlockPage('|enabled|' + page[key].uid, page[key])"
+                >Desbloquear</a
+              >
+            </span>
+            <span *ngIf="filter === 'deleted'">
+              <a
+                class="uk-text-danger uk-text-bold"
+                (click)="onUnBlockPage('|enabled|' + page[key].uid, page[key])"
+                >Recuperar</a
+              >
+            </span>
+          </div>
+          <div
+            class="uk-height-small uk-background-secondary uk-background-cover uk-background-center-center uk-background-norepeat"
+            [ngStyle]="{ 'background-image': 'url(' + page[key].cover + ')' }"
+          ></div>
+          <h4>{{ page[key].createdAt | date }}</h4>
+          <blockquote cite="#">
+            <p class="uk-margin-small-bottom">{{ page[key].description || '--' }}</p>
+          </blockquote>
+        </ng-template>
       </div>
     </mat-expansion-panel>
   </mat-accordion>
 </div>
-<div *ngIf="(pages | async).length <= 0"><h2>Not found data</h2></div>
+<div
+  *ngIf="
+    !(pageList | async) ||
+    ((pageList | async) && ObjectKeys(pageList | async).length === 0)
+  "
+>
+  <h2>Not found data</h2>
+</div>

@@ -1,14 +1,22 @@
 import { makeid } from '../../../shared/utils';
 
+export interface Menus {
+  [key: string]: Menu;
+}
+
 export interface Menu {
-  text: string;
-  path: string;
+  uid: string;
+  title: string;
+  currentPath: string;
   backPath: string;
-  menu: Menu[];
-  link: string;
+  enabled?: Menus;
+  url: string;
+  externalURL: boolean;
   root?: boolean;
+  dbPath?: string;
   blocked: boolean;
   deleted: boolean;
+  deletedCount: number;
   createdAt: Date;
 }
 export class Menu {
@@ -17,8 +25,11 @@ export class Menu {
   }
 
   format(menu) {
-    if (!menu.menu || menu.menu === null || menu.menu === undefined) {
-      menu.menu = [];
+    if (!menu.uid || menu.uid === null || menu.uid === undefined) {
+      menu.uid = 'menu-' + makeid(15);
+    }
+    if (!menu.enabled || menu.enabled === null || menu.enabled === undefined) {
+      menu.enabled = {};
     }
     if (
       !menu.createdAt ||
@@ -29,8 +40,4 @@ export class Menu {
     }
     return menu;
   }
-}
-
-export interface Menus {
-  [key: string]: Menu;
 }

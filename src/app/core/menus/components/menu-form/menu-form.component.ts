@@ -6,12 +6,9 @@ import * as _ from 'lodash';
 import * as _moment from 'moment';
 import { Observable } from 'rxjs';
 
-import {
-  MenuService,
-  ServiceResponse as MenuServiceResponse
-} from '../../services/menu.service';
+import { MenuService } from '../../services/menu.service';
 
-import { Menu } from '../../models/menu';
+import { Menu, Menus } from '../../models/menu';
 import { Message } from '../../../../models/message';
 
 @Component({
@@ -21,11 +18,10 @@ import { Message } from '../../../../models/message';
 })
 export class MenuFormComponent implements OnInit {
   @Input() menu: Menu;
-  @Input() action: string;
-  @Input() path: string;
+  @Input() filter: string;
+  @Input() value: string;
 
-  events: string[] = [];
-  menus: Observable<Menu[]>;
+  menus: Observable<Menus>;
   submitted: boolean;
   form: FormGroup;
   editing: boolean;
@@ -52,15 +48,17 @@ export class MenuFormComponent implements OnInit {
         required: 'La foto de perfíl es requerida.'
       }
     };
-
     this.form = new FormGroup({
-      text: new FormControl('', Validators.required),
-      link: new FormControl('', Validators.required),
+      uid: new FormControl(),
+      title: new FormControl('', Validators.required),
+      url: new FormControl('', Validators.required),
+      currentPath: new FormControl(''),
+      dbPath: new FormControl(''),
+      externalURL: new FormControl(false),
       blocked: new FormControl(true),
       deleted: new FormControl(false)
     });
-
-    if (this.action === 'edit') {
+    if (this.filter === 'edit') {
       this.form.patchValue(this.menu);
     }
   }
@@ -78,92 +76,104 @@ export class MenuFormComponent implements OnInit {
       show: false
     };
 
-    const value = new Menu(event[event.index]);
+    const value = event[event.index];
+    const menu: Menu = new Menu(value);
 
-    if (this.action === 'add') {
-      if (this.path && this.menu) {
-        value.path = this.path + '|menu|' + this.menu.menu.length;
-        value.backPath = this.path;
+    if (this.filter === 'edit') {
+      menu.dbPath = this.value + '|enabled';
+      menu.currentPath = this.value + '|enabled|' + menu.uid;
+      menu.backPath = this.value;
+      menu.root = true;
+
+      this.menuService
+        .setItem(this.value, menu)
+        .subscribe((status: boolean) => {
+          if (status) {
+            this.message = {
+              show: true,
+              label: 'Info',
+              sublabel: 'Menú guardado',
+              color: 'accent',
+              icon: 'info'
+            };
+
+            this.router.navigate(['/admin/menu/list']);
+          }
+        })
+        .unsubscribe();
+    } else if (this.filter === 'add') {
+      if (this.value) {
+        menu.dbPath = this.value + '|enabled';
+        menu.currentPath = this.value + '|enabled|' + menu.uid;
+        menu.backPath = this.value;
+        menu.root = true;
 
         this.menuService
-          .pushWithPath(this.path, value)
-          .subscribe((menuResponse: MenuServiceResponse) => {
-            if (menuResponse) {
+          .setItem(this.value + '|enabled|' + menu.uid, menu)
+          .subscribe((status: boolean) => {
+            if (status) {
               this.message = {
                 show: true,
                 label: 'Info',
-                sublabel: 'Menu creado',
+                sublabel: 'Menú guardado',
                 color: 'accent',
                 icon: 'info'
               };
-            }
 
-            this.router.navigate(['/admin/menu/list/path', this.path]);
+              this.router.navigate(['/admin/menu/list']);
+            }
           })
           .unsubscribe();
       } else {
-        this.menuService
-          .list()
-          .subscribe((menuList: Menu[]) => {
-            if (!!menuList) {
-              value.root = true;
-              value.path = '|' + menuList.length;
-
-              this.menuService
-                .push(value)
-                .subscribe((menuResponse: MenuServiceResponse) => {
-                  if (menuResponse) {
-                    this.message = {
-                      show: true,
-                      label: 'Info',
-                      sublabel: 'Menu creado',
-                      color: 'accent',
-                      icon: 'info'
-                    };
-                  }
-
-                  this.router.navigate(['/admin/menu/list']);
-                })
-                .unsubscribe();
-            }
-          })
-          .unsubscribe();
-      }
-    } else if (this.action === 'edit') {
-      if (this.path && this.menu) {
-        this.menu.text = value.text;
-        this.menu.link = value.link;
-        this.menu.blocked = value.blocked;
-        this.menu.deleted = value.deleted;
+        menu.dbPath = '|enabled';
+        menu.currentPath = '|enabled|' + menu.uid;
+        menu.backPath = '';
+        menu.root = true;
 
         this.menuService
-          .setWithPath(this.path, this.menu)
-          .subscribe((menuResponse: MenuServiceResponse) => {
-            if (menuResponse) {
+          .setItem('|enabled|' + menu.uid, menu)
+          .subscribe((status: boolean) => {
+            if (status) {
               this.message = {
                 show: true,
                 label: 'Info',
-                sublabel: 'Menu editado',
+                sublabel: 'Menú guardado',
                 color: 'accent',
                 icon: 'info'
               };
-            }
 
-            if (this.menu.root) {
               this.router.navigate(['/admin/menu/list']);
-            } else {
-              this.router.navigate([
-                '/admin/menu/list/path',
-                this.menu.backPath
-              ]);
             }
           })
           .unsubscribe();
       }
+    } else {
+      menu.dbPath = '|enabled';
+      menu.currentPath = '|enabled|' + menu.uid;
+      menu.backPath = '';
+      menu.root = true;
+
+      this.menuService
+        .setItem('|enabled|' + menu.uid, menu)
+        .subscribe((status: boolean) => {
+          if (status) {
+            this.message = {
+              show: true,
+              label: 'Info',
+              sublabel: 'Menú guardado',
+              color: 'accent',
+              icon: 'info'
+            };
+
+            this.router.navigate(['/admin/menu/list']);
+          }
+        })
+        .unsubscribe();
     }
+
+    this.reset();
   }
   onSubmitted(event: boolean) {
-    console.log('SUBMIT', event);
     this.submitted = true;
 
     if (event) {

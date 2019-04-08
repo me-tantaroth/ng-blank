@@ -7,16 +7,13 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import * as _moment from 'moment';
 import { Observable } from 'rxjs';
 
-import { Accents } from '../../../../shared/utils/accents';
+import { Accents } from '../../../../shared/utils';
 
 declare var $: any;
 
-import {
-  PageService,
-  ServiceResponse as PageServiceResponse
-} from '../../services/page.service';
+import { PageService } from '../../services/page.service';
 
-import { Page } from '../../models/page';
+import { Page, Pages } from '../../models/page';
 import { Message } from '../../../../models/message';
 
 @Component({
@@ -28,10 +25,10 @@ import { Message } from '../../../../models/message';
 export class PageFormComponent implements OnInit {
   @ViewChild('froalaEditor') froalaEditor;
   @Input() page: Page;
-  @Input() uid: string;
+  @Input() filter: string;
+  @Input() value: string;
 
-  events: string[] = [];
-  pages: Observable<Page[]>;
+  pages: Observable<Pages>;
   submitted: boolean;
   form: FormGroup;
   editing: boolean;
@@ -111,84 +108,30 @@ export class PageFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.pages = this.pageService.list();
-
     this.errorMessages = {
-      image: {
+      cover: {
         required: 'La foto de perfíl es requerida.'
       }
     };
-
     this.form = new FormGroup({
       uid: new FormControl(),
-      index: new FormControl(),
-      path: new FormControl(''),
       title: new FormControl('', Validators.required),
       description: new FormControl(''),
       keywords: new FormControl(''),
       content: new FormControl(''),
-      image: new FormControl(''),
-      postedAt: new FormControl(new Date().toISOString()),
+      cover: new FormControl(''),
+      principalPath: new FormControl(''),
+      currentPath: new FormControl(''),
+      dbPath: new FormControl(''),
+      postedAt: new FormControl(),
+      externalURL: new FormControl(false),
       blocked: new FormControl(true),
       deleted: new FormControl(false)
     });
-
-    if (this.uid) {
-      this.pageService
-        .filter({ uid: this.uid })
-        .subscribe((pages: Page[]) => {
-          if (pages && pages.length > 0 && pages.length === 1) {
-            const page: Page = pages[0];
-
-            this.form.patchValue({
-              uid: page.uid,
-              index: page.index,
-              path: page.path,
-              title: page.title,
-              description: page.description,
-              keywords: page.keywords,
-              content: page.content,
-              image: page.image,
-              postedAt: page.postedAt,
-              blocked: page.blocked,
-              deleted: page.deleted
-            });
-          }
-        })
-        .unsubscribe();
+    console.log(this.filter);
+    if (this.filter === 'edit') {
+      this.form.patchValue(this.page);
     }
-
-    $.FroalaEditor.DefineIcon('customHTML', { NAME: 'code' });
-    $.FroalaEditor.RegisterCommand('customHTML', {
-      title: 'Hello',
-      focus: false,
-      undo: false,
-      refreshAfterCallback: false,
-
-      callback: () => {
-        $(this.froalaEditor.nativeElement).froalaEditor(
-          'html.set',
-          '<p>asdsad</p><prueba>sassdf</prueba>',
-          false
-        );
-
-        $.FroalaEditor.MODULES.data = (p) => {
-          const w: any = window;
-          p.events.on('html.set', () => {
-            alert('HTML SET');
-            var e=p.el.querySelector('[data-f-id="pbf"]');
-            e&&w(e).remove()
-          });
-        };
-
-        console.log(
-          $.FroalaEditor.MODULES,
-          this.froalaEditor.nativeElement,
-          '***',
-          $(this.froalaEditor.nativeElement).froalaEditor('html.get')
-        );
-      }
-    });
   }
 
   reset() {
@@ -207,7 +150,7 @@ export class PageFormComponent implements OnInit {
 
   onPathChanged(event) {
     this.form.patchValue({
-      path: new Accents()
+      principalPath: new Accents()
         .removeDiacritics(event.target.value)
         .toLowerCase()
         .replace(/ /g, '-')
@@ -221,8 +164,9 @@ export class PageFormComponent implements OnInit {
     reader.readAsDataURL(files[0]);
 
     reader.onload = (event: any) => {
+      console.log(event.target.result);
       this.form.patchValue({
-        image: event.target.result
+        cover: event.target.result
       });
     };
   }
@@ -233,18 +177,22 @@ export class PageFormComponent implements OnInit {
     };
 
     const value = event[event.index];
+    const page: Page = new Page(value);
 
-    console.log('VALUE', value);
+    if (this.filter === 'edit') {
+      page.dbPath = '|enabled';
+      page.currentPath = '|enabled|' + page.uid;
+      page.backPath = this.value;
+      page.root = true;
 
-    if (this.uid) {
       this.pageService
-        .set({ uid: this.uid }, new Page(value))
-        .subscribe((pageResponse: PageServiceResponse) => {
-          if (pageResponse) {
+        .setItem(this.value, page)
+        .subscribe((status: boolean) => {
+          if (status) {
             this.message = {
               show: true,
               label: 'Info',
-              sublabel: 'Página editada',
+              sublabel: 'Página guardado',
               color: 'accent',
               icon: 'info'
             };
@@ -253,17 +201,66 @@ export class PageFormComponent implements OnInit {
           }
         })
         .unsubscribe();
+    } else if (this.filter === 'add') {
+      if (this.value) {
+        page.dbPath = this.value + '|enabled';
+        page.currentPath = this.value + '|enabled|' + page.uid;
+        page.backPath = this.value;
+        page.root = true;
+
+        this.pageService
+          .setItem(this.value + '|enabled|' + page.uid, page)
+          .subscribe((status: boolean) => {
+            if (status) {
+              this.message = {
+                show: true,
+                label: 'Info',
+                sublabel: 'Página guardado',
+                color: 'accent',
+                icon: 'info'
+              };
+
+              this.router.navigate(['/admin/page/list']);
+            }
+          })
+          .unsubscribe();
+      } else {
+        page.dbPath = '|enabled';
+        page.currentPath = '|enabled|' + page.uid;
+        page.backPath = '';
+        page.root = true;
+
+        this.pageService
+          .setItem('|enabled|' + page.uid, page)
+          .subscribe((status: boolean) => {
+            if (status) {
+              this.message = {
+                show: true,
+                label: 'Info',
+                sublabel: 'Página guardado',
+                color: 'accent',
+                icon: 'info'
+              };
+
+              this.router.navigate(['/admin/page/list']);
+            }
+          })
+          .unsubscribe();
+      }
     } else {
-      value.index = event.index;
+      page.dbPath = '|enabled';
+      page.currentPath = '|enabled|' + page.uid;
+      page.backPath = '';
+      page.root = true;
 
       this.pageService
-        .push(new Page(value))
-        .subscribe((pageResponse: PageServiceResponse) => {
-          if (pageResponse) {
+        .setItem('|enabled|' + page.uid, page)
+        .subscribe((status: boolean) => {
+          if (status) {
             this.message = {
               show: true,
               label: 'Info',
-              sublabel: 'Página creada',
+              sublabel: 'Página guardado',
               color: 'accent',
               icon: 'info'
             };
@@ -273,6 +270,8 @@ export class PageFormComponent implements OnInit {
         })
         .unsubscribe();
     }
+
+    this.reset();
   }
   onSubmitted(event: boolean) {
     console.log('SUBMIT', event);

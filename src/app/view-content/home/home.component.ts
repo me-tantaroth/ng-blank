@@ -25,13 +25,13 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.pages = this.pageService
-      .list()
-      .pipe(
-        map((pages: Page[]) =>
-          _.filter(pages, (o) => !o.blocked && o.path === 'home')
-        )
-      );
+    // this.pages = this.pageService
+    //   .list()
+    //   .pipe(
+    //     map((pages: Page[]) =>
+    //       _.filter(pages, (o) => !o.blocked && o.path === 'home')
+    //     )
+    //   );
 
     this.pages.subscribe(console.log);
   }

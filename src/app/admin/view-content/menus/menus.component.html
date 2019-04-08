@@ -6,10 +6,32 @@
         <mat-card-subtitle>usage stats for our menu</mat-card-subtitle>
         <mat-divider></mat-divider>
         <mat-card-content>
-          <app-menu-list
-            [filter]="paramFilter"
-            [value]="paramValue"
-          ></app-menu-list>
+          <div align="right">
+            {{ value }}
+            <button
+              [routerLink]="['/admin/menu/form/add', value || '']"
+              routerLinkActive="router-link-active"
+              mat-raised-button
+              color="primary"
+            >
+              Nuevo
+            </button>
+          </div>
+          <!-- <div>
+            <a routerLink="/admin/menu/list" class="uk-text-success"
+              >Lista de menu activos</a
+            >
+            &nbsp;
+            <a routerLink="/admin/menu/list/blocked" class="uk-text-warning"
+              >Lista de menu bloqueados</a
+            >
+            &nbsp;
+            <a routerLink="/admin/menu/list/deleted" class="uk-text-danger"
+              >Lista de menu eliminados</a
+            >
+          </div> -->
+          <br />
+          <app-menu-list [filter]="filter" [value]="value"></app-menu-list>
         </mat-card-content>
       </mat-card>
     </div>

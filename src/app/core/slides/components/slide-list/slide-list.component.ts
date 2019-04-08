@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Router, ActivationEnd } from '@angular/router';
+import { Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 import * as _ from 'lodash';
 
@@ -19,7 +20,17 @@ export class SlideListComponent implements OnInit {
   panelOpenState: boolean;
   slides: Observable<Slides>;
 
-  constructor(private slideService: SlideService) {}
+  constructor(private slideService: SlideService, private router: Router) {
+    router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (!!data.snapshot.params.filter) {
+          this.filter = data.snapshot.params.filter;
+
+          this.slides = this.slideService.list('|' + this.filter);
+        }
+      }
+    });
+  }
 
   ngOnInit() {
     this.filter = this.filter || 'enabled';
@@ -27,7 +38,7 @@ export class SlideListComponent implements OnInit {
     this.slides = this.slideService.list('|' + this.filter);
   }
 
-  blockSlide(path: string, slide: Slide) {
+  onBlockSlide(path: string, slide: Slide) {
     slide.blocked = true;
 
     this.slideService
@@ -47,7 +58,7 @@ export class SlideListComponent implements OnInit {
       });
   }
 
-  unBlockSlide(path: string, slide: Slide) {
+  onUnBlockSlide(path: string, slide: Slide) {
     slide.blocked = false;
 
     this.slideService
@@ -67,7 +78,7 @@ export class SlideListComponent implements OnInit {
       });
   }
 
-  deleteSlide(path: string, slide: Slide) {
+  onDeleteSlide(path: string, slide: Slide) {
     if (confirm(`Seguro que desea eliminar a '${slide.title}'?`)) {
       slide.deleted = true;
 
@@ -89,7 +100,7 @@ export class SlideListComponent implements OnInit {
     }
   }
 
-  unDeletedSlide(path: string, slide: Slide) {
+  onUnDeletedSlide(path: string, slide: Slide) {
     slide.deleted = false;
 
     this.slideService
