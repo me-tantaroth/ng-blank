@@ -19,6 +19,12 @@ export class AppComponent {
   ) {
     let PROJECT_ID: string;
 
+    function getDomainName(hostName) {
+      return hostName.substring(
+        hostName.lastIndexOf('.', hostName.lastIndexOf('.') - 1) + 1
+      ).split('.')[0];
+    }
+
     function getSubdomain(hostname) {
       const regexParse = new RegExp('[a-z-0-9]{2,63}.[a-z.]{2,5}$');
       const urlParts = regexParse.exec(hostname);
@@ -29,7 +35,7 @@ export class AppComponent {
       if (getSubdomain(window.location.hostname)) {
         PROJECT_ID = getSubdomain(window.location.hostname);
       } else {
-        PROJECT_ID = window.location.hostname;
+        PROJECT_ID = getDomainName(window.location.hostname);
       }
     } else {
       if (environment.project && environment.project.uid) {

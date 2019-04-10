@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   project: {
-    uid: 'ngfire-blank',
+    uid: 'ng-fire-blank',
     layout: 'default',
     lang: 'es'
   },
