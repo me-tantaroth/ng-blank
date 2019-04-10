@@ -1,6 +1,10 @@
 export const environment = {
   production: true,
-  projectID: 'default',
+  project: {
+    uid: 'ng-fire-blank',
+    layout: 'default',
+    lang: 'es'
+  },
   theme: {
     color: 'purple'
   },
