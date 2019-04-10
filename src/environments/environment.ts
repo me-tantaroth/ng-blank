@@ -3,14 +3,6 @@
 // The list of file replacements can be found in `angular.json`.
 import { environment as envProject } from '../../../environtment.project';
 
-let project = {};
-
-try {
-  project = envProject;
-} catch (err) {
-  console.error('>', err);
-}
-
 export const environment = {
   ...{
     production: false,
@@ -19,8 +11,10 @@ export const environment = {
     firebase: {},
     backgroundImage: ''
   },
-  ...project
+  ...envProject
 };
+
+console.log('>>>', environment)
 
 /*
  * For easier debugging in development mode, you can import the following file

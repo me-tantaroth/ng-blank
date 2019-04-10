@@ -1,13 +1,5 @@
 import { environment as envProject } from '../../../environtment.project';
 
-let project = {};
-
-try {
-  project = envProject;
-} catch (err) {
-  console.error('>', err);
-}
-
 export const environment = {
   ...{
     production: true,
@@ -16,5 +8,5 @@ export const environment = {
     firebase: {},
     backgroundImage: ''
   },
-  ...project
+  ...envProject
 };
