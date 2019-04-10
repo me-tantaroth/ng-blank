@@ -64,8 +64,8 @@ import {
     NgBarnModule.forRoot({
       store: {
         node: {
-          'ng-fire-blank': {
-            uid: 'ng-fire-blank',
+          'ngfire-blank': {
+            uid: 'ngfire-blank',
             title: 'NG Fire Blank',
             lang: {
               es: {
