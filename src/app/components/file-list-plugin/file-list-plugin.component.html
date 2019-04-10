@@ -1,27 +1,39 @@
-<!-- <div *ngIf="currentFile">
-  <ul class="uk-breadcrumb">
-    <li>
-      <a (click)="onBackFile(currentFile)">Atrás</a>
-    </li>
-    <li>
-      <span>{{ currentFile.name || 'Vacio' }}</span>
-    </li>
-  </ul>
-</div>
+<ng-template
+  let-currentFile
+  [ngTemplateOutletContext]="{ $implicit: currentFile | async }"
+  [ngTemplateOutlet]="currentFileT"
+  #currentFileT
+>
+  <div *ngIf="currentFile">
+    <ul class="uk-breadcrumb">
+      <li>
+        <a (click)="onBackFile(currentFile)">Atrás</a>
+      </li>
+      <li>
+        <span>{{ currentFile.title || '--' }}</span>
+      </li>
+    </ul>
+  </div>
+</ng-template>
 
-<div *ngIf="(fileList | async)">
-  <div *ngIf="(fileList | async).length > 0">
-    <div uk-grid>
-      <div
-        *ngFor="let file of (fileList | async); let i = index"
-        class="uk-width-1-3@s uk-width-1-4@m uk-text-center"
+<div *ngIf="(files | async) && ObjectKeys(files | async).length > 0">
+  <div uk-grid>
+    <div
+      *ngFor="let key of ObjectKeys(files | async)"
+      class="uk-width-1-3@s uk-width-1-4@m uk-text-center"
+    >
+      <ng-template
+        let-file
+        [ngTemplateOutletContext]="{ $implicit: (files | async)[key] }"
+        [ngTemplateOutlet]="fileT"
+        #fileT
       >
         <span *ngIf="file.type === 'folder'">
-          <a [routerLink]="['/files/' + (filter || ''), file.path]">
+          <a [routerLink]="['/files/' + (filter || ''), file.currentPath]">
             <mat-icon aria-hidden="false" aria-label="Example home icon"
               >folder_open</mat-icon
             >
-            <div>{{ file.name }}</div>
+            <div>{{ file.title }}</div>
           </a>
         </span>
         <span *ngIf="file.type !== 'folder'">
@@ -29,12 +41,18 @@
             <mat-icon aria-hidden="false" aria-label="Example home icon"
               >insert_drive_file</mat-icon
             >
-            <div>{{ file.name }}</div>
+            <div>{{ file.title }}</div>
           </a>
-        </span>
-      </div>
+        </span></ng-template
+      >
     </div>
   </div>
-  <div *ngIf="(fileList | async).length <= 0"><h2>Not found data</h2></div>
 </div>
-<div *ngIf="!(fileList | async)"><h2>Not found data</h2></div> -->
+<div
+  *ngIf="
+    !(files | async) ||
+    ((files | async) && ObjectKeys(files | async).length === 0)
+  "
+>
+  <h2>Not found data</h2>
+</div>

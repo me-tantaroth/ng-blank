@@ -3,119 +3,134 @@ import { StoreService } from 'ng-barn';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 
+import { Config, ConfigService } from '../../../shared/services/config.service';
 import { LangsService } from '../../../langs/services/langs.service';
-import { Accents } from '../../../shared/utils/accents';
 
-import { User } from '../models/user';
-
-export interface ServiceResponse {
-  list: User[];
-  index: number;
-  value: User;
-}
+import { User, Users } from '../models/user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private users: User[] = [];
+  private rootPath: string;
+  private node;
+  private users: Users;
 
-  constructor(private store: StoreService, private langs: LangsService) {
-    const langsNode = this.store.get('langs-node');
+  constructor(
+    private configService: ConfigService,
+    private store: StoreService,
+    private langs: LangsService
+  ) {
+    const CONFIG: Config = this.configService.get();
+    const NODE = this.store.get('node');
+    const NODE_LANGS = NODE[CONFIG.project.uid].lang;
+    const NODE_USERS =
+      NODE_LANGS[document.documentElement.lang] ||
+      NODE_LANGS[CONFIG.project.lang].user.enabled;
+    const LANG = NODE_LANGS[document.documentElement.lang]
+      ? document.documentElement.lang
+      : CONFIG.project.lang;
 
-    this.users = langsNode[this.langs.currentLang].users || [];
+    this.node = NODE;
+    this.rootPath = `|${CONFIG.project.uid}|lang|${LANG}|user`;
+
+    this.users = NODE_USERS;
   }
 
-  list(): Observable<User[]> {
+  list(path?: string): Observable<Users> {
+    let result: Users = this.users;
+
+    if (path) {
+      const node = this.node;
+
+      const splitRootPath: string[] = this.rootPath.split('|');
+      const splitPath: string[] = path.split('|');
+
+      splitRootPath.shift();
+      splitPath.shift();
+
+      const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+      const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+      const absolutePath = cursorsRoot + cursorsPath;
+
+      const updateAction = `result = node${absolutePath};`;
+
+      eval(updateAction);
+    }
+
     return new Observable((observer) => {
-      console.log('>>>', this.users);
-      observer.next(this.users);
+      observer.next(result);
       observer.complete();
     });
   }
 
-  item(key): Observable<User> {
+  getItem(path: string): Observable<User> {
+    let result: User;
+
+    const node = this.node;
+
+    const splitRootPath: string[] = this.rootPath.split('|');
+    const splitPath: string[] = path.split('|');
+
+    splitRootPath.shift();
+    splitPath.shift();
+
+    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+    const absolutePath = cursorsRoot + cursorsPath;
+    const updateAction = `result = node${absolutePath};`;
+
+    eval(updateAction);
+
     return new Observable((observer) => {
-      observer.next(this.users[key]);
+      observer.next(result);
       observer.complete();
     });
   }
 
-  filter(query): Observable<User[]> {
-    return new Observable((observer) => {
-      observer.next(
-        _.filter(
-          this.users,
-          (user: User) =>
-            _.filter(Object.keys(query), (key) => {
-              const slideValue = new Accents()
-                .removeDiacritics(user[key])
-                .toLowerCase()
-                .replace(/[^\w\s]/gi, '')
-                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
-                .replace(/ /g, '');
-              const filterValue = new Accents()
-                .removeDiacritics(query[key])
-                .toLowerCase()
-                .replace(/[^\w\s]/gi, '')
-                .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
-                .replace(/ /g, '');
+  setItem(path: string, user: User): Observable<boolean> {
+    const node = this.node;
 
-              return slideValue.search(filterValue) >= 0;
-            }).length > 0
-        )
-      );
+    user.dbPath = user.dbPath;
+
+    const splitRootPath: string[] = this.rootPath.split('|');
+    const splitPath: string[] = path.split('|');
+
+    splitRootPath.shift();
+    splitPath.shift();
+
+    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+    const absolutePath = cursorsRoot + cursorsPath;
+    const updateAction = `node${absolutePath} = ${JSON.stringify(user)};`;
+
+    eval(updateAction);
+
+    return new Observable((observer) => {
+      observer.next(true);
       observer.complete();
     });
   }
 
-  get(key?): Observable<ServiceResponse> {
+  removeItem(path: string): Observable<boolean> {
+    const node = this.node;
+
+    const splitRootPath: string[] = this.rootPath.split('|');
+    const splitPath: string[] = path.split('|');
+
+    splitRootPath.shift();
+    splitPath.shift();
+
+    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
+    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
+    const absolutePath = cursorsRoot + cursorsPath;
+
+    const updateAction = `delete node${absolutePath};`;
+
+    eval(updateAction);
+
     return new Observable((observer) => {
-      observer.next({
-        list: this.users,
-        index: key || null,
-        value: key ? this.users[key] : null
-      });
-      observer.complete();
-    });
-  }
-
-  set(query, data: User): Observable<ServiceResponse> {
-    return new Observable((observer) => {
-      this.filter(query)
-        .subscribe((users: User[]) => {
-          if (users.length > 0) {
-            this.users = _.map(this.users, (user: User) => {
-              let result: User = user;
-
-              if (user.uid === data.uid) {
-                result = data;
-              }
-
-              return result;
-            });
-          }
-
-          observer.next({
-            list: this.users,
-            index: data.index,
-            value: data
-          });
-        })
-        .unsubscribe();
-      observer.complete();
-    });
-  }
-
-  push(value: User): Observable<ServiceResponse> {
-    return new Observable((observer) => {
-      this.users.push(value);
-
-      observer.next({
-        list: this.users,
-        index: this.users.length - 1,
-        value
-      });
+      observer.next(true);
       observer.complete();
     });
   }

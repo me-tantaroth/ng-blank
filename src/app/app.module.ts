@@ -82,18 +82,19 @@ import {
                       uid: '-user-item-1',
                       cover: '',
                       photoURL: '',
-                      display: 'Eduard Ramirez',
+                      displayName: 'Eduard Ramirez',
                       username: 'tantaroth',
                       email: 'tantaroth@gmail.com',
                       emailVerified: true,
+                      currentPath: '|enabled|-user-item-1',
                       dbPath: '/lang/es/user/-user-item-1',
                       blocked: false,
                       deleted: false,
                       deletedCount: 0,
                       createdAt: new Date()
-                    },
-                    deleted: {}
-                  }
+                    }
+                  },
+                  deleted: {}
                 },
                 slide: {
                   enabled: {

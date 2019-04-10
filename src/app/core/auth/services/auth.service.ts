@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ɵConsole } from '@angular/core';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 
-import { UserService } from '../../users/services/users.service';
+import { UserService } from '../../../core/users/services/users.service';
 
-import { User } from '../../users/models/user';
+import { User, Users } from '../../../core/users/models/user';
 
 export interface ServiceResponse {
   status: boolean;
@@ -16,7 +16,7 @@ export interface ServiceResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private users: Observable<User[]>;
+  private users: Observable<Users>;
 
   constructor(private usersService: UserService) {
     this.users = this.usersService.list();
@@ -26,19 +26,8 @@ export class AuthService {
     return new Observable((observer) => {
       this.getUser()
         .subscribe((response) => {
-          console.log('Status', response.status);
           if (response.status) {
-            console.log(
-              response.data,
-              response.data.blocked,
-              response.data.deleted
-            );
-            if (
-              response.data &&
-              (response.data.blocked ||
-                response.data.deleted ||
-                !response.data.emailVerified)
-            ) {
+            if (response.data && !response.data.emailVerified) {
               observer.next(false);
               observer.complete();
             } else {
@@ -57,18 +46,18 @@ export class AuthService {
   getUser(): Observable<ServiceResponse> {
     return new Observable((observer) => {
       this.users
-        .subscribe((users: User[]) => {
-          const results = _.filter(users, function(item) {
-            return (
-              item.email.indexOf(
-                window.localStorage.getItem('authenticated-email')
-              ) > -1
-            );
+        .subscribe((users: Users) => {
+          const results = _.filter(Object.keys(users), function(key) {
+            return users[key] && users[key].email
+              ? users[key].email.search(
+                  window.localStorage.getItem('authenticated-email')
+                ) > -1
+              : false;
           });
 
           observer.next({
             status: !!results[0],
-            data: results[0]
+            data: users[results[0]]
           });
         })
         .unsubscribe();
@@ -78,23 +67,20 @@ export class AuthService {
   emailSignIn(email: string, passowrd: string): Observable<ServiceResponse> {
     return new Observable((observer) => {
       this.users
-        .subscribe((users: User[]) => {
-          const results = _.filter(users, function(item) {
-            return item.email.indexOf(email) > -1;
-          });
+        .subscribe((users: Users) => {
+          const results = _.filter(Object.keys(users), (key) =>
+            users[key] && users[key].email
+              ? users[key].email.search(email) > -1
+              : false
+          );
 
-          if (
-            results.length > 0 &&
-            !results[0].blocked &&
-            !results[0].deleted &&
-            results[0].emailVerified
-          ) {
+          if (results.length > 0 && users[results[0]].emailVerified) {
             window.localStorage.setItem('authenticated-email', email);
 
             observer.next({
               status: true
             });
-          } else if (results.length > 0 && results[0].deleted) {
+          } else if (results.length > 0 && users[results[0]].deleted) {
             window.localStorage.setItem('authenticated-email', email);
             observer.next({
               status: false,
@@ -103,7 +89,7 @@ export class AuthService {
                 message: 'User Deleted'
               }
             });
-          } else if (results.length > 0 && results[0].blocked) {
+          } else if (results.length > 0 && users[results[0]].blocked) {
             observer.next({
               status: false,
               error: {
@@ -111,7 +97,7 @@ export class AuthService {
                 message: 'User blocked'
               }
             });
-          } else if (results.length > 0 && !results[0].emailVerified) {
+          } else if (results.length > 0 && !users[results[0]].emailVerified) {
             observer.next({
               status: true,
               error: {
@@ -138,9 +124,13 @@ export class AuthService {
   emailSignUp(email: string, passowrd: string): Observable<ServiceResponse> {
     return new Observable((observer) => {
       this.users
-        .subscribe((users: User[]) => {
-          const results = _.filter(users, function(item) {
-            return item.email.indexOf(email) > -1;
+        .subscribe((users: Users) => {
+          const results = _.filter(Object.keys(users), function(key) {
+            return users[key] && users[key].email
+              ? users[key].email.search(
+                  window.localStorage.getItem('authenticated-email')
+                ) > -1
+              : false;
           });
 
           if (results.length <= 0) {

@@ -100,7 +100,7 @@ export class PageFormComponent implements OnInit {
     private pageService: PageService,
     private router: Router
   ) {
-    store.select('pages');
+    this.store.select('pages');
   }
 
   get f(): any {
@@ -128,7 +128,6 @@ export class PageFormComponent implements OnInit {
       blocked: new FormControl(true),
       deleted: new FormControl(false)
     });
-    console.log(this.filter);
     if (this.filter === 'edit') {
       this.form.patchValue(this.page);
     }

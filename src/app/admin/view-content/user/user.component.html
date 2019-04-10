@@ -6,7 +6,11 @@
         <mat-card-subtitle>usage stats for our users</mat-card-subtitle>
         <mat-divider></mat-divider>
         <mat-card-content>
-          <app-user-form [uid]="uid"></app-user-form>
+          <app-user-form
+            [filter]="filter"
+            [value]="value"
+            [user]="user"
+          ></app-user-form>
         </mat-card-content>
       </mat-card>
     </div>

@@ -15,6 +15,7 @@ export interface Page {
   dbPath: string;
   backPath: string;
   currentPath: string;
+  principalPath: string;
   alias: string[];
   author: string;
   cover: string;

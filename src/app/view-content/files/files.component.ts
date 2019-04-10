@@ -1,17 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
 
+import { Config, ConfigService } from '../../shared/services/config.service';
+
 @Component({
   selector: 'app-files',
   templateUrl: './files.component.html',
   styleUrls: ['./files.component.scss']
 })
 export class FilesComponent implements OnInit {
+  config: Config;
   filter: string;
   value: string;
 
-  constructor(private route: ActivatedRoute, private router: Router) {
-    router.events.subscribe((data) => {
+  constructor(
+    private configService: ConfigService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
+    this.config = this.configService.get();
+
+    this.router.events.subscribe((data) => {
       if (data instanceof ActivationEnd) {
         if (!!data.snapshot.params.filter) {
           this.filter = data.snapshot.params.filter;

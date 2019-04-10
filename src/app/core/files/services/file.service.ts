@@ -42,7 +42,6 @@ export class FileService {
     let result: Files = this.files;
 
     if (path) {
-      console.log('¡¡¡¡¡>>>>>>', path);
       const node = this.node;
 
       const splitRootPath: string[] = this.rootPath.split('|');
@@ -57,7 +56,6 @@ export class FileService {
 
       const updateAction = `result = node${absolutePath};`;
 
-      console.log('00>', updateAction);
       eval(updateAction);
     }
 
@@ -126,7 +124,6 @@ export class FileService {
     const absolutePath = cursorsRoot + cursorsPath;
     const updateAction = `node${absolutePath} = ${JSON.stringify(file)};`;
 
-    console.log(':::::::', updateAction);
     eval(updateAction);
 
     return new Observable((observer) => {

@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
+import { first } from 'rxjs/operators';
+
+import { UserService } from '../../../core/users/services/users.service';
+
+import { User } from '../../../core/users/models/user';
 
 @Component({
   selector: 'app-user',
@@ -7,19 +12,64 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent implements OnInit {
-  uid: string;
+  user: User;
+  filter: string;
+  value: string;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private userService: UserService
+  ) {
+    this.router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (!!data.snapshot.params.filter) {
+          this.filter = data.snapshot.params.filter;
+        }
+        if (!!data.snapshot.params.value) {
+          this.value = data.snapshot.params.value;
+        }
+      }
+    });
+  }
 
   ngOnInit() {
-    const uid = this.route.snapshot.paramMap.get('uid');
+    const value = this.route.snapshot.paramMap.get('value');
 
-    if (uid) {
-      this.uid = uid;
+    if (value) {
+      this.value = value;
+
+      this.userService
+        .getItem(value)
+        .subscribe((user: User) => (this.user = user))
+        .unsubscribe();
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          this.uid = params.get('uid');
+          if (params.get('value')) {
+            this.value = params.get('value');
+
+            this.userService
+              .getItem(value)
+              .pipe(first())
+              .subscribe((user: User) => (this.user = user));
+          }
+        })
+        .unsubscribe();
+    }
+
+    const filter = this.route.snapshot.paramMap.get('filter');
+
+    if (filter) {
+      this.filter = filter;
+    } else {
+      this.filter = 'add';
+
+      this.route.paramMap
+        .subscribe((params) => {
+          if (params.get('filter')) {
+            this.filter = params.get('filter');
+          }
         })
         .unsubscribe();
     }

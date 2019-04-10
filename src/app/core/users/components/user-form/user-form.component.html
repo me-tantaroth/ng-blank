@@ -32,6 +32,7 @@
       id="email"
       name="email"
       formControlName="email"
+      (change)="onPathChanged($event)"
     />
     <mat-error *ngIf="f.email.hasError('required')">
       E-mail is <strong>required</strong>
@@ -44,7 +45,7 @@
     </mat-error>
   </mat-form-field>
 
-  <div *ngIf="uid">
+  <div *ngIf="value">
     <mat-form-field class="uk-width-1-1 uk-margin-small">
       <input
         matInput
@@ -66,71 +67,12 @@
         formControlName="phoneNumber"
       />
     </mat-form-field>
-
-    <mat-form-field class="uk-width-1-1 uk-margin-small">
-      <input
-        matInput
-        type="text"
-        placeholder="Cite"
-        formControlName="cite"
-        name="cite"
-        #cite
-      />
-    </mat-form-field>
-    <mat-form-field class="uk-width-1-1 uk-margin-small">
-      <textarea
-        matInput
-        placeholder="About me"
-        formControlName="aboutMe"
-        name="aboutMe"
-        #aboutMe
-      ></textarea>
-    </mat-form-field>
-    <div class="uk-width-1-1 uk-margin-small">
-      <section>
-        <mat-slide-toggle
-          color="accent"
-          formControlName="blocked"
-          name="blocked"
-          required
-          #blocked
-        >
-          Blocked
-        </mat-slide-toggle>
-      </section>
-    </div>
-    <div class="uk-width-1-1 uk-margin-small">
-      <section>
-        <mat-slide-toggle
-          color="warn"
-          formControlName="deleted"
-          name="deleted"
-          required
-          #deleted
-        >
-          Deleted
-        </mat-slide-toggle>
-      </section>
-    </div>
-    <div class="uk-width-1-1 uk-margin-small">
-      <section>
-        <mat-slide-toggle
-          color="primary"
-          formControlName="emailVerified"
-          name="emailVerified"
-          required
-          #emailVerified
-        >
-          Email verified
-        </mat-slide-toggle>
-      </section>
-    </div>
   </div>
   <mat-form-field class="uk-width-1-1 uk-margin-small">
     <input
       matInput
       type="password"
-      [placeholder]="(uid ? 'Current ' : '') + 'Password'"
+      [placeholder]="(value ? 'Current ' : '') + 'Password'"
       formControlName="password"
       name="password"
       required
@@ -153,7 +95,7 @@
     </mat-error>
   </mat-form-field>
 
-  <div *ngIf="!uid">
+  <div *ngIf="!value">
     <mat-form-field class="uk-width-1-1 uk-margin-small">
       <input
         matInput

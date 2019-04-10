@@ -1,11 +1,7 @@
 <app-load-layout [template]="config.project.layout">
   <app-slideshow-plugin></app-slideshow-plugin>
 
-  <div *ngIf="(pages | async)[0]">
-    <div [innerHtml]="(pages | async)[0].content | safe: 'html'"></div>
-  </div>
-
-  <div class="uk-section uk-container uk-background-primary">
-    <h2>Hola</h2>
+  <div *ngIf="(page | async)">
+    <div [innerHtml]="(page | async).content | safe: 'html'"></div>
   </div>
 </app-load-layout>

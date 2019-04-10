@@ -27,18 +27,18 @@ export class UserViewComponent implements OnInit {
   }
 
   ngOnInit() {
-    let uid = this.route.snapshot.paramMap.get('uid');
+    // let uid = this.route.snapshot.paramMap.get('uid');
 
-    if (uid) {
-      this.user = this.userService.filter({ uid }).pipe((o) => o[0]);
-    } else {
-      this.route.paramMap
-        .subscribe((params) => {
-          uid = params.get('uid');
+    // if (uid) {
+    //   this.user = this.userService.filter({ uid }).pipe((o) => o[0]);
+    // } else {
+    //   this.route.paramMap
+    //     .subscribe((params) => {
+    //       uid = params.get('uid');
 
-          this.user = this.userService.filter({ uid }).pipe((o) => o[0]);
-        })
-        .unsubscribe();
-    }
+    //       this.user = this.userService.filter({ uid }).pipe((o) => o[0]);
+    //     })
+    //     .unsubscribe();
+    // }
   }
 }

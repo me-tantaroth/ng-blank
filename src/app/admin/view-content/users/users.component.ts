@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-users',
@@ -7,19 +7,27 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit {
-  listFilter: string;
+  filter: string;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private router: Router, private route: ActivatedRoute) {
+    this.router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (!!data.snapshot.params.filter) {
+          this.filter = data.snapshot.params.filter;
+        }
+      }
+    });
+  }
 
   ngOnInit() {
-    const listFilter = this.route.snapshot.paramMap.get('filter');
+    const filter = this.route.snapshot.paramMap.get('filter');
 
-    if (listFilter) {
-      this.listFilter = listFilter;
+    if (filter) {
+      this.filter = filter;
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          this.listFilter = params.get('filter');
+          this.filter = params.get('filter');
         })
         .unsubscribe();
     }

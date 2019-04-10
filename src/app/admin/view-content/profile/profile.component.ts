@@ -19,14 +19,14 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
     if (localStorage.getItem('authenticated-email')) {
-      this.userService
-        .filter({ email: localStorage.getItem('authenticated-email') })
-        .subscribe((users: User[]) => {
-          if (users && users.length > 0 && users.length === 1) {
-            this.uid = users[0].uid;
-          }
-        })
-        .unsubscribe();
+      // this.userService
+      //   .filter({ email: localStorage.getItem('authenticated-email') })
+      //   .subscribe((users: User[]) => {
+      //     if (users && users.length > 0 && users.length === 1) {
+      //       this.uid = users[0].uid;
+      //     }
+      //   })
+      //   .unsubscribe();
     }
   }
 }

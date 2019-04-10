@@ -1,15 +1,23 @@
+<ng-template #content>
+  <ng-content></ng-content>
+</ng-template>
+
 <ng-template #default>
   <app-layout-default>
-    <ng-content></ng-content>
+    <div *ngIf="template === 'default'">
+      <ng-container [ngTemplateOutlet]="content"> </ng-container>
+    </div>
   </app-layout-default>
 </ng-template>
 <ng-template #corpayande>
   <app-layout-corpayande>
-    <ng-content></ng-content>
+    <div *ngIf="template === 'corpayande'">
+      <ng-container [ngTemplateOutlet]="content"> </ng-container>
+    </div>
   </app-layout-corpayande>
 </ng-template>
 
-<ng-container [ngTemplateOutlet]="templates[template]"></ng-container>
+<ng-container [ngTemplateOutlet]="templates[template]"> </ng-container>
 
 <!-- ADMIN MENU -->
 
@@ -18,26 +26,26 @@
   *ngIf="(authenticated | async)"
 >
   <div id="admin-options" class="uk-animation-slide-bottom-medium">
-      <div class="uk-margin-small uk-flex uk-flex-center">
-        <button
-          type="button"
-          mat-mini-fab
-          routerLink="/admin/file/list"
-          uk-tooltip="title: Folder; pos: left"
-        >
-          <mat-icon aria-label="Folder">folder</mat-icon>
-        </button>
-      </div>
-      <div class="uk-margin-small uk-flex uk-flex-center">
-        <button
-          type="button"
-          mat-mini-fab
-          routerLink="/admin/menu/list"
-          uk-tooltip="title: Menus; pos: left"
-        >
-          <mat-icon aria-label="Menus">menu</mat-icon>
-        </button>
-      </div>
+    <div class="uk-margin-small uk-flex uk-flex-center">
+      <button
+        type="button"
+        mat-mini-fab
+        routerLink="/admin/file/list"
+        uk-tooltip="title: Folder; pos: left"
+      >
+        <mat-icon aria-label="Folder">folder</mat-icon>
+      </button>
+    </div>
+    <div class="uk-margin-small uk-flex uk-flex-center">
+      <button
+        type="button"
+        mat-mini-fab
+        routerLink="/admin/menu/list"
+        uk-tooltip="title: Menus; pos: left"
+      >
+        <mat-icon aria-label="Menus">menu</mat-icon>
+      </button>
+    </div>
     <div class="uk-margin-small uk-flex uk-flex-center">
       <button
         type="button"

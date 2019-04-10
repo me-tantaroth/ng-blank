@@ -2,9 +2,12 @@ import { environment } from '../../../../environments/environment';
 
 import { makeid } from '../../../shared/utils';
 
+export interface Users {
+  [key: string]: User;
+}
+
 export interface User {
   uid: string;
-  index: number;
   displayName?: string;
   email: string;
   username: string;
@@ -14,8 +17,15 @@ export interface User {
   emailVerified: boolean;
   aboutMe?: string;
   cite?: string;
+  root: boolean;
+  dbPath: string;
+  backPath: string;
+  currentPath: string;
+  principalPath: string;
+  alias: string[];
   blocked: boolean;
   deleted: boolean;
+  deletedCount: number;
   createdAt: Date;
 }
 export class User {
@@ -60,8 +70,4 @@ export class User {
 
     return user;
   }
-}
-
-export interface Users {
-  [key: string]: User;
 }

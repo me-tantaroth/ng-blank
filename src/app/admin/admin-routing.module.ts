@@ -36,23 +36,33 @@ const routes: Routes = [
     children: [
       {
         path: 'list',
-        component: UsersComponent
+        component: UsersComponent,
+        canActivate: [SignInGuard]
       },
       {
         path: 'list/:filter',
-        component: UsersComponent
+        component: UsersComponent,
+        canActivate: [SignInGuard]
+      },
+      {
+        path: 'list/:filter/:value',
+        component: UsersComponent,
+        canActivate: [SignInGuard]
       },
       {
         path: 'form',
-        component: UserComponent
+        component: UserComponent,
+        canActivate: [SignInGuard]
       },
       {
-        path: 'form/:uid',
-        component: UserComponent
+        path: 'form/:filter',
+        component: UserComponent,
+        canActivate: [SignInGuard]
       },
       {
-        path: 'profile',
-        component: ProfileComponent
+        path: 'form/:filter/:value',
+        component: UserComponent,
+        canActivate: [SignInGuard]
       }
     ]
   },

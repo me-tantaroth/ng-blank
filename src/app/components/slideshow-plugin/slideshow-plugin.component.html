@@ -1,32 +1,39 @@
-<div *ngIf="(slides | async).length > 0">
+<div *ngIf="(slides | async) && ObjectKeys(slides | async).length > 0">
   <div
     class="uk-position-relative uk-visible-toggle uk-light"
     tabindex="-1"
     uk-slideshow="min-height: 300; max-height: 450"
   >
     <ul class="uk-slideshow-items">
-      <li *ngFor="let slide of (slides | async); let i = index">
-        <img
-          [src]="slide.image"
-          [alt]="slide.title"
-          [title]="slide.title"
-          uk-cover
-        />
-        <div
-          *ngIf="
-            (slide.title && slide.title !== '') ||
-            (slide.subtitle && slide.subtitle !== '')
-          "
-          class="uk-overlay uk-overlay-primary uk-position-bottom"
+      <li *ngFor="let key of ObjectKeys(slides | async)">
+        <ng-template
+          let-slide
+          [ngTemplateOutletContext]="{ $implicit: (slides | async)[key] }"
+          [ngTemplateOutlet]="slideT"
+          #slideT
         >
-          <p>
-            <a [href]="slide.redirect" target="_blank">
-              {{ slide.title }}
-              <br />
-              <span class="uk-text-meta">{{ slide.subtitle }}</span>
-            </a>
-          </p>
-        </div>
+          <img
+            [src]="slide.image"
+            [alt]="slide.title"
+            [title]="slide.title"
+            uk-cover
+          />
+          <div
+            *ngIf="
+              (slide.title && slide.title !== '') ||
+              (slide.subtitle && slide.subtitle !== '')
+            "
+            class="uk-overlay uk-overlay-primary uk-position-bottom"
+          >
+            <p>
+              <a [href]="slide.redirect" target="_blank">
+                {{ slide.title }}
+                <br />
+                <span class="uk-text-meta">{{ slide.subtitle }}</span>
+              </a>
+            </p>
+          </div>
+        </ng-template>
       </li>
     </ul>
 

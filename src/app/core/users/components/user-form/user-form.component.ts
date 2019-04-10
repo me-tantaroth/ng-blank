@@ -5,10 +5,9 @@ import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
 
-import {
-  UserService,
-  ServiceResponse as UserServiceResponse
-} from '../../services/users.service';
+import { Accents } from '../../../../shared/utils';
+
+import { UserService } from '../../services/users.service';
 import {
   AuthService,
   ServiceResponse as AuthServiceResponse
@@ -16,7 +15,7 @@ import {
 
 import { ConfirmPasswordValidator } from '../../../../shared/validators/confirm-password-validator';
 
-import { User } from '../../models/user';
+import { User, Users } from '../../models/user';
 import { Message } from '../../../../models/message';
 
 @Component({
@@ -26,9 +25,11 @@ import { Message } from '../../../../models/message';
 })
 export class UserFormComponent implements OnInit {
   @ViewChild('password') password: ElementRef;
-  @Input() uid: string;
+  @Input() user: User;
+  @Input() filter: string;
+  @Input() value: string;
 
-  users: Observable<User[]>;
+  users: Observable<Users>;
   submitted: boolean;
   form: FormGroup;
   editing: boolean;
@@ -42,7 +43,7 @@ export class UserFormComponent implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {
-    store.select('users');
+    this.store.select('users');
   }
 
   get f(): any {
@@ -50,8 +51,6 @@ export class UserFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.users = this.usersService.list();
-
     this.form = new FormGroup({
       uid: new FormControl(),
       index: new FormControl(),
@@ -80,37 +79,18 @@ export class UserFormComponent implements OnInit {
       ]),
       cite: new FormControl(''),
       aboutMe: new FormControl(''),
-      blocked: new FormControl(false),
-      deleted: new FormControl(false),
-      emailVerified: new FormControl(false)
+      emailVerified: new FormControl(false),
+      principalPath: new FormControl(''),
+      currentPath: new FormControl(''),
+      dbPath: new FormControl(''),
+      postedAt: new FormControl(),
+      externalURL: new FormControl(false),
+      blocked: new FormControl(true),
+      deleted: new FormControl(false)
     });
 
-    if (this.uid) {
-      console.log({ uid: this.uid }, '????????????');
-      this.usersService
-        .filter({ uid: this.uid })
-        .subscribe((users: User[]) => {
-          if (users && users.length > 0 && users.length === 1) {
-            const user: User = users[0];
-
-            this.form.patchValue({
-              uid: user.uid,
-              index: user.index,
-              displayName: user.displayName,
-              email: user.email,
-              username: user.username,
-              password: this.password.nativeElement.value,
-              confirmPassword: this.password.nativeElement.value,
-              blocked: user.blocked,
-              deleted: user.deleted,
-              phoneNumber: user.phoneNumber,
-              emailVerified: user.emailVerified,
-              cite: user.cite,
-              aboutMe: user.aboutMe
-            });
-          }
-        })
-        .unsubscribe();
+    if (this.filter === 'edit') {
+      this.form.patchValue(this.user);
     }
   }
 
@@ -118,8 +98,21 @@ export class UserFormComponent implements OnInit {
     this.form.reset();
   }
 
+  onPathChanged(event) {
+    const username = new Accents()
+      .removeDiacritics(event.target.value)
+      .toLowerCase()
+      .replace(/ /g, '-')
+      .replace(/[-\/\\^$*+?.()|[\]{}]/g, '');
+
+    this.form.patchValue({
+      principalPath: username,
+      username
+    });
+  }
+
   addConfirmPassword(passwordValue) {
-    if (this.uid) {
+    if (this.value) {
       this.form.patchValue({
         confirmPassword: passwordValue
       });
@@ -127,24 +120,30 @@ export class UserFormComponent implements OnInit {
   }
 
   onSubmitting(event: any) {
+    console.log(event)
     this.message = {
       show: false
     };
 
     const value = event[event.index];
+    const user: User = new User(value);
 
-    if (this.uid) {
-      delete value.password;
-      delete value.confirmPassword;
+    console.log('## FILTER', this.filter, user)
+
+    if (this.filter === 'edit') {
+      user.dbPath = '|enabled';
+      user.currentPath = '|enabled|' + user.uid;
+      user.backPath = this.value;
+      user.root = true;
 
       this.usersService
-        .set({ uid: this.uid }, new User(value))
-        .subscribe((userResponse: UserServiceResponse) => {
-          if (userResponse) {
+        .setItem(this.value, user)
+        .subscribe((status: boolean) => {
+          if (status) {
             this.message = {
               show: true,
               label: 'Info',
-              sublabel: 'User edited',
+              sublabel: 'Página guardado',
               color: 'accent',
               icon: 'info'
             };
@@ -153,60 +152,81 @@ export class UserFormComponent implements OnInit {
           }
         })
         .unsubscribe();
+    } else if (this.filter === 'add') {
+      if (this.value) {
+        user.dbPath = this.value + '|enabled';
+        user.currentPath = this.value + '|enabled|' + user.uid;
+        user.backPath = this.value;
+        user.root = true;
+
+        this.usersService
+          .setItem(this.value + '|enabled|' + user.uid, user)
+          .subscribe((status: boolean) => {
+            if (status) {
+              this.message = {
+                show: true,
+                label: 'Info',
+                sublabel: 'Página guardado',
+                color: 'accent',
+                icon: 'info'
+              };
+
+              this.router.navigate(['/admin/user/list']);
+            }
+          })
+          .unsubscribe();
+      } else {
+        user.dbPath = '|enabled';
+        user.currentPath = '|enabled|' + user.uid;
+        user.backPath = '';
+        user.root = true;
+
+        this.usersService
+          .setItem('|enabled|' + user.uid, user)
+          .subscribe((status: boolean) => {
+            if (status) {
+              this.message = {
+                show: true,
+                label: 'Info',
+                sublabel: 'Página guardado',
+                color: 'accent',
+                icon: 'info'
+              };
+
+              this.router.navigate(['/admin/user/list']);
+            }
+          })
+          .unsubscribe();
+      }
     } else {
-      const password = value.confirmPassword;
+      user.dbPath = '|enabled';
+      user.currentPath = '|enabled|' + user.uid;
+      user.backPath = '';
+      user.root = true;
 
-      delete value.password;
-      delete value.confirmPassword;
-
-      this.authService
-        .emailSignUp(value.email, password)
-        .subscribe((authResponse: AuthServiceResponse) => {
-          if (authResponse.status) {
-            this.usersService
-              .push(new User(value))
-              .subscribe((userResponse: UserServiceResponse) => {
-                if (userResponse) {
-                  this.message = {
-                    show: true,
-                    label: 'Info',
-                    sublabel: 'User created',
-                    color: 'accent',
-                    icon: 'info'
-                  };
-
-                  this.authService
-                    .signOut()
-                    .subscribe((signOutResponse: AuthServiceResponse) => {
-                      if (signOutResponse.status) {
-                        this.authService
-                          .emailSignIn(value.email, password)
-                          .subscribe((signInReponse: AuthServiceResponse) => {
-                            if (signInReponse.status) {
-                              this.router.navigate(['/auth/sign-in']);
-                            }
-                          })
-                          .unsubscribe();
-                      }
-                    });
-                }
-              })
-              .unsubscribe();
-          } else {
+      this.usersService
+        .setItem('|enabled|' + user.uid, user)
+        .subscribe((status: boolean) => {
+          if (status) {
             this.message = {
               show: true,
-              label: 'Error!',
-              sublabel: authResponse.error,
-              color: 'warn',
-              icon: 'error'
+              label: 'Info',
+              sublabel: 'Página guardado',
+              color: 'accent',
+              icon: 'info'
             };
+
+            this.router.navigate(['/admin/user/list']);
           }
         })
         .unsubscribe();
     }
+
+    this.reset();
   }
   onSubmitted(event: boolean) {
     this.submitted = true;
+    console.log(event);
 
     if (event) {
       this.submitted = false;
