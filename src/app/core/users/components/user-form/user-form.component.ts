@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
@@ -17,6 +18,7 @@ import { ConfirmPasswordValidator } from '../../../../shared/validators/confirm-
 
 import { User, Users } from '../../models/user';
 import { Message } from '../../../../models/message';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-form',
@@ -38,8 +40,9 @@ export class UserFormComponent implements OnInit {
   };
 
   constructor(
+    private afs: AngularFirestore,
     private store: StoreService,
-    private usersService: UserService,
+    private userService: UserService,
     private authService: AuthService,
     private router: Router
   ) {
@@ -120,15 +123,18 @@ export class UserFormComponent implements OnInit {
   }
 
   onSubmitting(event: any) {
-    console.log(event)
     this.message = {
       show: false
     };
 
     const value = event[event.index];
-    const user: User = new User(value);
 
-    console.log('## FILTER', this.filter, user)
+    const password = value.password;
+
+    delete value.password;
+    delete value.confirmPassword;
+
+    const user: User = new User(value);
 
     if (this.filter === 'edit') {
       user.dbPath = '|enabled';
@@ -136,97 +142,174 @@ export class UserFormComponent implements OnInit {
       user.backPath = this.value;
       user.root = true;
 
-      this.usersService
+      this.userService
         .setItem(this.value, user)
+        .pipe(first())
         .subscribe((status: boolean) => {
           if (status) {
             this.message = {
               show: true,
               label: 'Info',
-              sublabel: 'Página guardado',
+              sublabel: 'Usuario editado',
               color: 'accent',
               icon: 'info'
             };
 
-            this.router.navigate(['/admin/user/list']);
+            // this.router.navigate(['/admin/user/list']);
           }
-        })
-        .unsubscribe();
+        });
     } else if (this.filter === 'add') {
+      user.uid = this.afs.createId();
+      console.log('## USER', user)
       if (this.value) {
         user.dbPath = this.value + '|enabled';
         user.currentPath = this.value + '|enabled|' + user.uid;
         user.backPath = this.value;
         user.root = true;
 
-        this.usersService
-          .setItem(this.value + '|enabled|' + user.uid, user)
-          .subscribe((status: boolean) => {
-            if (status) {
+        this.authService
+          .emailSignUp(user.email, password)
+          .pipe(first())
+          .subscribe((authServiceResponse: AuthServiceResponse) => {
+            if (authServiceResponse.status) {
+              this.userService
+                .setItem(user.currentPath, user)
+                .pipe(first())
+                .subscribe((status: boolean) => {
+                  if (status) {
+                    this.message = {
+                      show: true,
+                      label: 'Info',
+                      sublabel: 'Usuario guardado',
+                      color: 'accent',
+                      icon: 'info'
+                    };
+
+                    // this.router.navigate(['/admin/user/list']);
+                  }
+                });
+
               this.message = {
                 show: true,
                 label: 'Info',
-                sublabel: 'Página guardado',
+                sublabel: 'Usuario creado',
                 color: 'accent',
                 icon: 'info'
               };
 
-              this.router.navigate(['/admin/user/list']);
+              // this.router.navigate(['/admin/user/list']);
+            } else {
+              this.message = {
+                show: true,
+                label: 'Error!',
+                sublabel: authServiceResponse.error.message,
+                color: 'warn',
+                icon: 'error'
+              };
             }
-          })
-          .unsubscribe();
+          });
       } else {
         user.dbPath = '|enabled';
         user.currentPath = '|enabled|' + user.uid;
         user.backPath = '';
         user.root = true;
 
-        this.usersService
-          .setItem('|enabled|' + user.uid, user)
-          .subscribe((status: boolean) => {
-            if (status) {
+        this.authService
+          .emailSignUp(user.email, password)
+          .pipe(first())
+          .subscribe((authServiceResponse: AuthServiceResponse) => {
+            if (authServiceResponse.status) {
+              this.userService
+                .setItem(user.currentPath, user)
+                .pipe(first())
+                .subscribe((status: boolean) => {
+                  if (status) {
+                    this.message = {
+                      show: true,
+                      label: 'Info',
+                      sublabel: 'Usuario guardado',
+                      color: 'accent',
+                      icon: 'info'
+                    };
+
+                    // this.router.navigate(['/admin/user/list']);
+                  }
+                });
+
               this.message = {
                 show: true,
                 label: 'Info',
-                sublabel: 'Página guardado',
+                sublabel: 'Usuario creado',
                 color: 'accent',
                 icon: 'info'
               };
 
-              this.router.navigate(['/admin/user/list']);
+              // this.router.navigate(['/admin/user/list']);
+            } else {
+              this.message = {
+                show: true,
+                label: 'Error!',
+                sublabel: authServiceResponse.error.message,
+                color: 'warn',
+                icon: 'error'
+              };
             }
-          })
-          .unsubscribe();
+          });
       }
     } else {
+      user.uid = this.afs.createId();
       user.dbPath = '|enabled';
       user.currentPath = '|enabled|' + user.uid;
       user.backPath = '';
       user.root = true;
 
-      this.usersService
-        .setItem('|enabled|' + user.uid, user)
-        .subscribe((status: boolean) => {
-          if (status) {
+      this.authService
+        .emailSignUp(user.email, password)
+        .pipe(first())
+        .subscribe((authServiceResponse: AuthServiceResponse) => {
+          if (authServiceResponse.status) {
+            this.userService
+              .setItem(user.currentPath, user)
+              .pipe(first())
+              .subscribe((status: boolean) => {
+                if (status) {
+                  this.message = {
+                    show: true,
+                    label: 'Info',
+                    sublabel: 'Usuario guardado',
+                    color: 'accent',
+                    icon: 'info'
+                  };
+
+                  // this.router.navigate(['/admin/user/list']);
+                }
+              });
+
             this.message = {
               show: true,
               label: 'Info',
-              sublabel: 'Página guardado',
+              sublabel: 'Usuario creado',
               color: 'accent',
               icon: 'info'
             };
 
-            this.router.navigate(['/admin/user/list']);
+            // this.router.navigate(['/admin/user/list']);
+          } else {
+            this.message = {
+              show: true,
+              label: 'Error!',
+              sublabel: authServiceResponse.error.message,
+              color: 'warn',
+              icon: 'error'
+            };
           }
-        })
-        .unsubscribe();
+        });
     }
 
     this.reset();
   }
   onSubmitted(event: boolean) {
     this.submitted = true;
-    console.log(event);
 
     if (event) {
       this.submitted = false;

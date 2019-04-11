@@ -34,6 +34,31 @@ export class User {
   }
 
   format(user) {
+    if (!user) {
+      user = {
+        uid: 'user-' + makeid(15),
+        displayName: '',
+        email: '',
+        username: '',
+        phoneNumber: '',
+        cover: '', // PATH ABSOLUTE
+        photoURL: '', // PATH ABSOLUTE
+        emailVerified: false,
+        aboutMe: '',
+        cite: '',
+        root: false,
+        dbPath: '',
+        backPath: '',
+        currentPath: '',
+        principalPath: '',
+        alias: [''],
+        blocked: false,
+        deleted: false,
+        deletedCount: 0,
+        createdAt: new Date(),
+      };
+    }
+
     if (!user.uid || user.uid === null || user.uid === undefined) {
       user.uid = 'user-' + makeid(15);
     }
@@ -59,7 +84,7 @@ export class User {
       user.createdAt = new Date();
     }
     if (user.blocked === null || user.blocked === undefined) {
-      user.blocked = true;
+      user.blocked = false;
     }
     if (user.deleted === null || user.deleted === undefined) {
       user.deleted = false;

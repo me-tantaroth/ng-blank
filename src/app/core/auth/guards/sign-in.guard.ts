@@ -6,6 +6,7 @@ import {
   Router
 } from '@angular/router';
 import { Observable } from 'rxjs';
+import { first, map } from 'rxjs/operators';
 
 import { AuthService } from '../services/auth.service';
 
@@ -19,13 +20,13 @@ export class SignInGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    return this.auth.authenticated.pipe((authObservable) => {
-      authObservable.subscribe((authenticated) => {
-        if (!authenticated) {
+    return this.auth.currentUser().pipe(
+      map((u) => {
+        if (!u || (!!u && !u.emailVerified && u.deleted && u.blocked)) {
           this.router.navigate(['/not-found']);
         }
-      }).unsubscribe();
-      return authObservable;
-    });
+        return !!u && u.emailVerified && !u.deleted && !u.blocked;
+      })
+    );
   }
 }

@@ -25,6 +25,7 @@ export class LoadLayoutComponent implements OnInit {
   constructor(private router: Router, private auth: AuthService) {}
 
   ngOnInit() {
+    // this.authenticated = new Observable(observer => observer.next(true));
     this.authenticated = this.auth.authenticated;
 
     this.templates.default = this.default;

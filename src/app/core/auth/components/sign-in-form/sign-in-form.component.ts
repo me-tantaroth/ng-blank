@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { first } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { StoreService } from 'ng-barn';
 
-import { AuthService } from '../../services/auth.service';
+import { AuthService, ServiceResponse as AuthServiceResponse } from '../../services/auth.service';
 
 import { Message } from '../../../../models/message';
 
@@ -51,8 +52,9 @@ export class SignInFormComponent implements OnInit {
 
     this.auth
       .emailSignIn(value.email, value.password)
-      .subscribe((response) => {
-        if (response.status) {
+      .pipe(first())
+      .subscribe((suthServiceResponse: AuthServiceResponse) => {
+        if (suthServiceResponse.status) {
           this.store.set(value, 'authenticated');
 
           this.message = {
@@ -64,17 +66,16 @@ export class SignInFormComponent implements OnInit {
           this.message = {
             show: true,
             label: 'Error!',
-            sublabel: response.error.message,
+            sublabel: suthServiceResponse.error.message,
             color: 'warn',
             icon: 'error'
           };
 
-          if (response.error.code === 'user-deleted') {
+          if (suthServiceResponse.error.code === 'user-deleted') {
             this.router.navigate(['/auth/recovery']);
           }
         }
-      })
-      .unsubscribe();
+      });
   }
   onSubmitted(event: boolean) {
     this.submitted = true;

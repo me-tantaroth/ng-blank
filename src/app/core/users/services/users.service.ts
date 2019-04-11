@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { StoreService } from 'ng-barn';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
@@ -12,18 +13,20 @@ import { User, Users } from '../models/user';
   providedIn: 'root'
 })
 export class UserService {
+  private usersCollection: AngularFirestoreCollection<User>;
   private rootPath: string;
   private node;
   private users: Users;
 
   constructor(
+    private afs: AngularFirestore,
     private configService: ConfigService,
     private store: StoreService,
     private langs: LangsService
   ) {
     const CONFIG: Config = this.configService.get();
     const NODE = this.store.get('node');
-    const NODE_LANGS = NODE[CONFIG.project.uid].lang;
+    const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
     const NODE_USERS =
       NODE_LANGS[document.documentElement.lang] ||
       NODE_LANGS[CONFIG.project.lang].user.enabled;
@@ -32,9 +35,12 @@ export class UserService {
       : CONFIG.project.lang;
 
     this.node = NODE;
-    this.rootPath = `|${CONFIG.project.uid}|lang|${LANG}|user`;
+    this.rootPath = `|project|${CONFIG.project.uid}|lang|${LANG}|user`;
 
     this.users = NODE_USERS;
+
+    console.log('¡¡¡>>>>', this.rootPath.split('|').join('/'))
+    this.usersCollection = this.afs.collection<User>('/project/ng-fire-blank/lang');
   }
 
   list(path?: string): Observable<Users> {
@@ -99,6 +105,8 @@ export class UserService {
     splitRootPath.shift();
     splitPath.shift();
 
+    const firePath = splitPath.join('/');
+    console.log('>>>>>', this.rootPath.split('|').join('/'), firePath);
     const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
     const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
     const absolutePath = cursorsRoot + cursorsPath;

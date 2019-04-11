@@ -23,7 +23,7 @@ export class SlideService {
   ) {
     const CONFIG: Config = this.configService.get();
     const NODE = this.store.get('node');
-    const NODE_LANGS = NODE[CONFIG.project.uid].lang;
+    const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
     const NODE_SLIDES =
       NODE_LANGS[document.documentElement.lang] ||
       NODE_LANGS[CONFIG.project.lang].slide.enabled;
@@ -32,7 +32,7 @@ export class SlideService {
       : CONFIG.project.lang;
 
     this.node = NODE;
-    this.rootPath = `|${CONFIG.project.uid}|lang|${LANG}|slide`;
+    this.rootPath = `|project|${CONFIG.project.uid}|lang|${LANG}|slide`;
 
     this.slides = NODE_SLIDES;
   }

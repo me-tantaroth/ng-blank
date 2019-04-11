@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';
 import { TdMediaService } from '@covalent/core';
@@ -15,7 +17,7 @@ import { User } from '../../../core/users/models/user';
 export class LayoutAdminComponent implements OnInit {
   name = 'NG Blank';
 
-  user: User;
+  user: Observable<User>;
 
   routes: any[] = [
     {
@@ -47,7 +49,7 @@ export class LayoutAdminComponent implements OnInit {
       icon: 'folder',
       route: '/admin/file/list',
       title: 'Folder'
-    },
+    }
     // {
     //   icon: 'delete',
     //   route: '/admin/trash',
@@ -102,12 +104,6 @@ export class LayoutAdminComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.authService.getUser().subscribe(
-      response => {
-        if (response.status) {
-          this.user = response.data;
-        }
-      }
-    ).unsubscribe();
+    this.user = this.authService.currentUser().pipe(map((u) => new User(u)));
   }
 }

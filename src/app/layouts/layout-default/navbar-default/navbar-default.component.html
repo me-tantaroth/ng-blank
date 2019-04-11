@@ -3,7 +3,7 @@
     <ul class="uk-navbar-nav">
       <li class="uk-active"><a routerLink="/">NG Blank</a></li>
       <li><a routerLink="/files">Archivos</a></li>
-      <li *ngFor="let item of (menu | async)">
+      <!-- <li *ngFor="let item of (menu | async)">
         <a [routerLink]="[item.link]">{{ item.text || 'Link' }}</a>
         <div
           class="uk-navbar-dropdown"
@@ -11,11 +11,11 @@
         >
           <ul class="uk-nav uk-navbar-dropdown-nav" [innerHTML]="submenu(item.menu)"></ul>
         </div>
-      </li>
-      <li *ngIf="!(authenticated | async)">
+      </li> -->
+      <li *ngIf="!authenticated">
         <a routerLink="/auth/sign-in">Sign In</a>
       </li>
-      <li *ngIf="(authenticated | async)">
+      <li *ngIf="authenticated">
         <a routerLink="/auth/sign-out" (click)="signOut()">Sign Out</a>
       </li>
     </ul>

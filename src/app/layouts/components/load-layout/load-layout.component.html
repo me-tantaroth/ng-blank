@@ -3,7 +3,7 @@
 </ng-template>
 
 <ng-template #default>
-  <app-layout-default>
+  <app-layout-default [authenticated]="authenticated | async">
     <div *ngIf="template === 'default'">
       <ng-container [ngTemplateOutlet]="content"> </ng-container>
     </div>

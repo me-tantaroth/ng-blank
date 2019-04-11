@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -13,7 +13,7 @@ import { Menu } from '../../../core/menus/models/menu';
   styleUrls: ['./navbar-default.component.scss']
 })
 export class NavbarDefaultComponent implements OnInit {
-  authenticated: Observable<boolean>;
+  @Input() authenticated: boolean;
   menu: Observable<Menu[]> = of([]);
 
   constructor(
@@ -22,7 +22,6 @@ export class NavbarDefaultComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.authenticated = this.authService.authenticated;
     // this.menu = this.menuService.filter({
     //   deleted: false
     // });

@@ -24,7 +24,7 @@ export class FileService {
   ) {
     const CONFIG: Config = this.configService.get();
     const NODE = this.store.get('node');
-    const NODE_LANGS = NODE[CONFIG.project.uid].lang;
+    const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
     const NODE_FILE =
       NODE_LANGS[document.documentElement.lang] ||
       NODE_LANGS[CONFIG.project.lang].file.enabled;
@@ -33,7 +33,7 @@ export class FileService {
       : CONFIG.project.lang;
 
     this.node = NODE;
-    this.rootPath = `|${CONFIG.project.uid}|lang|${LANG}|file`;
+    this.rootPath = `|project|${CONFIG.project.uid}|lang|${LANG}|file`;
 
     this.files = NODE_FILE;
   }
