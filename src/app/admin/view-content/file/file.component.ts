@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
-import { first } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 import { FileService } from '../../../core/files/services/file.service';
 
@@ -12,7 +12,7 @@ import { File } from '../../../core/files/models/file';
   styleUrls: ['./file.component.scss']
 })
 export class FileComponent implements OnInit {
-  file: File;
+  file: Observable<File>;
   filter: string;
   value: string;
 
@@ -39,20 +39,14 @@ export class FileComponent implements OnInit {
     if (value) {
       this.value = value;
 
-      this.fileService
-        .getItem(value)
-        .subscribe((file: File) => (this.file = file))
-        .unsubscribe();
+      this.file = this.fileService.getItem(value);
     } else {
       this.route.paramMap
         .subscribe((params) => {
           if (params.get('value')) {
             this.value = params.get('value');
 
-            this.fileService
-              .getItem(value)
-              .pipe(first())
-              .subscribe((file: File) => (this.file = file));
+            this.file = this.fileService.getItem(value);
           }
         })
         .unsubscribe();

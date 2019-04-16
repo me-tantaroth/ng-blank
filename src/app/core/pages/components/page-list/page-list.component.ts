@@ -28,19 +28,19 @@ export class PageListComponent implements OnInit {
       if (data instanceof ActivationEnd) {
         if (
           !!data.snapshot.params.filter &&
-          data.snapshot.params.filter === 'enabled' &&
+          data.snapshot.params.filter === 'enabled|list' &&
           !!data.snapshot.params.value
         ) {
           this.currentPage = this.pageService.getItem(
             data.snapshot.params.value
           );
           this.pageList = this.pageService.list(
-            data.snapshot.params.value + '|enabled'
+            data.snapshot.params.value + '|enabled|list'
           );
         } else {
           if (
             !!data.snapshot.params.filter &&
-            (data.snapshot.params.filter === 'enabled' ||
+            (data.snapshot.params.filter === 'enabled|list' ||
               data.snapshot.params.filter === 'blocked' ||
               data.snapshot.params.filter === 'deleted') &&
             !data.snapshot.params.value
@@ -56,13 +56,13 @@ export class PageListComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!!this.filter && this.filter === 'enabled' && !!this.value) {
+    if (!!this.filter && this.filter === 'enabled|list' && !!this.value) {
       console.log('## FILTER PATH');
       this.currentPage = this.pageService.getItem(this.value);
 
-      this.pageList = this.pageService.list(this.value + '|enabled');
+      this.pageList = this.pageService.list(this.value + '|enabled|list');
     } else {
-      this.filter = this.filter || 'enabled';
+      this.filter = this.filter || 'enabled|list';
 
       console.log('## ONLY NOT DELETED');
       this.pageList = this.pageService.list('|' + this.filter);
@@ -85,7 +85,7 @@ export class PageListComponent implements OnInit {
   onBackPage(page: Page) {
     if (page) {
       this.router.navigate([
-        '/admin/page/list/' + (this.filter || 'enabled'),
+        '/admin/page/list/' + (this.filter || 'enabled|list'),
         page.backPath || ''
       ]);
     }
@@ -106,7 +106,7 @@ export class PageListComponent implements OnInit {
       .subscribe((status: boolean) => {
         if (status) {
           this.pageService
-            .removeItem('|enabled|' + splitPath.join('|'))
+            .removeItem('|enabled|list|' + splitPath.join('|'))
             .pipe(first())
             .subscribe((statusEnabled: boolean) => {
               if (statusEnabled) {
@@ -147,11 +147,11 @@ export class PageListComponent implements OnInit {
         .subscribe((status: boolean) => {
           if (status) {
             this.pageService
-              .removeItem('|enabled|' + page.uid)
+              .removeItem('|enabled|list|' + page.uid)
               .pipe(first())
               .subscribe((statusEnabled: boolean) => {
                 if (statusEnabled) {
-                  this.pageList = this.pageService.list('|enabled');
+                  this.pageList = this.pageService.list('|enabled|list');
                 }
               });
           }

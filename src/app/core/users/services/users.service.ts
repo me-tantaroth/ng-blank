@@ -29,7 +29,7 @@ export class UserService {
     const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
     const NODE_USERS =
       NODE_LANGS[document.documentElement.lang] ||
-      NODE_LANGS[CONFIG.project.lang].user.enabled;
+      NODE_LANGS[CONFIG.project.lang].modules.user.enabled.list;
     const LANG = NODE_LANGS[document.documentElement.lang]
       ? document.documentElement.lang
       : CONFIG.project.lang;

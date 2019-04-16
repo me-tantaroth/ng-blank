@@ -7,11 +7,20 @@
   class="uk-margin"
 ></td-message>
 
-<div *ngIf="(filter === 'add-file' || filter === 'add-folder')">
-  <h3>
-    Agregando {{ filter === 'add-file' ? 'archivo' : 'sub carpeta' }} en
-    {{ file ? file.title : 'Principal' }}
-  </h3>
+<div *ngIf="filter === 'add-file' || filter === 'add-folder'">
+  <ng-template
+    let-item
+    [ngTemplateOutletContext]="{ $implicit: file | async }"
+    [ngTemplateOutlet]="fileT"
+    #fileT
+  >
+    <button (click)="prueba(item)">Prueba</button>
+  
+    <h3>
+      Agregando {{ filter === 'add-file' ? 'archivo' : 'sub carpeta' }} en
+      {{ item ? item.title : 'Principal' }}
+    </h3>
+  </ng-template>
 </div>
 
 <tnt-barn-form

@@ -1,11 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 import * as _moment from 'moment';
 import { Observable } from 'rxjs';
-import { first } from 'rxjs/operators';
 
 import { FileService } from '../../services/file.service';
 
@@ -33,6 +33,7 @@ export class FileFormComponent implements OnInit {
   errorMessages: any;
 
   constructor(
+    private afs: AngularFirestore,
     private store: StoreService,
     private fileService: FileService,
     private router: Router
@@ -73,6 +74,15 @@ export class FileFormComponent implements OnInit {
     }
   }
 
+  prueba(file) {
+    console.log('##', file);
+    this.afs
+      .doc(
+        '/project/ng-fire-blank/lang/es/file/list/enabled/i58UWYELptXWQaeRciO0/list/enabled/asdasdasdsad'
+      )
+      .set(file, { merge: true });
+  }
+
   reset() {
     this.form.reset();
   }
@@ -85,15 +95,12 @@ export class FileFormComponent implements OnInit {
     if (files && files.length && files.length > 0) {
       const file = files[0];
 
-      console.log(file, file.type.search('image/'));
       if (file.type.search('image/') >= 0) {
         const reader = new FileReader();
 
         reader.readAsDataURL(file);
 
-        console.log('=??=?=?==?');
         reader.onload = (event: any) => {
-          console.log(event, '>>>>>>>');
           // UPLOAD FILE TO FIRESTORAGE
           // GET DOWNLOAD URL AND ADD THIS URL TO FORM LINK
           this.form.patchValue({
@@ -121,46 +128,45 @@ export class FileFormComponent implements OnInit {
     this.message = {
       show: false
     };
-    console.log('## FORM FILE', event, this.form);
 
     const value = event[event.index];
     const file: File = new File(value);
 
+    console.log('### FILTER', this.filter);
     if (this.filter.search('edit') >= 0) {
-      file.dbPath = this.value + '|enabled';
-      file.currentPath = this.value + '|enabled|' + file.uid;
+      file.dbPath = this.value;
+      file.currentPath = this.value;
       file.backPath = this.value;
       file.root = true;
 
-      this.fileService
-        .setItem(this.value, file)
-        .subscribe((status: boolean) => {
-          if (status) {
-            this.message = {
-              show: true,
-              label: 'Info',
-              sublabel: 'Guardado',
-              color: 'accent',
-              icon: 'info'
-            };
+      // this.fileService
+      //   .setItem(this.value, file)
+      //   .subscribe((response: FileServiceResponse) => {
+      //     if (response.status) {
+      //       this.message = {
+      //         show: true,
+      //         label: 'Info',
+      //         sublabel: 'Guardado',
+      //         color: 'accent',
+      //         icon: 'info'
+      //       };
 
-            this.router.navigate(['/admin/file/list']);
-          }
-        })
-        .unsubscribe();
+      //       this.router.navigate(['/admin/file/list']);
+      //     }
+      //   });
     } else if (this.filter.search('add') >= 0) {
+      console.log('### ADD FOLDER', this.value);
       if (this.value) {
-        file.dbPath = this.value + '|enabled';
-        file.currentPath = this.value + '|enabled|' + file.uid;
+        file.uid = this.afs.createId();
+        file.dbPath = this.value + '|list|enabled';
+        file.currentPath = this.value + '|list|enabled|' + file.uid;
         file.backPath = this.value;
         file.root = true;
 
-        console.log('===>', this.value + '|enabled|' + file.uid, file);
         this.fileService
-          .setItem(this.value + '|enabled|' + file.uid, file)
-          .pipe(first())
-          .subscribe((status: boolean) => {
-            if (status) {
+          .setItem(this.value + '|list|enabled|' + file.uid, file)
+          .subscribe((response: boolean) => {
+            if (response) {
               this.message = {
                 show: true,
                 label: 'Info',
@@ -169,17 +175,20 @@ export class FileFormComponent implements OnInit {
                 icon: 'info'
               };
 
-              this.router.navigate(['/admin/file/list']);
+              this.afs
+                .doc(file.currentPath.split('|').join('/'))
+                .set({ name: 'Habilitado' });
             }
           });
       } else {
-        file.dbPath = '|enabled';
-        file.currentPath = '|enabled|' + file.uid;
-        file.backPath = '';
+        file.uid = this.afs.createId();
+        file.dbPath = '|list|enabled';
+        file.currentPath = '|list|enabled|' + file.uid;
+        file.backPath = '|list|enabled';
         file.root = true;
 
         this.fileService
-          .setItem('|enabled|' + file.uid, file)
+          .setItem('|list|enabled|' + file.uid, file)
           .subscribe((status: boolean) => {
             if (status) {
               this.message = {
@@ -189,20 +198,18 @@ export class FileFormComponent implements OnInit {
                 color: 'accent',
                 icon: 'info'
               };
-
-              this.router.navigate(['/admin/file/list']);
             }
-          })
-          .unsubscribe();
+          });
       }
     } else {
-      file.dbPath = '|enabled';
-      file.currentPath = '|enabled|' + file.uid;
-      file.backPath = '';
+      file.uid = this.afs.createId();
+      file.dbPath = '|list|enabled';
+      file.currentPath = '|list|enabled|' + file.uid;
+      file.backPath = '|list|enabled';
       file.root = true;
 
       this.fileService
-        .setItem('|enabled|' + file.uid, file)
+        .setItem('|list|enabled|' + file.uid, file)
         .subscribe((status: boolean) => {
           if (status) {
             this.message = {
@@ -213,101 +220,16 @@ export class FileFormComponent implements OnInit {
               icon: 'info'
             };
 
-            this.router.navigate(['/admin/file/list']);
+            this.afs
+              .doc(file.currentPath.split('|').join('/'))
+              .set({ name: 'Habilitado' });
           }
-        })
-        .unsubscribe();
+        });
     }
 
     this.reset();
-
-    // if (this.action.search('add') >= 0) {
-    //   if (this.path && this.file) {
-    //     value.path = this.path + '|file|' + this.file.file.length;
-    //     value.backPath = this.path;
-
-    //     this.fileService
-    //       .pushWithPath(this.path, value)
-    //       .subscribe((fileResponse: FileServiceResponse) => {
-    //         if (fileResponse) {
-    //           this.message = {
-    //             show: true,
-    //             label: 'Info',
-    //             sublabel: 'File creado',
-    //             color: 'accent',
-    //             icon: 'info'
-    //           };
-    //         }
-
-    //         this.router.navigate(['/admin/file/list/path', this.path]);
-    //       })
-    //       .unsubscribe();
-    //   } else {
-    //     this.fileService
-    //       .list()
-    //       .subscribe((fileList: File[]) => {
-    //         if (!!fileList) {
-    //           value.root = true;
-    //           value.path = '|' + fileList.length;
-
-    //           this.fileService
-    //             .push(value)
-    //             .subscribe((fileResponse: FileServiceResponse) => {
-    //               if (fileResponse) {
-    //                 this.message = {
-    //                   show: true,
-    //                   label: 'Info',
-    //                   sublabel: 'file creado',
-    //                   color: 'accent',
-    //                   icon: 'info'
-    //                 };
-    //               }
-
-    //               this.router.navigate(['/admin/file/list']);
-    //             })
-    //             .unsubscribe();
-    //         }
-    //       })
-    //       .unsubscribe();
-    //   }
-    // } else if (this.action.search('edit') >= 0) {
-    //   if (this.path && this.file) {
-    //     this.file.name = value.name;
-    //     this.file.type = value.type;
-    //     this.file.size = value.size;
-    //     this.file.link = value.link;
-    //     this.file.lastModifiedDate = value.lastModifiedDate;
-    //     this.file.blocked = value.blocked;
-    //     this.file.deleted = value.deleted;
-
-    //     this.fileService
-    //       .setWithPath(this.path, this.file)
-    //       .subscribe((fileResponse: FileServiceResponse) => {
-    //         if (fileResponse) {
-    //           this.message = {
-    //             show: true,
-    //             label: 'Info',
-    //             sublabel: 'file editado',
-    //             color: 'accent',
-    //             icon: 'info'
-    //           };
-    //         }
-
-    //         if (this.file.root) {
-    //           this.router.navigate(['/admin/file/list']);
-    //         } else {
-    //           this.router.navigate([
-    //             '/admin/file/list/path',
-    //             this.file.backPath
-    //           ]);
-    //         }
-    //       })
-    //       .unsubscribe();
-    //   }
-    // }
   }
   onSubmitted(event: boolean) {
-    console.log('SUBMIT', event);
     this.submitted = true;
 
     if (event) {

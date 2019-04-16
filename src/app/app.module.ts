@@ -10,7 +10,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AdminModule } from './admin/admin.module';
 import { CoreModule } from './core/core.module';
 import { AngularFireModule } from '@angular/fire';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
+import {
+  AngularFirestoreModule,
+  FirestoreSettingsToken
+} from '@angular/fire/firestore';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 
@@ -87,167 +90,183 @@ import {
                   deleted: false,
                   deletedCount: 0,
                   createdAt: new Date(),
-                  user: {
-                    enabled: {
-                      '-user-item-1': {
-                        uid: '-user-item-1',
-                        cover: '',
-                        photoURL: '',
-                        displayName: 'Eduard Ramirez',
-                        username: 'tantaroth',
-                        email: 'tantaroth@gmail.com',
-                        emailVerified: true,
-                        currentPath: '|enabled|-user-item-1',
-                        dbPath: '/lang/es/user/-user-item-1',
-                        blocked: false,
-                        deleted: false,
-                        deletedCount: 0,
-                        createdAt: new Date()
-                      }
-                    },
-                    deleted: {}
-                  },
-                  slide: {
-                    enabled: {
-                      '-slide-item-1': {
-                        uid: '-slide-item-1',
-                        title: 'Afro Power',
-                        image:
-                          'https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-                        subtitle: 'Orgullo, defensa y conciencia',
-                        url: '/yudis-rivas',
-                        externalURL: false,
-                        currentPath: '|enabled|-slide-item-1',
-                        dbPath: '/lang/es/slide/-slide-item-1',
-                        blocked: false,
-                        deleted: false,
-                        deletedCount: 1,
-                        createdAt: new Date()
+                  modules: {
+                    user: {
+                      enabled: {
+                        list: {
+                          '-user-item-1': {
+                            uid: '-user-item-1',
+                            cover: '',
+                            photoURL: '',
+                            displayName: 'Eduard Ramirez',
+                            username: 'tantaroth',
+                            email: 'tantaroth@gmail.com',
+                            emailVerified: true,
+                            currentPath: '|enabled|list|-user-item-1',
+                            dbPath: '/lang/es/user/-user-item-1',
+                            blocked: false,
+                            deleted: false,
+                            deletedCount: 0,
+                            createdAt: new Date()
+                          }
+                        }
                       },
-                      '-slide-item-2': {
-                        uid: '-slide-item-2',
-                        title: 'Afro Power!2',
-                        image:
-                          'https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-                        subtitle: 'Orgullo, defensa y conciencia',
-                        url: '/yudis-rivas',
-                        externalURL: false,
-                        currentPath: '|enabled|-slide-item-2',
-                        dbPath: '/lang/es/slide/-slide-item-2',
-                        blocked: false,
-                        deleted: false,
-                        deletedCount: 1,
-                        createdAt: new Date()
-                      }
+                      deleted: {}
                     },
-                    blocked: {},
-                    deleted: {}
-                  },
-                  page: {
-                    enabled: {
-                      '-page-item-1': {
-                        uid: '-page-item-1',
-                        principalPath: 'home',
-                        currentPath: '|enabled|-page-item-1',
-                        alias: ['home'],
-                        title: 'Home',
-                        description: 'Is the afroup website',
-                        keywords: 'home, afroup',
-                        content: '<h1>Home works!</h1>',
-                        author: '/lang/es/user/-user-item-1',
-                        cover: '',
-                        postedAt: new Date(),
-                        theme: {
-                          color: 'black'
-                        },
-                        type: 'article',
-                        views: 0,
-                        dbPath: '/lang/es/page/-page-item-1',
-                        blocked: false,
-                        deleted: false,
-                        deletedCount: 1,
-                        createdAt: new Date()
-                      }
+                    slide: {
+                      enabled: {
+                        list: {
+                          '-slide-item-1': {
+                            uid: '-slide-item-1',
+                            title: 'Afro Power',
+                            image:
+                              'https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                            subtitle: 'Orgullo, defensa y conciencia',
+                            url: '/yudis-rivas',
+                            externalURL: false,
+                            currentPath: '|enabled|list|-slide-item-1',
+                            dbPath: '/lang/es/slide/-slide-item-1',
+                            blocked: false,
+                            deleted: false,
+                            deletedCount: 1,
+                            createdAt: new Date()
+                          },
+                          '-slide-item-2': {
+                            uid: '-slide-item-2',
+                            title: 'Afro Power!2',
+                            image:
+                              'https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                            subtitle: 'Orgullo, defensa y conciencia',
+                            url: '/yudis-rivas',
+                            externalURL: false,
+                            currentPath: '|enabled|list|-slide-item-2',
+                            dbPath: '/lang/es/slide/-slide-item-2',
+                            blocked: false,
+                            deleted: false,
+                            deletedCount: 1,
+                            createdAt: new Date()
+                          }
+                        }
+                      },
+                      blocked: {},
+                      deleted: {}
                     },
-                    deleted: {}
-                  },
-                  menu: {
-                    enabled: {
-                      '-menu-item-1': {
-                        uid: '-menu-item-1',
-                        title: 'Home',
-                        currentPath: '|enabled|-menu-item-1',
-                        backPath: '',
-                        enabled: {
-                          '-menu-item-1-1': {
-                            uid: '-menu-item-1-1',
-                            title: 'Proyectos',
-                            currentPath:
-                              '|enabled|-menu-item-1|enabled|-menu-item-1-1',
-                            backPath: '|enabled|-menu-item-1',
-                            enabled: {},
-                            url: 'https://portafol.io/afroup',
-                            externalURL: true,
-                            dbPath:
-                              '/lang/es/menu/-menu-item-1/menu/-menu-item-1-1',
+                    page: {
+                      enabled: {
+                        list: {
+                          '-page-item-1': {
+                            uid: '-page-item-1',
+                            principalPath: 'home',
+                            currentPath: '|enabled|list|-page-item-1',
+                            alias: ['home'],
+                            title: 'Home',
+                            description: 'Is the afroup website',
+                            keywords: 'home, afroup',
+                            content: '<h1>Home works!</h1>',
+                            author: '/lang/es/user/-user-item-1',
+                            cover: '',
+                            postedAt: new Date(),
+                            theme: {
+                              color: 'black'
+                            },
+                            type: 'article',
+                            views: 0,
+                            dbPath: '/lang/es/page/-page-item-1',
+                            blocked: false,
+                            deleted: false,
+                            deletedCount: 1,
+                            createdAt: new Date()
+                          }
+                        }
+                      },
+                      deleted: {}
+                    },
+                    menu: {
+                      enabled: {
+                        list: {
+                          '-menu-item-1': {
+                            uid: '-menu-item-1',
+                            title: 'Home',
+                            currentPath: '|enabled|list|-menu-item-1',
+                            backPath: '',
+                            enabled: {
+                              list: {
+                                '-menu-item-1-1': {
+                                  uid: '-menu-item-1-1',
+                                  title: 'Proyectos',
+                                  currentPath:
+                                    '|enabled|list|-menu-item-1|enabled|list|-menu-item-1-1',
+                                  backPath: '|enabled|list|-menu-item-1',
+                                  enabled: {},
+                                  url: 'https://portafol.io/afroup',
+                                  externalURL: true,
+                                  dbPath:
+                                    '/lang/es/menu/-menu-item-1/menu/-menu-item-1-1',
+                                  blocked: false,
+                                  deleted: false,
+                                  deletedCount: 0,
+                                  createdAt: new Date()
+                                }
+                              }
+                            },
+                            url: '/home',
+                            externalURL: false,
+                            root: true,
+                            dbPath: '/lang/es/menu/-menu-item-1',
                             blocked: false,
                             deleted: false,
                             deletedCount: 0,
                             createdAt: new Date()
                           }
-                        },
-                        url: '/home',
-                        externalURL: false,
-                        root: true,
-                        dbPath: '/lang/es/menu/-menu-item-1',
-                        blocked: false,
-                        deleted: false,
-                        deletedCount: 0,
-                        createdAt: new Date()
-                      }
+                        }
+                      },
+                      blocked: {},
+                      deleted: {}
                     },
-                    blocked: {},
-                    deleted: {}
-                  },
-                  file: {
-                    enabled: {
-                      '-file-item-1': {
-                        uid: '-file-item-1',
-                        title: 'Carpeta 1',
-                        currentPath: '|enabled|-file-item-1',
-                        backPath: '',
+                    file: {
+                      list: {
                         enabled: {
-                          '-file-item-1-1': {
-                            uid: '-file-item-1-1',
-                            title: 'carpeta 1.1',
-                            currentPath:
-                              '|enabled|-file-item-1|enabled|-file-item-1-1',
-                            backPath: '|enabled|-file-item-1',
-                            enabled: {},
-                            url: 'https://portafol.io/afroup',
-                            externalURL: true,
+                          '-file-item-1': {
+                            uid: '-file-item-1',
+                            title: 'Carpeta 1',
+                            currentPath: '|enabled|list|-file-item-1',
+                            backPath: '',
+                            list: {
+                              enabled: {
+                                '-file-item-1-1': {
+                                  uid: '-file-item-1-1',
+                                  title: 'carpeta 1.1',
+                                  currentPath:
+                                    '|enabled|list|-file-item-1|enabled|list|-file-item-1-1',
+                                  backPath: '|enabled|list|-file-item-1',
+                                  enabled: {},
+                                  url: 'https://portafol.io/afroup',
+                                  externalURL: true,
+                                  type: 'folder',
+                                  dbPath:
+                                    '/lang/es/file/-file-item-1/file/-file-item-1-1',
+                                  blocked: false,
+                                  deleted: false,
+                                  deletedCount: 0,
+                                  createdAt: new Date()
+                                }
+                              }
+                            },
+                            url: '/home',
+                            externalURL: false,
                             type: 'folder',
-                            dbPath:
-                              '/lang/es/file/-file-item-1/file/-file-item-1-1',
+                            root: true,
+                            dbPath: '/lang/es/file/-file-item-1',
                             blocked: false,
                             deleted: false,
                             deletedCount: 0,
                             createdAt: new Date()
                           }
                         },
-                        url: '/home',
-                        externalURL: false,
-                        type: 'folder',
-                        root: true,
-                        dbPath: '/lang/es/file/-file-item-1',
-                        blocked: false,
-                        deleted: false,
-                        deletedCount: 0,
-                        createdAt: new Date()
+                        blocked: {},
+                        deleted: {}
                       }
-                    },
-                    blocked: {},
-                    deleted: {}
+                    }
                   }
                 }
               }

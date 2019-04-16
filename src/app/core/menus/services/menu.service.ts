@@ -26,7 +26,7 @@ export class MenuService {
     const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
     const NODE_MENU =
       NODE_LANGS[document.documentElement.lang] ||
-      NODE_LANGS[CONFIG.project.lang].menu.enabled;
+      NODE_LANGS[CONFIG.project.lang].modules.menu.enabled;
     const LANG = NODE_LANGS[document.documentElement.lang]
       ? document.documentElement.lang
       : CONFIG.project.lang;

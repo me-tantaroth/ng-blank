@@ -137,8 +137,8 @@ export class UserFormComponent implements OnInit {
     const user: User = new User(value);
 
     if (this.filter === 'edit') {
-      user.dbPath = '|enabled';
-      user.currentPath = '|enabled|' + user.uid;
+      user.dbPath = this.value;
+      user.currentPath = this.value;
       user.backPath = this.value;
       user.root = true;
 
@@ -162,8 +162,8 @@ export class UserFormComponent implements OnInit {
       user.uid = this.afs.createId();
       console.log('## USER', user)
       if (this.value) {
-        user.dbPath = this.value + '|enabled';
-        user.currentPath = this.value + '|enabled|' + user.uid;
+        user.dbPath = this.value + '|enabled|list';
+        user.currentPath = this.value + '|enabled|list|' + user.uid;
         user.backPath = this.value;
         user.root = true;
 
@@ -209,8 +209,8 @@ export class UserFormComponent implements OnInit {
             }
           });
       } else {
-        user.dbPath = '|enabled';
-        user.currentPath = '|enabled|' + user.uid;
+        user.dbPath = '|enabled|list';
+        user.currentPath = '|enabled|list|' + user.uid;
         user.backPath = '';
         user.root = true;
 
@@ -258,8 +258,8 @@ export class UserFormComponent implements OnInit {
       }
     } else {
       user.uid = this.afs.createId();
-      user.dbPath = '|enabled';
-      user.currentPath = '|enabled|' + user.uid;
+      user.dbPath = '|enabled|list';
+      user.currentPath = '|enabled|list|' + user.uid;
       user.backPath = '';
       user.root = true;
 

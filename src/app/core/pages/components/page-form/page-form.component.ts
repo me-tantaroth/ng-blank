@@ -179,8 +179,8 @@ export class PageFormComponent implements OnInit {
     const page: Page = new Page(value);
 
     if (this.filter === 'edit') {
-      page.dbPath = '|enabled';
-      page.currentPath = '|enabled|' + page.uid;
+      page.dbPath = this.value;
+      page.currentPath = this.value;
       page.backPath = this.value;
       page.root = true;
 
@@ -202,13 +202,13 @@ export class PageFormComponent implements OnInit {
         .unsubscribe();
     } else if (this.filter === 'add') {
       if (this.value) {
-        page.dbPath = this.value + '|enabled';
-        page.currentPath = this.value + '|enabled|' + page.uid;
+        page.dbPath = this.value + '|enabled|list';
+        page.currentPath = this.value + '|enabled|list|' + page.uid;
         page.backPath = this.value;
         page.root = true;
 
         this.pageService
-          .setItem(this.value + '|enabled|' + page.uid, page)
+          .setItem(this.value + '|enabled|list|' + page.uid, page)
           .subscribe((status: boolean) => {
             if (status) {
               this.message = {
@@ -224,13 +224,13 @@ export class PageFormComponent implements OnInit {
           })
           .unsubscribe();
       } else {
-        page.dbPath = '|enabled';
-        page.currentPath = '|enabled|' + page.uid;
+        page.dbPath = '|enabled|list';
+        page.currentPath = '|enabled|list|' + page.uid;
         page.backPath = '';
         page.root = true;
 
         this.pageService
-          .setItem('|enabled|' + page.uid, page)
+          .setItem('|enabled|list|' + page.uid, page)
           .subscribe((status: boolean) => {
             if (status) {
               this.message = {
@@ -247,13 +247,13 @@ export class PageFormComponent implements OnInit {
           .unsubscribe();
       }
     } else {
-      page.dbPath = '|enabled';
-      page.currentPath = '|enabled|' + page.uid;
+      page.dbPath = '|enabled|list';
+      page.currentPath = '|enabled|list|' + page.uid;
       page.backPath = '';
       page.root = true;
 
       this.pageService
-        .setItem('|enabled|' + page.uid, page)
+        .setItem('|enabled|list|' + page.uid, page)
         .subscribe((status: boolean) => {
           if (status) {
             this.message = {

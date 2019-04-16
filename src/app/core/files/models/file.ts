@@ -1,3 +1,6 @@
+
+import * as firebase from 'firebase/app';
+
 import { makeid } from '../../../shared/utils';
 
 export interface Files {
@@ -20,7 +23,7 @@ export interface File {
   blocked: boolean;
   deleted: boolean;
   deletedCount: number;
-  createdAt: Date;
+  createdAt: firebase.firestore.FieldValue;
 }
 export class File {
   constructor(file) {
@@ -42,7 +45,7 @@ export class File {
       file.createdAt === null ||
       file.createdAt === undefined
     ) {
-      file.createdAt = new Date();
+      file.createdAt = firebase.firestore.FieldValue.serverTimestamp();
     }
     return file;
   }

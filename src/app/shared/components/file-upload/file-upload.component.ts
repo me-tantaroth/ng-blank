@@ -1,4 +1,13 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectorRef
+} from '@angular/core';
+
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-file-upload',
@@ -11,9 +20,20 @@ export class FileUploadComponent implements OnInit {
   @Output() private filesChanged: EventEmitter<File[]> = new EventEmitter();
   @Output() private filesInvalid: EventEmitter<File[]> = new EventEmitter();
 
-  constructor() {}
+  backgroundImageURL: string;
+
+  constructor(private cdRef: ChangeDetectorRef) {}
+
+  ngAfterViewChecked() {
+    if (this.imageURL) {
+      console.log('! changement de la date du composant !', this.imageURL);
+      this.imageURL = this.imageURL;
+      this.cdRef.detectChanges();
+    }
+  }
 
   ngOnInit() {
+    this.backgroundImageURL = environment.backgroundImage;
   }
 
   onFilesChange(fileList: Array<File>) {

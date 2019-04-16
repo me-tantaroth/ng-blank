@@ -1,6 +1,8 @@
 import {
   Directive,
   OnInit,
+  OnChanges,
+  SimpleChanges,
   HostListener,
   HostBinding,
   EventEmitter,
@@ -11,7 +13,7 @@ import {
 @Directive({
   selector: '[appFileDragDrop]'
 })
-export class FileDragDropDirective implements OnInit {
+export class FileDragDropDirective implements OnInit, OnChanges {
   @Input() private defaultColor: string;
   @Input() private dragColor: string;
   @Input() private imageURL: string;
@@ -30,10 +32,11 @@ export class FileDragDropDirective implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    console.log('## FILE DIRECIVE', this.imageURL);
-    if (this.imageURL) {
-      this.backgroundImage = `url(${this.imageURL})`;
-    }
+    console.log('## CURRENT BG IMAGE URL:', this.imageURL);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('## CHANGES:', changes);
   }
 
   @HostListener('click', ['$event']) public onClick(evt: any) {
@@ -87,7 +90,7 @@ export class FileDragDropDirective implements OnInit {
       this.backgroundImage = `url(${event.target.result})`;
     };
 
-    if (files.length > 0) {
+    if (files && files.length > 0) {
       for (const file of files) {
         const ext = file.name.split('.')[file.name.split('.').length - 1];
 

@@ -1,10 +1,14 @@
-<div class="uk-padding-small uk-padding-vertical-remove">
+<div
+  *ngIf="backgroundImageURL"
+  class="uk-padding-small uk-padding-vertical-remove"
+>
+  {{ backgroundImageURL }}
   <div
     class="dropzone uk-margin-small"
     appFileDragDrop
     defaultColor="#5f5f5f"
     dragColor="#71A73E"
-    [imageURL]="imageURL"
+    [ngStyle]="{ backgroundImage: imageURL }"
     (filesChangeEmiter)="onFilesChange($event)"
     (filesInvalidEmiter)="onFileInvalids($event)"
     [allowed_extensions]="allowed_extensions"

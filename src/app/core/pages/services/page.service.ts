@@ -26,7 +26,7 @@ export class PageService {
     const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
     const NODE_PAGES =
       NODE_LANGS[document.documentElement.lang] ||
-      NODE_LANGS[CONFIG.project.lang].page.enabled;
+      NODE_LANGS[CONFIG.project.lang].modules.page.enabled.list;
     const LANG = NODE_LANGS[document.documentElement.lang]
       ? document.documentElement.lang
       : CONFIG.project.lang;

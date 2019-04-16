@@ -45,8 +45,8 @@
           #pageDetailT
         >
           <div align="right" class="uk-margin-small">
-            <span *ngIf="filter === 'enabled'">
-              <a [routerLink]="['/page/view/', page.path]">Preview</a> &nbsp;
+            <span *ngIf="filter === 'enabled|list'">
+              <a [routerLink]="['/page/view/', page[key].currentPath]">Preview</a> &nbsp;
               <!-- <a
                 [routerLink]="[
                   '/admin/page/list/enabled/',

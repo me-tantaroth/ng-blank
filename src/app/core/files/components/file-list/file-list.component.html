@@ -16,117 +16,92 @@
   </div>
 </ng-template>
 
-<div *ngIf="(files | async) && ObjectKeys(files | async).length > 0">
+<div>
   <mat-accordion>
     <mat-expansion-panel
       role="file"
-      *ngFor="let key of ObjectKeys(files | async)"
+      *ngFor="let file of (files | async)"
       (opened)="panelOpenState = true"
       (closed)="panelOpenState = false"
     >
       <mat-expansion-panel-header>
-        <ng-template
-          let-file
-          [ngTemplateOutletContext]="{ $implicit: files | async }"
-          [ngTemplateOutlet]="fileT"
-          #fileT
-        >
-          <mat-panel-title> {{ file[key].title || '--' }} </mat-panel-title>
-          <mat-panel-description>
-            {{ file[key].createdAt | date }}
-          </mat-panel-description>
-        </ng-template>
+        <mat-panel-title> {{ file.title || '--' }} </mat-panel-title>
+        <mat-panel-description>
+          {{ file.createdAt.toDate() | date }}
+        </mat-panel-description>
       </mat-expansion-panel-header>
       <div>
-        <ng-template
-          let-file
-          [ngTemplateOutletContext]="{ $implicit: files | async }"
-          [ngTemplateOutlet]="fileDetailT"
-          #fileDetailT
-        >
-          <div align="right" class="uk-margin-small">
-            <span *ngIf="filter === 'enabled'">
-              <a
-                *ngIf="file[key].type === 'folder'"
-                [routerLink]="[
-                  '/admin/file/list/enabled/',
-                  file[key].currentPath
-                ]"
-                class="uk-text-success"
-                >Archivos</a
-              >
-              &nbsp;
-              <a
-                [routerLink]="[
-                  '/admin/file/form/edit-' +
-                    (file[key].type === 'folder' ? file[key].type : 'file'),
-                  file[key].currentPath
-                ]"
-                class="uk-text-primary"
-                >Editar</a
-              >
-              &nbsp;
-              <!-- <span
-                *ngIf="file[key].blocked"
+        <div align="right" class="uk-margin-small">
+          <span *ngIf="filter === 'list|enabled'">
+            <a
+              *ngIf="file.type === 'folder'"
+              [routerLink]="[
+                '/admin/file/list/list|enabled/',
+                file.currentPath
+              ]"
+              class="uk-text-success"
+              >Archivos</a
+            >
+            &nbsp;
+            <a
+              [routerLink]="[
+                '/admin/file/form/edit-' +
+                  (file.type === 'folder' ? file.type : 'file'),
+                file.currentPath
+              ]"
+              class="uk-text-primary"
+              >Editar</a
+            >
+            &nbsp;
+            <!-- <span
+                *ngIf="file.blocked"
                 class="uk-text-warning uk-text-bold"
-                >{{ file[key].blocked ? 'Blocked' : '' }}</span
+                >{{ file.blocked ? 'Blocked' : '' }}</span
               >
               <a
                 class="uk-text-warning"
-                (click)="onBlockFile(file[key].currentPath, file[key])"
-                *ngIf="!file[key].blocked"
+                (click)="onBlockFile(file.currentPath, file)"
+                *ngIf="!file.blocked"
                 >Bloquear</a
               >
               &nbsp; -->
-              <span
-                *ngIf="file[key].deleted"
-                class="uk-text-warning uk-text-bold"
-                >{{ file[key].deleted ? 'Deleted' : '' }}</span
-              >
-              <a
-                class="uk-text-danger"
-                (click)="onDeleteFile('|deleted|' + file[key].uid, file[key])"
-                *ngIf="!file[key].deleted"
-                >Eliminar</a
-              >
-            </span>
-            <span *ngIf="filter === 'blocked'">
-              <a
-                class="uk-text-warning uk-text-bold"
-                (click)="onUnBlockFile('|enabled|' + file[key].uid, file[key])"
-                >Desbloquear</a
-              >
-            </span>
-            <span *ngIf="filter === 'deleted'">
-              <a
-                class="uk-text-danger uk-text-bold"
-                (click)="onUnBlockFile('|enabled|' + file[key].uid, file[key])"
-                >Recuperar</a
-              >
-            </span>
+            <span *ngIf="file.deleted" class="uk-text-warning uk-text-bold">{{
+              file.deleted ? 'Deleted' : ''
+            }}</span>
+            <a
+              class="uk-text-danger"
+              (click)="onDeleteFile('|deleted|' + file.uid, file)"
+              *ngIf="!file.deleted"
+              >Eliminar</a
+            >
+          </span>
+          <span *ngIf="filter === 'blocked'">
+            <a
+              class="uk-text-warning uk-text-bold"
+              (click)="onUnBlockFile('|enabled|' + file.uid, file)"
+              >Desbloquear</a
+            >
+          </span>
+          <span *ngIf="filter === 'deleted'">
+            <a
+              class="uk-text-danger uk-text-bold"
+              (click)="onUnBlockFile('|enabled|' + file.uid, file)"
+              >Recuperar</a
+            >
+          </span>
+        </div>
+        <div *ngIf="file.type !== 'folder'">
+          <img [src]="file.url" [alt]="file.title" [title]="file.title" />
+          <div class="uk-margin">
+            <b>Tipo:</b>
+            &nbsp;
+            <span>{{ file.type }}</span>
           </div>
-          <div *ngIf="file[key].type !== 'folder'">
-            <img
-              [src]="file[key].url"
-              [alt]="file[key].title"
-              [title]="file[key].title"
-            />
-            <div class="uk-margin">
-              <b>Tipo:</b>
-              &nbsp;
-              <span>{{ file[key].type }}</span>
-            </div>
-          </div>
-        </ng-template>
+        </div>
       </div>
     </mat-expansion-panel>
   </mat-accordion>
 </div>
-<div
-  *ngIf="
-    !(files | async) ||
-    ((files | async) && ObjectKeys(files | async).length === 0)
-  "
->
+<div *ngIf="!(files | async)">
   <h2>Not found data</h2>
 </div>
