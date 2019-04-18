@@ -41,7 +41,7 @@ export class AppComponent {
       if (environment.project && environment.project.uid) {
         PROJECT_ID = environment.project.uid;
       } else {
-        PROJECT_ID = 'ng-fire-blank';
+        PROJECT_ID = 'blank-fire';
       }
     }
 

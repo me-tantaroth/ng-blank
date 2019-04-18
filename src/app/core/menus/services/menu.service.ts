@@ -21,20 +21,20 @@ export class MenuService {
     private store: StoreService,
     private langs: LangsService
   ) {
-    const CONFIG: Config = this.configService.get();
-    const NODE = this.store.get('node');
-    const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
-    const NODE_MENU =
-      NODE_LANGS[document.documentElement.lang] ||
-      NODE_LANGS[CONFIG.project.lang].modules.menu.enabled;
-    const LANG = NODE_LANGS[document.documentElement.lang]
-      ? document.documentElement.lang
-      : CONFIG.project.lang;
+    // const CONFIG: Config = this.configService.get();
+    // const NODE = this.store.get('node');
+    // const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
+    // const NODE_MENU =
+    //   NODE_LANGS[document.documentElement.lang] ||
+    //   NODE_LANGS[CONFIG.project.lang].modules.menu.enabled;
+    // const LANG = NODE_LANGS[document.documentElement.lang]
+    //   ? document.documentElement.lang
+    //   : CONFIG.project.lang;
 
-    this.node = NODE;
-    this.rootPath = `|project|${CONFIG.project.uid}|lang|${LANG}|menu`;
+    // this.node = NODE;
+    // this.rootPath = `|project|${CONFIG.project.uid}|lang|${LANG}|menu`;
 
-    this.menus = NODE_MENU;
+    this.menus = {};
   }
 
   list(path?: string): Observable<Menus> {

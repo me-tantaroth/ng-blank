@@ -23,7 +23,7 @@ export interface File {
   blocked: boolean;
   deleted: boolean;
   deletedCount: number;
-  createdAt: firebase.firestore.FieldValue;
+  createdAt: Date;
 }
 export class File {
   constructor(file) {
@@ -45,7 +45,7 @@ export class File {
       file.createdAt === null ||
       file.createdAt === undefined
     ) {
-      file.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      file.createdAt = new Date();
     }
     return file;
   }

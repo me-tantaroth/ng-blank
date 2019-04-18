@@ -61,6 +61,7 @@ export class AuthService {
     this.afAuth.auth
       .signInWithEmailAndPassword(email, passowrd)
       .then((snap) => {
+        console.log('>>>', snap);
         if (snap) {
           if (snap.user) {
             const user: User = new User(snap.user);

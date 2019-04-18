@@ -320,6 +320,7 @@ import {
     CoreModule,
     LangsModule
   ],
+  providers: [{ provide: FirestoreSettingsToken, useValue: {} }],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

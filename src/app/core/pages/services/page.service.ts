@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { StoreService } from 'ng-barn';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
@@ -12,29 +13,34 @@ import { Page, Pages } from '../models/page';
   providedIn: 'root'
 })
 export class PageService {
+  private pagesCollection: AngularFirestoreCollection<Page>;
   private rootPath: string;
   private node;
   private pages: Pages;
 
   constructor(
+    private afs: AngularFirestore,
     private configService: ConfigService,
     private store: StoreService,
     private langs: LangsService
   ) {
     const CONFIG: Config = this.configService.get();
     const NODE = this.store.get('node');
-    const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
-    const NODE_PAGES =
-      NODE_LANGS[document.documentElement.lang] ||
-      NODE_LANGS[CONFIG.project.lang].modules.page.enabled.list;
-    const LANG = NODE_LANGS[document.documentElement.lang]
-      ? document.documentElement.lang
-      : CONFIG.project.lang;
+    // CONFIG.project.uid;
 
-    this.node = NODE;
-    this.rootPath = `|project|${CONFIG.project.uid}|lang|${LANG}|page`;
 
-    this.pages = NODE_PAGES;
+    // const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
+    // const NODE_PAGES =
+    //   NODE_LANGS[document.documentElement.lang] ||
+    //   NODE_LANGS[CONFIG.project.lang].modules.page.enabled.list;
+    // const LANG = NODE_LANGS[document.documentElement.lang]
+    //   ? document.documentElement.lang
+    //   : CONFIG.project.lang;
+
+    // this.node = NODE;
+    // this.rootPath = `|project|${CONFIG.project.uid}|lang|${LANG}|page`;
+
+    this.pages = {};
   }
 
   list(path?: string): Observable<Pages> {
