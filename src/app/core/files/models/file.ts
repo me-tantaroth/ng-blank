@@ -8,21 +8,23 @@ export interface Files {
 }
 
 export interface File {
-  uid: string;
-  title: string;
-  currentPath: string;
+  uuid: string;
+  name: string;
+  text: string;
   backPath: string;
-  dbPath?: string;
+  absolutePath?: string;
+  customPath?: string;
   type: string;
   size?: number;
   lastModifiedDate?: Date;
-  enabled?: Files;
   url?: string;
+  previewImage?: string;
   externalURL: boolean;
   root?: boolean;
+  user: string;
   blocked: boolean;
   deleted: boolean;
-  deletedCount: number;
+  deleteCount: number;
   createdAt: Date;
 }
 export class File {
@@ -31,14 +33,11 @@ export class File {
   }
 
   format(file) {
-    if (!file.uid || file.uid === null || file.uid === undefined) {
-      file.uid = 'file-' + makeid(15);
+    if (!file.uuid || file.uuid === null || file.uuid === undefined) {
+      file.uuid = 'file-' + makeid(15);
     }
     if (!file.type || file.type === null || file.type === undefined) {
       file.type = 'folder';
-    }
-    if (!file.enabled || file.enabled === null || file.enabled === undefined) {
-      file.enabled = {};
     }
     if (
       !file.createdAt ||

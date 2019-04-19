@@ -4,123 +4,97 @@ import {
   AngularFirestoreCollection
 } from '@angular/fire/firestore';
 import { StoreService } from 'ng-barn';
-import { Observable, Subject, of } from 'rxjs';
+import { Observable, from, Subject, of } from 'rxjs';
 import * as _ from 'lodash';
 
 import { Config, ConfigService } from '../../../shared/services/config.service';
-import { LangsService } from '../../../langs/services/langs.service';
 
-import { File, Files } from '../models/file';
-import { map } from 'rxjs/operators';
+import { File } from '../models/file';
+import { switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileService {
-  private fileCollection: AngularFirestoreCollection<File>;
+  private driveCollection: AngularFirestoreCollection<File>;
+  private drive: Observable<File>;
   private fileList: Observable<File[]> = new Observable<File[]>();
   private rootPath: string;
   private node;
-  private files: Files;
 
   constructor(
     private afs: AngularFirestore,
     private configService: ConfigService,
-    private store: StoreService,
-    private langs: LangsService
+    private store: StoreService
   ) {
-    const CONFIG: Config = this.configService.get();
-    const NODE = this.store.get('node');
-    const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
-    const NODE_FILE = (
-      NODE_LANGS[document.documentElement.lang] ||
-      NODE_LANGS[CONFIG.project.lang]
-    ).modules.file;
-    const LANG = NODE_LANGS[document.documentElement.lang]
-      ? document.documentElement.lang
-      : CONFIG.project.lang;
-
-    this.node = NODE;
-    this.rootPath = `|project|${CONFIG.project.uid}|lang|${LANG}|modules|file`;
-
-    this.files = NODE_FILE;
   }
 
   list(path: string): Observable<File[]> {
-    const splitRootPath: string[] = this.rootPath.split('|');
-    const splitPath: string[] = path.split('|');
-    const fbPath = splitRootPath.join('/') + splitPath.join('/');
-
-    console.log('###### LIST', fbPath);
-
-    try {
-      this.fileCollection = this.afs.collection<File>(fbPath);
-      this.fileList = this.fileCollection.valueChanges();
-    } catch (err) {
-      this.fileList = of(null);
-    }
-
-    return this.fileList;
+    return this.configService.get().pipe(
+      switchMap(
+        (config: Config): Observable<File[]> => {
+          return this.afs
+            .collection<File>(
+              `projects/${config.project.uuid}/langs/${
+                config.project.lang
+              }/modules/drive${path.split('|').join('/')}`
+            )
+            .valueChanges();
+        }
+      )
+    );
   }
 
   getItem(path: string): Observable<File> {
-    const splitRootPath: string[] = this.rootPath.split('|');
-    const splitPath: string[] = path.split('|');
-    const fbPath = splitRootPath.join('/') + splitPath.join('/');
-    console.log('#### GET ITEM', fbPath);
-
-    return this.afs.doc<File>(fbPath).valueChanges();
+    return this.configService
+      .get()
+      .pipe(
+        switchMap(
+          (config: Config): Observable<File> =>
+            this.afs
+              .doc<File>(
+                `projects/${config.project.uuid}/langs/${
+                  config.project.lang
+                }/modules/drive${path.split('|').join('/')}`
+              )
+              .valueChanges()
+        )
+      );
   }
 
-  setItem(path: string, file: File): Observable<boolean> {
-    const node = this.node;
-
-    file.dbPath = file.dbPath;
-
-    const splitRootPath: string[] = this.rootPath.split('|');
-    const splitPath: string[] = path.split('|');
-    const fbPath = splitRootPath.join('/') + splitPath.join('/');
-
-    console.log('###### SET', fbPath, file);
-
-    return new Observable((observer) => {
-      this.afs
-        .doc<File>(fbPath)
-        .set(file, { merge: true })
-        .then(() => {
-          // this.afs
-          //   .doc(fbPath + '/list/enabled')
-          //   .set({ name: 'Habilitado' }, { merge: true })
-          //   .then(() => {
-          //     console.log('>>> PATH', fbPath + '/list/enabled');
-          //     observer.next(true);
-          //   });
-            observer.next(true);
-        })
-        .catch(() => observer.next(false));
-    });
+  setItem(path: string, file: File): Observable<void> {
+    return this.configService.get().pipe(
+      switchMap(
+        (config: Config): Observable<void> => {
+          return from(
+            this.afs
+              .doc<File>(
+                `projects/${config.project.uuid}/langs/${
+                  config.project.lang
+                }/modules/drive${path.split('|').join('/')}`
+              )
+              .set(file)
+          );
+        }
+      )
+    );
   }
 
-  removeItem(path: string): Observable<boolean> {
-    const node = this.node;
-
-    const splitRootPath: string[] = this.rootPath.split('|');
-    const splitPath: string[] = path.split('|');
-
-    splitRootPath.shift();
-    splitPath.shift();
-
-    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
-    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
-    const absolutePath = cursorsRoot + cursorsPath;
-
-    const updateAction = `delete node${absolutePath};`;
-
-    eval(updateAction);
-
-    return new Observable((observer) => {
-      observer.next(true);
-      observer.complete();
-    });
+  removeItem(path: string): Observable<void> {
+    return this.configService.get().pipe(
+      switchMap(
+        (config: Config): Observable<void> => {
+          return from(
+            this.afs
+              .doc<File>(
+                `projects/${config.project.uuid}/langs/${
+                  config.project.lang
+                }/modules/drive${path.split('|').join('/')}`
+              )
+              .delete()
+          );
+        }
+      )
+    );
   }
 }

@@ -23,7 +23,7 @@ export class UserViewComponent implements OnInit {
     private route: ActivatedRoute,
     private userService: UserService
   ) {
-    this.config = this.configService.get();
+    // this.config = this.configService.get();
   }
 
   ngOnInit() {

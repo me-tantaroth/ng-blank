@@ -7,18 +7,35 @@
   class="uk-margin"
 ></td-message>
 
-<div *ngIf="filter === 'add-file' || filter === 'add-folder'">
+<div
+  *ngIf="
+    filter === 'add-file' ||
+    filter === 'add-folder' ||
+    filter === 'edit-file' ||
+    filter === 'edit-folder'
+  "
+>
   <ng-template
     let-item
-    [ngTemplateOutletContext]="{ $implicit: file | async }"
+    [ngTemplateOutletContext]="{ $implicit: file }"
     [ngTemplateOutlet]="fileT"
     #fileT
   >
-    <button (click)="prueba(item)">Prueba</button>
-  
     <h3>
-      Agregando {{ filter === 'add-file' ? 'archivo' : 'sub carpeta' }} en
-      {{ item ? item.title : 'Principal' }}
+      {{
+        filter === 'add-file' || filter === 'add-folder'
+          ? 'Agregando'
+          : filter === 'edit-file' || filter === 'edit-folder'
+          ? 'Editando'
+          : ''
+      }}
+      {{
+        filter === 'add-file' || filter === 'edit-file'
+          ? 'archivo'
+          : 'carpeta'
+      }}
+      de
+      {{ item ? item.text : 'Principal' }}
     </h3>
   </ng-template>
 </div>
@@ -45,11 +62,11 @@
   <mat-form-field class="uk-width-1-1 uk-margin-small">
     <input
       matInput
-      #title
+      #text
       placeholder="Título"
-      id="title"
-      name="title"
-      formControlName="title"
+      id="text"
+      name="text"
+      formControlName="text"
     />
   </mat-form-field>
 

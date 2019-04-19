@@ -20,9 +20,9 @@ export class AppComponent {
     let PROJECT_ID: string;
 
     function getDomainName(hostName) {
-      return hostName.substring(
-        hostName.lastIndexOf('.', hostName.lastIndexOf('.') - 1) + 1
-      ).split('.')[0];
+      return hostName
+        .substring(hostName.lastIndexOf('.', hostName.lastIndexOf('.') - 1) + 1)
+        .split('.')[0];
     }
 
     function getSubdomain(hostname) {
@@ -32,16 +32,14 @@ export class AppComponent {
     }
 
     if (environment.production) {
-      if (getSubdomain(window.location.hostname)) {
-        PROJECT_ID = getSubdomain(window.location.hostname);
-      } else {
+      if ((PROJECT_ID = getDomainName(window.location.hostname))) {
         PROJECT_ID = getDomainName(window.location.hostname);
+      } else {
+        PROJECT_ID = environment.project.uuid;
       }
     } else {
-      if (environment.project && environment.project.uid) {
-        PROJECT_ID = environment.project.uid;
-      } else {
-        PROJECT_ID = 'blank-fire';
+      if (environment.project && environment.project.uuid) {
+        PROJECT_ID = environment.project.uuid;
       }
     }
 
@@ -49,9 +47,9 @@ export class AppComponent {
 
     this.configService.set({
       project: {
-        uid: PROJECT_ID,
+        uuid: PROJECT_ID,
         layout: LAYOUTS[NODE[PROJECT_ID]] ? NODE[PROJECT_ID] : 'default',
-        lang: 'es'
+        lang: navigator.language.split('-')[0]
       }
     });
   }

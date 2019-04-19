@@ -24,8 +24,8 @@ export class UserService {
     private store: StoreService,
     private langs: LangsService
   ) {
-    const CONFIG: Config = this.configService.get();
-    const NODE = this.store.get('node');
+    // const CONFIG: Config = this.configService.get();
+    // const NODE = this.store.get('node');
     // const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
     // const NODE_USERS =
     //   NODE_LANGS[document.documentElement.lang] ||

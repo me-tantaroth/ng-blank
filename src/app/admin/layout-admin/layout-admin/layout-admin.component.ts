@@ -47,7 +47,7 @@ export class LayoutAdminComponent implements OnInit {
     },
     {
       icon: 'folder',
-      route: '/admin/file/list',
+      route: '/admin/file/enabled',
       title: 'Folder'
     }
     // {

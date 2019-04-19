@@ -173,17 +173,17 @@ const routes: Routes = [
     canActivate: [SignInGuard],
     children: [
       {
-        path: 'list',
+        path: 'enabled',
         component: FilesComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'list/:filter',
+        path: 'enabled/:filter',
         component: FilesComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'list/:filter/:value',
+        path: 'enabled/:filter/:value',
         component: FilesComponent,
         canActivate: [SignInGuard]
       },

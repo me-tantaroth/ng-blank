@@ -9,7 +9,7 @@
           <app-file-form
             [filter]="filter"
             [value]="value"
-            [file]="file"
+            [file]="file | async"
           ></app-file-form>
         </mat-card-content>
       </mat-card>

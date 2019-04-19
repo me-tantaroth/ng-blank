@@ -26,28 +26,22 @@ export class FileListComponent implements OnInit {
   constructor(private fileService: FileService, private router: Router) {
     router.events.subscribe((data) => {
       if (data instanceof ActivationEnd) {
-        if (
-          !!data.snapshot.params.filter &&
-          data.snapshot.params.filter === 'enabled|list' &&
-          !!data.snapshot.params.value
-        ) {
-          this.currentFile = this.fileService.getItem(
-            data.snapshot.params.value
-          );
-          // this.files = this.fileService.list(
-          //   data.snapshot.params.value + '|enabled|list'
-          // );
-        } else {
-          if (
-            !!data.snapshot.params.filter &&
-            (data.snapshot.params.filter === 'enabled|list' ||
-              data.snapshot.params.filter === 'blocked' ||
-              data.snapshot.params.filter === 'deleted') &&
-            !data.snapshot.params.value
-          ) {
-            // this.files = this.fileService.list(
-            //   '|' + data.snapshot.params.filter
-            // );
+        if (!!data.snapshot.params.filter && !!data.snapshot.params.value) {
+          this.filter = data.snapshot.params.filter;
+          this.value = data.snapshot.params.value;
+          const currentFile = data.snapshot.params.value.split('|');
+
+          currentFile.pop();
+
+          switch (data.snapshot.params.filter) {
+            case 'list':
+              if (currentFile.join('|') !== '') {
+                this.currentFile = this.fileService.getItem(
+                  currentFile.join('|')
+                );
+              }
+              this.files = this.fileService.list(data.snapshot.params.value);
+              break;
           }
         }
       }
@@ -56,23 +50,21 @@ export class FileListComponent implements OnInit {
 
   ngOnInit() {
     if (!!this.filter && !!this.value) {
-      switch (this.filter) {
-        case 'list|enabled':
-          this.currentFile = this.fileService.getItem(this.value);
-          this.files = this.fileService.list(this.value + '|list|enabled');
+      const currentFile = this.value.split('|');
 
-          this.files.subscribe((data) =>
-            console.log('## 1 ----------------->...', this.value)
-          );
+      currentFile.pop();
+
+      switch (this.filter) {
+        case 'list':
+          if (currentFile.join('|') !== '') {
+            this.currentFile = this.fileService.getItem(currentFile.join('|'));
+          }
+          this.files = this.fileService.list(this.value);
           break;
       }
     } else {
-      this.filter = this.filter || 'list|enabled';
+      this.filter = 'list';
       this.files = this.fileService.list('|' + this.filter);
-
-      this.files.subscribe((data) =>
-        console.log('## 2 ----------------->...', this.value)
-      );
     }
   }
 
@@ -91,7 +83,7 @@ export class FileListComponent implements OnInit {
   onBackFile(file: File) {
     if (file) {
       this.router.navigate([
-        '/admin/file/list/' + (this.filter || 'enabled|list'),
+        '/admin/file/enabled/' + file.backPath,
         file.backPath || ''
       ]);
     }
@@ -141,25 +133,25 @@ export class FileListComponent implements OnInit {
     //   });
   }
 
-  onDeleteFile(path: string, file: File) {
-    if (confirm(`Seguro que desea eliminar a '${file.title}'?`)) {
+  onDeleteFile(file: File) {
+    if (confirm(`Seguro que desea eliminar a '${file.text}'?`)) {
       file.deleted = true;
 
-      // this.fileService
-      //   .setItem(path, file)
-      //   .pipe(first())
-      //   .subscribe((status: FileServiceResponse) => {
-      //     if (status) {
-      //       this.fileService
-      //         .removeItem('|enabled|' + file.uid)
-      //         .pipe(first())
-      //         .subscribe((statusEnabled: boolean) => {
-      //           if (statusEnabled) {
-      //             this.files = this.fileService.list('|enabled');
-      //           }
-      //         });
-      //     }
-      //   });
+      const path = file.customPath.split('|');
+
+      path.pop();
+
+      this.fileService
+        .removeItem(path.join('|'))
+        .pipe(first())
+        .subscribe(() => {
+          if (status) {
+            this.fileService
+              .removeItem('|enabled|' + file.uuid)
+              .pipe(first())
+              .subscribe();
+          }
+        });
     }
   }
 

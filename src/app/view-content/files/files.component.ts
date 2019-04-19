@@ -18,7 +18,7 @@ export class FilesComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {
-    this.config = this.configService.get();
+    // this.config = this.configService.get();
 
     this.router.events.subscribe((data) => {
       if (data instanceof ActivationEnd) {

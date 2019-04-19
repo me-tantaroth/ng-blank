@@ -12,7 +12,7 @@ export class SignOutComponent implements OnInit {
   config: Config;
 
   constructor(private configService: ConfigService, private auth: AuthService) {
-    this.config = this.configService.get();
+    // this.config = this.configService.get();
   }
 
   ngOnInit() {

@@ -23,7 +23,7 @@ export class PageViewComponent implements OnInit {
     private route: ActivatedRoute,
     private pageService: PageService
   ) {
-    this.config = this.configService.get();
+    // this.config = this.configService.get();
   }
 
   ngOnInit() {

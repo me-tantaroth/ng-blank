@@ -24,7 +24,7 @@ export class RecoveryComponent implements OnInit {
     private router: Router,
     private auth: AuthService
   ) {
-    this.config = this.configService.get();
+    // this.config = this.configService.get();
     this.authEmail = window.localStorage.getItem('authenticated-email');
     if (!this.authEmail) {
       this.router.navigate(['/']);

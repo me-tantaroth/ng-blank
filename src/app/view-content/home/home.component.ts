@@ -21,7 +21,7 @@ export class HomeComponent implements OnInit {
     private configService: ConfigService,
     private pageService: PageService
   ) {
-    this.config = this.configService.get();
+    // this.config = this.configService.get();
   }
 
   ngOnInit() {

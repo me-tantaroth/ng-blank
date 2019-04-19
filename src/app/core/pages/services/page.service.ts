@@ -24,8 +24,8 @@ export class PageService {
     private store: StoreService,
     private langs: LangsService
   ) {
-    const CONFIG: Config = this.configService.get();
-    const NODE = this.store.get('node');
+    // const CONFIG: Config = this.configService.get();
+    // const NODE = this.store.get('node');
     // CONFIG.project.uid;
 
 

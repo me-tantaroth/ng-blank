@@ -7,101 +7,119 @@
   <div *ngIf="currentFile">
     <ul class="uk-breadcrumb">
       <li>
-        <a (click)="onBackFile(currentFile)">Atrás</a>
+        <a [routerLink]="['/admin/file/enabled/list', currentFile.backPath]"
+          >Atrás</a
+        >
       </li>
       <li>
-        <span>{{ currentFile.title || '--' }}</span>
+        <span>{{ currentFile.text || '--' }}</span>
       </li>
     </ul>
   </div>
 </ng-template>
 
-<div>
-  <mat-accordion>
-    <mat-expansion-panel
-      role="file"
-      *ngFor="let file of (files | async)"
-      (opened)="panelOpenState = true"
-      (closed)="panelOpenState = false"
-    >
-      <mat-expansion-panel-header>
-        <mat-panel-title> {{ file.title || '--' }} </mat-panel-title>
-        <mat-panel-description>
-          {{ file.createdAt.toDate() | date }}
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-      <div>
-        <div align="right" class="uk-margin-small">
-          <span *ngIf="filter === 'list|enabled'">
-            <a
-              *ngIf="file.type === 'folder'"
-              [routerLink]="[
-                '/admin/file/list/list|enabled/',
-                file.currentPath
-              ]"
-              class="uk-text-success"
-              >Archivos</a
-            >
-            &nbsp;
-            <a
-              [routerLink]="[
-                '/admin/file/form/edit-' +
-                  (file.type === 'folder' ? file.type : 'file'),
-                file.currentPath
-              ]"
-              class="uk-text-primary"
-              >Editar</a
-            >
-            &nbsp;
-            <!-- <span
+<div *ngIf="(files | async); else loaderT">
+  <ng-template
+    let-fileList
+    [ngTemplateOutletContext]="{ $implicit: files | async }"
+    [ngTemplateOutlet]="filesT"
+    #filesT
+  >
+    <div *ngIf="fileList && fileList.length > 0; else notFoundT">
+      <mat-accordion>
+        <mat-expansion-panel
+          role="file"
+          *ngFor="let file of fileList"
+          (opened)="panelOpenState = true"
+          (closed)="panelOpenState = false"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title> {{ file.text || '--' }} </mat-panel-title>
+            <mat-panel-description>
+              {{ file.createdAt.toDate() | date }}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div>
+            <div align="right" class="uk-margin-small">
+              <span *ngIf="filter === 'list'">
+                <a
+                  *ngIf="file.type === 'folder'"
+                  [routerLink]="['/admin/file/enabled/list', file.customPath]"
+                  class="uk-text-success"
+                  >Archivos</a
+                >
+                &nbsp;
+                <a
+                  [routerLink]="[
+                    '/admin/file/form/edit-' +
+                      (file.type === 'folder' ? file.type : 'file'),
+                    file.customPath
+                  ]"
+                  class="uk-text-primary"
+                  >Editar</a
+                >
+                &nbsp;
+                <!-- <span
                 *ngIf="file.blocked"
                 class="uk-text-warning uk-text-bold"
                 >{{ file.blocked ? 'Blocked' : '' }}</span
               >
               <a
                 class="uk-text-warning"
-                (click)="onBlockFile(file.currentPath, file)"
+                (click)="onBlockFile(file.customPath, file)"
                 *ngIf="!file.blocked"
                 >Bloquear</a
               >
               &nbsp; -->
-            <span *ngIf="file.deleted" class="uk-text-warning uk-text-bold">{{
-              file.deleted ? 'Deleted' : ''
-            }}</span>
-            <a
-              class="uk-text-danger"
-              (click)="onDeleteFile('|deleted|' + file.uid, file)"
-              *ngIf="!file.deleted"
-              >Eliminar</a
-            >
-          </span>
-          <span *ngIf="filter === 'blocked'">
-            <a
-              class="uk-text-warning uk-text-bold"
-              (click)="onUnBlockFile('|enabled|' + file.uid, file)"
-              >Desbloquear</a
-            >
-          </span>
-          <span *ngIf="filter === 'deleted'">
-            <a
-              class="uk-text-danger uk-text-bold"
-              (click)="onUnBlockFile('|enabled|' + file.uid, file)"
-              >Recuperar</a
-            >
-          </span>
-        </div>
-        <div *ngIf="file.type !== 'folder'">
-          <img [src]="file.url" [alt]="file.title" [title]="file.title" />
-          <div class="uk-margin">
-            <b>Tipo:</b>
-            &nbsp;
-            <span>{{ file.type }}</span>
+                <span
+                  *ngIf="file.deleted"
+                  class="uk-text-warning uk-text-bold"
+                  >{{ file.deleted ? 'Eliminado' : '' }}</span
+                >
+                <a
+                  class="uk-text-danger"
+                  (click)="onDeleteFile(file)"
+                  *ngIf="!file.deleted"
+                  >Eliminar</a
+                >
+              </span>
+              <span *ngIf="filter === 'blocked'">
+                <a
+                  class="uk-text-warning uk-text-bold"
+                  (click)="onUnBlockFile('|enabled|' + file.uuid, file)"
+                  >Desbloquear</a
+                >
+              </span>
+              <span *ngIf="filter === 'deleted'">
+                <a
+                  class="uk-text-danger uk-text-bold"
+                  (click)="onUnBlockFile('|enabled|' + file.uuid, file)"
+                  >Recuperar</a
+                >
+              </span>
+            </div>
+            <div *ngIf="file.type !== 'folder'">
+              <a
+                [href]="file.url"
+                target="{{ file.externalURL === true ? '_blank' : '_self' }}"
+              >
+                <img
+                  [src]="file.previewImage"
+                  [alt]="file.text"
+                  [title]="file.text"
+                />
+              </a>
+              <div class="uk-margin">
+                <b>Tipo:</b>
+                &nbsp;
+                <span>{{ file.type }}</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </mat-expansion-panel>
-  </mat-accordion>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </ng-template>
 </div>
-<div *ngIf="!(files | async)">
-  <h2>Not found data</h2>
-</div>
+<ng-template #loaderT> <h2>Cargando...</h2> </ng-template>
+<ng-template #notFoundT><h2>No hay datos</h2> </ng-template>

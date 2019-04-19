@@ -37,23 +37,30 @@ export class FileComponent implements OnInit {
     const value = this.route.snapshot.paramMap.get('value');
 
     if (value) {
-      this.value = value;
+      const valueParser = value.split('|');
 
-      this.file = this.fileService.getItem(value);
+      valueParser.pop();
+
+      this.value = valueParser.join('|');
+
+      this.file = this.fileService.getItem(valueParser.join('|'));
     } else {
       this.route.paramMap
         .subscribe((params) => {
           if (params.get('value')) {
-            this.value = params.get('value');
+            const valueParser = params.get('value').split('|');
 
-            this.file = this.fileService.getItem(value);
+            valueParser.pop();
+
+            this.value = valueParser.join('|');
+
+            this.file = this.fileService.getItem(valueParser.join('|'));
           }
         })
         .unsubscribe();
     }
 
     const filter = this.route.snapshot.paramMap.get('filter');
-    console.log('¡?==?=?=?', filter);
 
     if (filter) {
       this.filter = filter;

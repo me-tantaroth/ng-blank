@@ -11,7 +11,7 @@ export class SignUpComponent implements OnInit {
   config: Config;
 
   constructor(private configService: ConfigService) {
-    this.config = this.configService.get();
+    // this.config = this.configService.get();
   }
 
   ngOnInit() {}

@@ -132,7 +132,7 @@ export class FileListPluginComponent implements OnInit {
   }
 
   onDeleteFile(path: string, file: File) {
-    if (confirm(`Seguro que desea eliminar a '${file.title}'?`)) {
+    if (confirm(`Seguro que desea eliminar a '${file.text}'?`)) {
       file.deleted = true;
 
       // this.fileService
