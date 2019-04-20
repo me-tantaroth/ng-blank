@@ -27,22 +27,22 @@ export class LayoutAdminComponent implements OnInit {
     },
     {
       icon: 'people',
-      route: '/admin/user/list',
+      route: '/admin/user/enabled',
       title: 'Users'
     },
     {
       icon: 'insert_drive_file',
-      route: '/admin/page/list',
+      route: '/admin/page/enabled',
       title: 'Pages'
     },
     {
       icon: 'slideshow',
-      route: '/admin/slide/list',
+      route: '/admin/slide/enabled',
       title: 'Slides'
     },
     {
       icon: 'menu',
-      route: '/admin/menu/list',
+      route: '/admin/menu/enabled',
       title: 'Menus'
     },
     {

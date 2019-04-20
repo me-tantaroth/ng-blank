@@ -35,17 +35,17 @@ const routes: Routes = [
     canActivate: [SignInGuard],
     children: [
       {
-        path: 'list',
+        path: 'enabled',
         component: UsersComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'list/:filter',
+        path: 'enabled/:filter',
         component: UsersComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'list/:filter/:value',
+        path: 'enabled/:filter/:value',
         component: UsersComponent,
         canActivate: [SignInGuard]
       },
@@ -71,28 +71,34 @@ const routes: Routes = [
     canActivate: [SignInGuard],
     children: [
       {
-        path: 'list',
-        component: SlidesComponent
+        path: 'enabled',
+        component: SlidesComponent,
+        canActivate: [SignInGuard]
       },
       {
-        path: 'list/:filter',
-        component: SlidesComponent
+        path: 'enabled/:filter',
+        component: SlidesComponent,
+        canActivate: [SignInGuard]
       },
       {
-        path: 'list/:filter/:value',
-        component: SlidesComponent
+        path: 'enabled/:filter/:value',
+        component: SlidesComponent,
+        canActivate: [SignInGuard]
       },
       {
         path: 'form',
-        component: SlideComponent
+        component: SlideComponent,
+        canActivate: [SignInGuard]
+      },
+      {
+        path: 'form/:filter',
+        component: SlideComponent,
+        canActivate: [SignInGuard]
       },
       {
         path: 'form/:filter/:value',
-        component: SlideComponent
-      },
-      {
-        path: 'form/:filter/:value',
-        component: SlideComponent
+        component: SlideComponent,
+        canActivate: [SignInGuard]
       }
     ]
   },
@@ -101,17 +107,17 @@ const routes: Routes = [
     canActivate: [SignInGuard],
     children: [
       {
-        path: 'list',
+        path: 'enabled',
         component: PagesComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'list/:filter',
+        path: 'enabled/:filter',
         component: PagesComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'list/:filter/:value',
+        path: 'enabled/:filter/:value',
         component: PagesComponent,
         canActivate: [SignInGuard]
       },
@@ -137,17 +143,17 @@ const routes: Routes = [
     canActivate: [SignInGuard],
     children: [
       {
-        path: 'list',
+        path: 'enabled',
         component: MenusComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'list/:filter',
+        path: 'enabled/:filter',
         component: MenusComponent,
         canActivate: [SignInGuard]
       },
       {
-        path: 'list/:filter/:value',
+        path: 'enabled/:filter/:value',
         component: MenusComponent,
         canActivate: [SignInGuard]
       },
