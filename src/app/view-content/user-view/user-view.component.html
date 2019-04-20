@@ -1,3 +1,3 @@
-<app-load-layout [template]="config.project.layout">
+<app-load-layout [config]="config | async">
   <app-user-info [user]="user | async"></app-user-info>
 </app-load-layout>

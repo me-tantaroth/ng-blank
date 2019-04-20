@@ -30,9 +30,7 @@
           : ''
       }}
       {{
-        filter === 'add-file' || filter === 'edit-file'
-          ? 'archivo'
-          : 'carpeta'
+        filter === 'add-file' || filter === 'edit-file' ? 'archivo' : 'carpeta'
       }}
       de
       {{ item ? item.text : 'Principal' }}
@@ -56,6 +54,39 @@
       <div align="center">
         <button mat-raised-button>Seleccionar</button>
       </div>
+      <ng-template
+        let-fileUploaded
+        [ngTemplateOutletContext]="{ $implicit: fileUploaded | async }"
+        [ngTemplateOutlet]="fileUploadedT"
+        #fileUploadedT
+      >
+        <ng-template
+          let-uploadPercent
+          [ngTemplateOutletContext]="{
+            $implicit: fileUploaded?.percent | async
+          }"
+          [ngTemplateOutlet]="uploadPercentT"
+          #uploadPercentT
+        >
+          <mat-form-field class="uk-width-1-1">
+            <input matInput formControlName="url" class="uk-hidden" />
+            <mat-hint
+              align="end"
+              [ngClass]="{
+                'uk-text-warning': ((uploadPercent || 0) < 100),
+                'uk-text-emphasis': (uploadPercent || 0) >= 100
+              }"
+              >
+              <span *ngIf="(uploadPercent || 0) >= 100">Archivo subido.</span>
+              {{ uploadPercent || 0 }}%
+            </mat-hint>
+          </mat-form-field>
+          <mat-progress-bar
+            mode="determinate"
+            [value]="uploadPercent"
+          ></mat-progress-bar>
+        </ng-template>
+      </ng-template>
     </app-file-upload>
   </div>
 

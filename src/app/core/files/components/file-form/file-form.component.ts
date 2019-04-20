@@ -1,4 +1,10 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  Input
+} from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,6 +14,10 @@ import * as _moment from 'moment';
 import { Observable } from 'rxjs';
 
 import { FileService } from '../../services/file.service';
+import {
+  StorageService,
+  FileUploaded
+} from '../../../services/storage.service';
 
 import { File } from '../../models/file';
 import { Message } from '../../../../models/message';
@@ -22,6 +32,7 @@ export class FileFormComponent implements OnInit, OnChanges {
   @Input() filter: string;
   @Input() value: string;
 
+  fileUploaded: Observable<FileUploaded>;
   events: string[] = [];
   files: Observable<File[]>;
   submitted: boolean;
@@ -35,6 +46,7 @@ export class FileFormComponent implements OnInit, OnChanges {
   constructor(
     private afs: AngularFirestore,
     private store: StoreService,
+    private storageService: StorageService,
     private fileService: FileService,
     private router: Router
   ) {
@@ -87,9 +99,9 @@ export class FileFormComponent implements OnInit, OnChanges {
   }
 
   onFilesChanged(files) {
-    if (files && files.length && files.length > 0) {
-      const file = files[0];
+    const file = files[0];
 
+    if (files && files.length && files.length > 0) {
       if (file.type.search('image/') >= 0) {
         const reader = new FileReader();
 
@@ -103,20 +115,34 @@ export class FileFormComponent implements OnInit, OnChanges {
             type: file.type,
             size: file.size,
             lastModifiedDate: file.lastModifiedDate,
-            url: event.target.result,
-            previewImage: 'http://www.clker.com/cliparts/V/k/G/v/Z/3/new-file-simple-md.png'
+            previewImage: event.target.result
           });
         };
       } else {
         // UPLOAD FILE TO FIRESTORAGE
         // GET DOWNLOAD URL AND ADD THIS URL TO FORM LINK
-        this.form.patchValue({
-          text: file.text,
-          type: file.type,
-          size: file.size,
-          lastModifiedDate: file.lastModifiedDate
-        });
       }
+
+      this.fileUploaded = this.storageService.uploadFile(file);
+      this.fileUploaded.subscribe((fileUploaded: FileUploaded) => {
+        if (fileUploaded.downloadURL) {
+          fileUploaded.downloadURL.subscribe((url) => {
+            const response = {
+              externalURL: true,
+              previewImage: null,
+              url,
+              text: file.text,
+              type: file.type,
+              size: file.size,
+              lastModifiedDate: file.lastModifiedDate
+            };
+            if (file.type.search('image/') >= 0) {
+              response.previewImage = url;
+            }
+            this.form.patchValue(response);
+          });
+        }
+      });
     }
   }
 

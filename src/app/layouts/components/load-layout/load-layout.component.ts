@@ -4,13 +4,15 @@ import { Observable } from 'rxjs';
 
 import { AuthService } from '../../../core/auth/services/auth.service';
 
+import { Config } from '../../../shared/services/config.service';
+
 @Component({
   selector: 'app-load-layout',
   templateUrl: './load-layout.component.html',
   styleUrls: ['./load-layout.component.scss']
 })
 export class LoadLayoutComponent implements OnInit {
-  @Input() template: string;
+  @Input() config: Config;
 
   @ViewChild('default') default;
   @ViewChild('corpayande') corpayande;

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import * as _ from 'lodash';
 import { Observable } from 'rxjs';
+import * as _ from 'lodash';
 
 import { Config, ConfigService } from '../../shared/services/config.service';
 
@@ -15,7 +15,7 @@ import { Page, Pages } from '../../core/pages/models/page';
   styleUrls: ['./page-view.component.scss']
 })
 export class PageViewComponent implements OnInit {
-  config: Config;
+  config: Observable<Config>;
   pages: Observable<Pages>;
 
   constructor(
@@ -23,7 +23,7 @@ export class PageViewComponent implements OnInit {
     private route: ActivatedRoute,
     private pageService: PageService
   ) {
-    // this.config = this.configService.get();
+    this.config = this.configService.get();
   }
 
   ngOnInit() {

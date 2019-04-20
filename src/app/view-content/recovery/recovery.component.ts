@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import { Config, ConfigService } from '../../shared/services/config.service';
 
@@ -13,7 +14,7 @@ import { Message } from '../../models/message';
   styleUrls: ['./recovery.component.scss']
 })
 export class RecoveryComponent implements OnInit {
-  config: Config;
+  config: Observable<Config>;
   authEmail: string;
   message: Message = {
     show: false
@@ -24,7 +25,7 @@ export class RecoveryComponent implements OnInit {
     private router: Router,
     private auth: AuthService
   ) {
-    // this.config = this.configService.get();
+    this.config = this.configService.get();
     this.authEmail = window.localStorage.getItem('authenticated-email');
     if (!this.authEmail) {
       this.router.navigate(['/']);

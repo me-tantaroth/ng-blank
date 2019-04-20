@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { Config, ConfigService } from '../../shared/services/config.service';
 
@@ -8,10 +9,10 @@ import { Config, ConfigService } from '../../shared/services/config.service';
   styleUrls: ['./sign-in.component.scss']
 })
 export class SignInComponent implements OnInit {
-  config: Config;
+  config: Observable<Config>;
 
   constructor(private configService: ConfigService) {
-    // this.config = this.configService.get();
+    this.config = this.configService.get();
   }
 
   ngOnInit() {

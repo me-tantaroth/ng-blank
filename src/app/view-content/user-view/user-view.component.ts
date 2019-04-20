@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import * as _ from 'lodash';
 import { Observable } from 'rxjs';
+import * as _ from 'lodash';
 
 import { Config, ConfigService } from '../../shared/services/config.service';
 
@@ -15,7 +15,7 @@ import { User } from '../../core/users/models/user';
   styleUrls: ['./user-view.component.scss']
 })
 export class UserViewComponent implements OnInit {
-  config: Config;
+  config: Observable<Config>;
   user: Observable<User>;
 
   constructor(

@@ -1,4 +1,4 @@
-<app-load-layout [template]="config.project.layout">
+<app-load-layout [config]="config | async">
   <app-slideshow-plugin></app-slideshow-plugin>
 
   <div *ngIf="(page | async)">

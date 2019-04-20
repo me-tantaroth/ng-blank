@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import { Config, ConfigService } from '../../shared/services/config.service';
 
@@ -9,7 +10,7 @@ import { Config, ConfigService } from '../../shared/services/config.service';
   styleUrls: ['./files.component.scss']
 })
 export class FilesComponent implements OnInit {
-  config: Config;
+  config: Observable<Config>;
   filter: string;
   value: string;
 
@@ -18,7 +19,7 @@ export class FilesComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {
-    // this.config = this.configService.get();
+    this.config = this.configService.get();
 
     this.router.events.subscribe((data) => {
       if (data instanceof ActivationEnd) {

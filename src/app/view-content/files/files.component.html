@@ -1,4 +1,4 @@
-<app-load-layout [template]="config.project.layout">
+<app-load-layout [config]="config | async">
   <h1>Files</h1>
 
   <app-file-list-plugin [filter]="filter" [value]="value"></app-file-list-plugin>

@@ -26,7 +26,8 @@ import {
   MatNativeDateModule,
   MatSliderModule,
   MatAutocompleteModule,
-  MatExpansionModule
+  MatExpansionModule,
+  MatProgressBarModule
 } from '@angular/material';
 
 @NgModule({
@@ -56,7 +57,8 @@ import {
     MatNativeDateModule,
     MatSliderModule,
     MatAutocompleteModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatProgressBarModule
   ],
   exports: [
     MatFormFieldModule,
@@ -83,7 +85,8 @@ import {
     MatNativeDateModule,
     MatSliderModule,
     MatAutocompleteModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatProgressBarModule
   ]
 })
 export class MaterialModule {}

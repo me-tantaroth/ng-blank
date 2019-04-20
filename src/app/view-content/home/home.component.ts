@@ -14,14 +14,14 @@ import { Page, Pages } from '../../core/pages/models/page';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  config: Config;
+  config: Observable<Config>;
   page: Observable<Page>;
 
   constructor(
     private configService: ConfigService,
     private pageService: PageService
   ) {
-    // this.config = this.configService.get();
+    this.config = this.configService.get();
   }
 
   ngOnInit() {

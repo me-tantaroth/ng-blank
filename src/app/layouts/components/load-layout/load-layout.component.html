@@ -4,20 +4,20 @@
 
 <ng-template #default>
   <app-layout-default [authenticated]="authenticated | async">
-    <div *ngIf="template === 'default'">
+    <div *ngIf="config.project.layout === 'default'">
       <ng-container [ngTemplateOutlet]="content"> </ng-container>
     </div>
   </app-layout-default>
 </ng-template>
 <ng-template #corpayande>
   <app-layout-corpayande>
-    <div *ngIf="template === 'corpayande'">
+    <div *ngIf="config.project.layout === 'corpayande'">
       <ng-container [ngTemplateOutlet]="content"> </ng-container>
     </div>
   </app-layout-corpayande>
 </ng-template>
 
-<ng-container [ngTemplateOutlet]="templates[template]"> </ng-container>
+<ng-container [ngTemplateOutlet]="templates[config?.project.layout]"> </ng-container>
 
 <!-- ADMIN MENU -->
 
@@ -30,7 +30,7 @@
       <button
         type="button"
         mat-mini-fab
-        routerLink="/admin/file/list"
+        routerLink="/admin/file/enabled"
         uk-tooltip="title: Folder; pos: left"
       >
         <mat-icon aria-label="Folder">folder</mat-icon>

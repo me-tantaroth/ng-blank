@@ -25,41 +25,42 @@
     [ngTemplateOutlet]="filesT"
     #filesT
   >
-    <div *ngIf="fileList && fileList.length > 0; else notFoundT">
-      <mat-accordion>
-        <mat-expansion-panel
-          role="file"
-          *ngFor="let file of fileList"
-          (opened)="panelOpenState = true"
-          (closed)="panelOpenState = false"
-        >
-          <mat-expansion-panel-header>
-            <mat-panel-title> {{ file.text || '--' }} </mat-panel-title>
-            <mat-panel-description>
-              {{ file.createdAt.toDate() | date }}
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <div>
-            <div align="right" class="uk-margin-small">
-              <span *ngIf="filter === 'list'">
-                <a
-                  *ngIf="file.type === 'folder'"
-                  [routerLink]="['/admin/file/enabled/list', file.customPath]"
-                  class="uk-text-success"
-                  >Archivos</a
-                >
-                &nbsp;
-                <a
-                  [routerLink]="[
-                    '/admin/file/form/edit-' +
-                      (file.type === 'folder' ? file.type : 'file'),
-                    file.customPath
-                  ]"
-                  class="uk-text-primary"
-                  >Editar</a
-                >
-                &nbsp;
-                <!-- <span
+    <div *ngIf="fileList; else loaderT">
+      <div *ngIf="fileList.length > 0; else notFoundT">
+        <mat-accordion>
+          <mat-expansion-panel
+            role="file"
+            *ngFor="let file of fileList"
+            (opened)="panelOpenState = true"
+            (closed)="panelOpenState = false"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title> {{ file.text || '--' }} </mat-panel-title>
+              <mat-panel-description>
+                {{ file.createdAt.toDate() | date }}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div>
+              <div align="right" class="uk-margin-small">
+                <span *ngIf="filter === 'list'">
+                  <a
+                    *ngIf="file.type === 'folder'"
+                    [routerLink]="['/admin/file/enabled/list', file.customPath]"
+                    class="uk-text-success"
+                    >Archivos</a
+                  >
+                  &nbsp;
+                  <a
+                    [routerLink]="[
+                      '/admin/file/form/edit-' +
+                        (file.type === 'folder' ? file.type : 'file'),
+                      file.customPath
+                    ]"
+                    class="uk-text-primary"
+                    >Editar</a
+                  >
+                  &nbsp;
+                  <!-- <span
                 *ngIf="file.blocked"
                 class="uk-text-warning uk-text-bold"
                 >{{ file.blocked ? 'Blocked' : '' }}</span
@@ -71,53 +72,56 @@
                 >Bloquear</a
               >
               &nbsp; -->
-                <span
-                  *ngIf="file.deleted"
-                  class="uk-text-warning uk-text-bold"
-                  >{{ file.deleted ? 'Eliminado' : '' }}</span
-                >
+                  <span
+                    *ngIf="file.deleted"
+                    class="uk-text-warning uk-text-bold"
+                    >{{ file.deleted ? 'Eliminado' : '' }}</span
+                  >
+                  <a
+                    class="uk-text-danger"
+                    (click)="onDeleteFile(file)"
+                    *ngIf="!file.deleted"
+                    >Eliminar</a
+                  >
+                </span>
+                <span *ngIf="filter === 'blocked'">
+                  <a
+                    class="uk-text-warning uk-text-bold"
+                    (click)="onUnBlockFile('|enabled|' + file.uuid, file)"
+                    >Desbloquear</a
+                  >
+                </span>
+                <span *ngIf="filter === 'deleted'">
+                  <a
+                    class="uk-text-danger uk-text-bold"
+                    (click)="onUnBlockFile('|enabled|' + file.uuid, file)"
+                    >Recuperar</a
+                  >
+                </span>
+              </div>
+              <div *ngIf="file.type !== 'folder'">
                 <a
-                  class="uk-text-danger"
-                  (click)="onDeleteFile(file)"
-                  *ngIf="!file.deleted"
-                  >Eliminar</a
+                  [href]="file.url"
+                  target="{{ file.externalURL === true ? '_blank' : '_self' }}"
                 >
-              </span>
-              <span *ngIf="filter === 'blocked'">
-                <a
-                  class="uk-text-warning uk-text-bold"
-                  (click)="onUnBlockFile('|enabled|' + file.uuid, file)"
-                  >Desbloquear</a
-                >
-              </span>
-              <span *ngIf="filter === 'deleted'">
-                <a
-                  class="uk-text-danger uk-text-bold"
-                  (click)="onUnBlockFile('|enabled|' + file.uuid, file)"
-                  >Recuperar</a
-                >
-              </span>
-            </div>
-            <div *ngIf="file.type !== 'folder'">
-              <a
-                [href]="file.url"
-                target="{{ file.externalURL === true ? '_blank' : '_self' }}"
-              >
-                <img
-                  [src]="file.previewImage"
-                  [alt]="file.text"
-                  [title]="file.text"
-                />
-              </a>
-              <div class="uk-margin">
-                <b>Tipo:</b>
-                &nbsp;
-                <span>{{ file.type }}</span>
+                  <img
+                    *ngIf="file.previewImage"
+                    [src]="file.previewImage"
+                    [alt]="file.text"
+                    [title]="file.text"
+                  />
+                  <span *ngIf="!file.previewImage">{{ file.text }}</span>
+                </a>
+                <div class="uk-margin">
+                  <b>Tipo:</b>
+                  &nbsp;
+                  <span>{{ file.type }}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </mat-expansion-panel>
-      </mat-accordion>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
     </div>
   </ng-template>
 </div>
