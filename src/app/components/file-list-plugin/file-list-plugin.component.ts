@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 import { FileService } from '../../core/files/services/file.service';
 
-import { File, Files } from '../../core/files/models/file';
+import { File } from '../../core/files/models/file';
 
 @Component({
   selector: 'app-file-list-plugin',

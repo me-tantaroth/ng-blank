@@ -1,27 +1,20 @@
-
-import * as firebase from 'firebase/app';
-
 import { makeid } from '../../../shared/utils';
-
-export interface Files {
-  [key: string]: File;
-}
 
 export interface File {
   uuid: string;
   name: string;
   text: string;
-  backPath: string;
+  url?: string;
+  externalURL: boolean;
   absolutePath?: string;
   customPath?: string;
-  type: string;
+  backPath: string;
+  previewImage?: string;
+  type: string; // folder or file type (image/png)
   size?: number;
   lastModifiedDate?: Date;
-  url?: string;
-  previewImage?: string;
-  externalURL: boolean;
   root?: boolean;
-  user: string;
+  user: string; // uuid of user modifier
   blocked: boolean;
   deleted: boolean;
   deleteCount: number;

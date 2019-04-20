@@ -1,4 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  Input
+} from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StoreService } from 'ng-barn';
@@ -8,7 +15,7 @@ import { Observable } from 'rxjs';
 
 import { MenuService } from '../../services/menu.service';
 
-import { Menu, Menus } from '../../models/menu';
+import { Menu } from '../../models/menu';
 import { Message } from '../../../../models/message';
 
 @Component({
@@ -16,12 +23,12 @@ import { Message } from '../../../../models/message';
   templateUrl: './menu-form.component.html',
   styleUrls: ['./menu-form.component.scss']
 })
-export class MenuFormComponent implements OnInit {
+export class MenuFormComponent implements OnInit, OnChanges {
   @Input() menu: Menu;
   @Input() filter: string;
   @Input() value: string;
 
-  menus: Observable<Menus>;
+  menus: Observable<Menu[]>;
   submitted: boolean;
   form: FormGroup;
   editing: boolean;
@@ -31,6 +38,7 @@ export class MenuFormComponent implements OnInit {
   errorMessages: any;
 
   constructor(
+    private afs: AngularFirestore,
     private store: StoreService,
     private menuService: MenuService,
     private router: Router
@@ -49,17 +57,28 @@ export class MenuFormComponent implements OnInit {
       }
     };
     this.form = new FormGroup({
-      uid: new FormControl(),
-      title: new FormControl('', Validators.required),
-      url: new FormControl('', Validators.required),
-      currentPath: new FormControl(''),
-      dbPath: new FormControl(''),
+      name: new FormControl('', Validators.required),
+      text: new FormControl(''),
+      uuid: new FormControl(''),
+      customPath: new FormControl(''),
+      backPath: new FormControl(''),
+      absolutePath: new FormControl(''),
+      url: new FormControl(''),
       externalURL: new FormControl(false),
+      root: new FormControl(true),
       blocked: new FormControl(true),
       deleted: new FormControl(false)
     });
     if (this.filter === 'edit') {
       this.form.patchValue(this.menu);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.menu.currentValue) {
+      if (this.filter.search('edit') >= 0) {
+        this.form.patchValue(changes.menu.currentValue);
+      }
     }
   }
 
@@ -79,96 +98,75 @@ export class MenuFormComponent implements OnInit {
     const value = event[event.index];
     const menu: Menu = new Menu(value);
 
-    if (this.filter === 'edit') {
-      menu.dbPath = this.value + '|enabled';
-      menu.currentPath = this.value + '|enabled|' + menu.uid;
-      menu.backPath = this.value;
-      menu.root = true;
+    menu.text = menu.name;
 
-      this.menuService
-        .setItem(this.value, menu)
-        .subscribe((status: boolean) => {
-          if (status) {
+    if (this.filter.search('edit') >= 0) {
+      menu.customPath = this.value + '|list';
+
+      this.menuService.setItem(this.value, menu).subscribe(() => {
+        this.message = {
+          show: true,
+          label: 'Info',
+          sublabel: 'Guardado',
+          color: 'accent',
+          icon: 'info'
+        };
+      });
+    } else if (this.filter.search('add') >= 0) {
+      menu.absolutePath =
+        '/projects/blank-fire/langs/es/modules/drive/list/' + menu.uuid;
+
+      if (this.value) {
+        menu.uuid = this.afs.createId();
+        menu.customPath = this.value + '|list|' + menu.uuid + '|list';
+        menu.backPath = this.value + '|list';
+        menu.root = true;
+        menu.absolutePath = `/projects/blank-fire/langs/es/modules/drive${this.value
+          .split('|')
+          .join('/')}/list/${menu.uuid}`;
+
+        this.menuService
+          .setItem(this.value + '|list|' + menu.uuid, menu)
+          .subscribe(() => {
             this.message = {
               show: true,
               label: 'Info',
-              sublabel: 'Menú guardado',
+              sublabel: 'Guardado',
               color: 'accent',
               icon: 'info'
             };
-
-            this.router.navigate(['/admin/menu/list']);
-          }
-        })
-        .unsubscribe();
-    } else if (this.filter === 'add') {
-      if (this.value) {
-        menu.dbPath = this.value + '|enabled';
-        menu.currentPath = this.value + '|enabled|' + menu.uid;
-        menu.backPath = this.value;
-        menu.root = true;
-
-        this.menuService
-          .setItem(this.value + '|enabled|' + menu.uid, menu)
-          .subscribe((status: boolean) => {
-            if (status) {
-              this.message = {
-                show: true,
-                label: 'Info',
-                sublabel: 'Menú guardado',
-                color: 'accent',
-                icon: 'info'
-              };
-
-              this.router.navigate(['/admin/menu/list']);
-            }
-          })
-          .unsubscribe();
+          });
       } else {
-        menu.dbPath = '|enabled';
-        menu.currentPath = '|enabled|' + menu.uid;
-        menu.backPath = '';
+        menu.uuid = this.afs.createId();
+        menu.customPath = '|list|' + menu.uuid + '|list';
+        menu.backPath = '|list';
         menu.root = true;
 
-        this.menuService
-          .setItem('|enabled|' + menu.uid, menu)
-          .subscribe((status: boolean) => {
-            if (status) {
-              this.message = {
-                show: true,
-                label: 'Info',
-                sublabel: 'Menú guardado',
-                color: 'accent',
-                icon: 'info'
-              };
-
-              this.router.navigate(['/admin/menu/list']);
-            }
-          })
-          .unsubscribe();
+        this.menuService.setItem('|list|' + menu.uuid, menu).subscribe(() => {
+          this.message = {
+            show: true,
+            label: 'Info',
+            sublabel: 'Guardado',
+            color: 'accent',
+            icon: 'info'
+          };
+        });
       }
     } else {
-      menu.dbPath = '|enabled';
-      menu.currentPath = '|enabled|' + menu.uid;
-      menu.backPath = '';
+      menu.uuid = this.afs.createId();
+      menu.customPath = '|list|' + menu.uuid + '|list';
+      menu.backPath = '|list';
       menu.root = true;
 
-      this.menuService
-        .setItem('|enabled|' + menu.uid, menu)
-        .subscribe((status: boolean) => {
-          if (status) {
-            this.message = {
-              show: true,
-              label: 'Info',
-              sublabel: 'Menú guardado',
-              color: 'accent',
-              icon: 'info'
-            };
-
-            this.router.navigate(['/admin/menu/list']);
-          }
-        })
-        .unsubscribe();
+      this.menuService.setItem('|list|' + menu.uuid, menu).subscribe(() => {
+        this.message = {
+          show: true,
+          label: 'Info',
+          sublabel: 'Guardado',
+          color: 'accent',
+          icon: 'info'
+        };
+      });
     }
 
     this.reset();

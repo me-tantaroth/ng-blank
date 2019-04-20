@@ -7,8 +7,25 @@
   class="uk-margin"
 ></td-message>
 
-<div *ngIf="filter === 'add' && value">
-  <h3>Agregando submenu en {{ menu ? menu.title : 'Principal' }}</h3>
+<div *ngIf="filter === 'add-menu' || filter === 'edit-menu'">
+  <ng-template
+    let-menu
+    [ngTemplateOutletContext]="{ $implicit: menu }"
+    [ngTemplateOutlet]="menuT"
+    #menuT
+  >
+    <h3>
+      {{
+        filter === 'add-menu'
+          ? 'Agregando'
+          : filter === 'edit-menu'
+          ? 'Editando'
+          : ''
+      }}
+      menú de
+      {{ menu ? menu.text : 'Principal' }}
+    </h3>
+  </ng-template>
 </div>
 
 <tnt-barn-form
@@ -19,11 +36,11 @@
   <mat-form-field class="uk-width-1-1 uk-margin-small">
     <input
       matInput
-      #title
-      placeholder="Título"
-      id="title"
-      name="title"
-      formControlName="title"
+      #name
+      placeholder="Nombre"
+      id="name"
+      name="name"
+      formControlName="name"
     />
   </mat-form-field>
 
@@ -35,6 +52,17 @@
       id="url"
       name="url"
       formControlName="url"
+    />
+  </mat-form-field>
+
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+    <input
+      matInput
+      #text
+      placeholder="Texto"
+      id="text"
+      name="text"
+      formControlName="text"
     />
   </mat-form-field>
 

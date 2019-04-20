@@ -27,7 +27,6 @@ export class ConfigService {
   private config: Config;
 
   constructor(private afs: AngularFirestore) {
-    console.log('>>>', this.config);
     this.projectsCollection = afs.collection<File>(`projects`);
   }
 

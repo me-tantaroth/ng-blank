@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 import { FileService } from '../../services/file.service';
 
-import { File, Files } from '../../models/file';
+import { File } from '../../models/file';
 
 @Component({
   selector: 'app-file-list',
@@ -82,10 +82,7 @@ export class FileListComponent implements OnInit {
 
   onBackFile(file: File) {
     if (file) {
-      this.router.navigate([
-        '/admin/file/enabled/' + file.backPath,
-        file.backPath || ''
-      ]);
+      this.router.navigate(['/admin/file/enabled', file.backPath || '']);
     }
   }
 

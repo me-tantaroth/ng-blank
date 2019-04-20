@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 import { MenuService } from '../../services/menu.service';
 
-import { Menu, Menus } from '../../models/menu';
+import { Menu } from '../../models/menu';
 
 @Component({
   selector: 'app-menu-list',
@@ -20,35 +20,28 @@ export class MenuListComponent implements OnInit {
   ObjectKeys = Object.keys;
   panelOpenState: boolean;
   currentMenu: Observable<Menu>;
-  menuList: Observable<Menus>;
-  backMenu: Observable<Menus>;
+  menus: Observable<Menu[]>;
+  backMenu: Observable<Menu[]>;
 
   constructor(private menuService: MenuService, private router: Router) {
     router.events.subscribe((data) => {
       if (data instanceof ActivationEnd) {
-        if (
-          !!data.snapshot.params.filter &&
-          data.snapshot.params.filter === 'enabled' &&
-          !!data.snapshot.params.value
-        ) {
-          this.currentMenu = this.menuService.getItem(
-            data.snapshot.params.value
-          );
-          this.menuList = this.menuService.list(
-            data.snapshot.params.value + '|enabled'
-          );
-        } else {
-          if (
-            !!data.snapshot.params.filter &&
-            (data.snapshot.params.filter === 'enabled' ||
-              data.snapshot.params.filter === 'blocked' ||
-              data.snapshot.params.filter === 'deleted') &&
-            !data.snapshot.params.value
-          ) {
-            console.log('¡?¡¡¡¡¡¡¡¡', data.snapshot.params.filter);
-            this.menuList = this.menuService.list(
-              '|' + data.snapshot.params.filter
-            );
+        if (!!data.snapshot.params.filter && !!data.snapshot.params.value) {
+          this.filter = data.snapshot.params.filter;
+          this.value = data.snapshot.params.value;
+          const currentMenu = data.snapshot.params.value.split('|');
+
+          currentMenu.pop();
+
+          switch (data.snapshot.params.filter) {
+            case 'list':
+              if (currentMenu.join('|') !== '') {
+                this.currentMenu = this.menuService.getItem(
+                  currentMenu.join('|')
+                );
+              }
+              this.menus = this.menuService.list(data.snapshot.params.value);
+              break;
           }
         }
       }
@@ -56,17 +49,22 @@ export class MenuListComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!!this.filter && this.filter === 'enabled' && !!this.value) {
-      console.log('## FILTER PATH');
-      this.currentMenu = this.menuService.getItem(this.value);
+    if (!!this.filter && !!this.value) {
+      const currentMenu = this.value.split('|');
 
-      this.menuList = this.menuService.list(this.value + '|enabled');
+      currentMenu.pop();
+
+      switch (this.filter) {
+        case 'list':
+          if (currentMenu.join('|') !== '') {
+            this.currentMenu = this.menuService.getItem(currentMenu.join('|'));
+          }
+          this.menus = this.menuService.list(this.value);
+          break;
+      }
     } else {
-      this.filter = this.filter || 'enabled';
-
-      console.log('## ONLY NOT DELETED');
-      this.menuList = this.menuService.list('|' + this.filter);
-      this.menuList.subscribe(data => console.log('QQQQ', data));
+      this.filter = 'list';
+      this.menus = this.menuService.list('|' + this.filter);
     }
   }
 
@@ -84,10 +82,7 @@ export class MenuListComponent implements OnInit {
 
   onBackMenu(menu: Menu) {
     if (menu) {
-      this.router.navigate([
-        '/admin/menu/list/' + (this.filter || 'enabled'),
-        menu.backPath || ''
-      ]);
+      this.router.navigate(['/admin/menu/enabled', menu.backPath || '']);
     }
   }
 
@@ -100,60 +95,58 @@ export class MenuListComponent implements OnInit {
 
     console.log('## BLOCKED', path, menu, '|blocked|' + splitPath.join('|'));
 
-    this.menuService
-      .setItem('|blocked|' + splitPath.join('|'), menu)
-      .pipe(first())
-      .subscribe((status: boolean) => {
-        if (status) {
-          this.menuService
-            .removeItem('|enabled|' + splitPath.join('|'))
-            .pipe(first())
-            .subscribe((statusEnabled: boolean) => {
-              if (statusEnabled) {
-                this.onBackMenu(menu);
-              }
-            });
-        }
-      });
+    // this.menuService
+    //   .setItem('|blocked|' + splitPath.join('|'), menu)
+    //   .pipe(first())
+    //   .subscribe(() => {
+    //       this.menuService
+    //         .removeItem('|enabled|' + splitPath.join('|'))
+    //         .pipe(first())
+    //         .subscribe((statusEnabled: boolean) => {
+    //           if (statusEnabled) {
+    //             this.onBackMenu(menu);
+    //           }
+    //         });
+    //   });
   }
 
   onUnBlockMenu(path: string, menu: Menu) {
     menu.blocked = false;
 
-    this.menuService
-      .setItem(path, menu)
-      .pipe(first())
-      .subscribe((status: boolean) => {
-        if (status) {
-          this.menuService
-            .removeItem('|blocked|' + menu.uid)
-            .pipe(first())
-            .subscribe((statusRemoved: boolean) => {
-              if (statusRemoved) {
-                this.onBackMenu(menu);
-              }
-            });
-        }
-      });
+    // this.menuService
+    //   .setItem(path, menu)
+    //   .pipe(first())
+    //   .subscribe(() => {
+    //     if (status) {
+    //       this.menuService
+    //         .removeItem('|blocked|' + menu.uid)
+    //         .pipe(first())
+    //         .subscribe((statusRemoved: boolean) => {
+    //           if (statusRemoved) {
+    //             this.onBackMenu(menu);
+    //           }
+    //         });
+    //     }
+    //   });
   }
 
-  onDeleteMenu(path: string, menu: Menu) {
-    if (confirm(`Seguro que desea eliminar a '${menu.title}'?`)) {
+  onDeleteMenu(menu: Menu) {
+    if (confirm(`Seguro que desea eliminar a '${menu.text}'?`)) {
       menu.deleted = true;
 
+      const path = menu.customPath.split('|');
+
+      path.pop();
+
       this.menuService
-        .setItem(path, menu)
+        .removeItem(path.join('|'))
         .pipe(first())
-        .subscribe((status: boolean) => {
+        .subscribe(() => {
           if (status) {
             this.menuService
-              .removeItem('|enabled|' + menu.uid)
+              .removeItem('|enabled|' + menu.uuid)
               .pipe(first())
-              .subscribe((statusEnabled: boolean) => {
-                if (statusEnabled) {
-                  this.menuList = this.menuService.list('|enabled');
-                }
-              });
+              .subscribe();
           }
         });
     }
@@ -162,20 +155,20 @@ export class MenuListComponent implements OnInit {
   onUnDeletedMenu(path: string, menu: Menu) {
     menu.deleted = false;
 
-    this.menuService
-      .setItem(path, menu)
-      .pipe(first())
-      .subscribe((status: boolean) => {
-        if (status) {
-          this.menuService
-            .removeItem('|deleted|' + menu.uid)
-            .pipe(first())
-            .subscribe((statusDeleted: boolean) => {
-              if (statusDeleted) {
-                this.menuList = this.menuService.list('|deleted');
-              }
-            });
-        }
-      });
+    // this.menuService
+    //   .setItem(path, menu)
+    //   .pipe(first())
+    //   .subscribe(() => {
+    //     if (status) {
+    //       this.menuService
+    //         .removeItem('|deleted|' + menu.uid)
+    //         .pipe(first())
+    //         .subscribe((statusDeleted: boolean) => {
+    //           if (statusDeleted) {
+    //             this.menus = this.menuService.list('|deleted');
+    //           }
+    //         });
+    //     }
+    //   });
   }
 }

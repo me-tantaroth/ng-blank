@@ -1,19 +1,16 @@
 import { makeid } from '../../../shared/utils';
 
-export interface Menus {
-  [key: string]: Menu;
-}
-
 export interface Menu {
-  uid: string;
-  title: string;
-  currentPath: string;
-  backPath: string;
-  enabled?: Menus;
+  uuid: string;
+  name: string;
+  text: string;
   url: string;
   externalURL: boolean;
+  absolutePath: string;
+  customPath?: string;
+  backPath: string;
   root?: boolean;
-  dbPath?: string;
+  user: string; // uuid of user modifier
   blocked: boolean;
   deleted: boolean;
   deletedCount: number;
@@ -27,9 +24,6 @@ export class Menu {
   format(menu) {
     if (!menu.uid || menu.uid === null || menu.uid === undefined) {
       menu.uid = 'menu-' + makeid(15);
-    }
-    if (!menu.enabled || menu.enabled === null || menu.enabled === undefined) {
-      menu.enabled = {};
     }
     if (
       !menu.createdAt ||

@@ -1,33 +1,23 @@
 import { Injectable } from '@angular/core';
-import {
-  AngularFirestore,
-  AngularFirestoreCollection
-} from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { StoreService } from 'ng-barn';
-import { Observable, from, Subject, of } from 'rxjs';
+import { Observable, from } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 import { Config, ConfigService } from '../../../shared/services/config.service';
 
 import { File } from '../models/file';
-import { switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileService {
-  private driveCollection: AngularFirestoreCollection<File>;
-  private drive: Observable<File>;
-  private fileList: Observable<File[]> = new Observable<File[]>();
-  private rootPath: string;
-  private node;
-
   constructor(
     private afs: AngularFirestore,
     private configService: ConfigService,
     private store: StoreService
-  ) {
-  }
+  ) {}
 
   list(path: string): Observable<File[]> {
     return this.configService.get().pipe(

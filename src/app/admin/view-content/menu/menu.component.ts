@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { first } from 'rxjs/operators';
+import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import { MenuService } from '../../../core/menus/services/menu.service';
 
@@ -12,35 +12,49 @@ import { Menu } from '../../../core/menus/models/menu';
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent implements OnInit {
-  menu: Menu;
+  menu: Observable<Menu>;
   filter: string;
   value: string;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private menuService: MenuService
-  ) {}
+  ) {
+    this.router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (!!data.snapshot.params.filter) {
+          this.filter = data.snapshot.params.filter;
+        }
+        if (!!data.snapshot.params.value) {
+          this.value = data.snapshot.params.value;
+        }
+      }
+    });
+  }
 
   ngOnInit() {
     const value = this.route.snapshot.paramMap.get('value');
 
     if (value) {
-      this.value = value;
+      const valueParser = value.split('|');
 
-      this.menuService
-        .getItem(value)
-        .subscribe((menu: Menu) => (this.menu = menu))
-        .unsubscribe();
+      valueParser.pop();
+
+      this.value = valueParser.join('|');
+
+      this.menu = this.menuService.getItem(valueParser.join('|'));
     } else {
       this.route.paramMap
         .subscribe((params) => {
           if (params.get('value')) {
-            this.value = params.get('value');
+            const valueParser = params.get('value').split('|');
 
-            this.menuService
-              .getItem(value)
-              .pipe(first())
-              .subscribe((menu: Menu) => (this.menu = menu));
+            valueParser.pop();
+
+            this.value = valueParser.join('|');
+
+            this.menu = this.menuService.getItem(valueParser.join('|'));
           }
         })
         .unsubscribe();
