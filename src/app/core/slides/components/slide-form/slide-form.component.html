@@ -12,8 +12,19 @@
   (submitting)="onSubmitting($event)"
   (submitted)="onSubmitted($event)"
 >
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+    <input
+      matInput
+      #name
+      placeholder="Nombre"
+      id="name"
+      name="name"
+      formControlName="name"
+    />
+  </mat-form-field>
+
   <app-file-upload
-    [imageURL]="f.image.value"
+    [imageURL]="image.value"
     allowed_extensions="image/*"
     (filesChanged)="onFilesChanged($event)"
   >
@@ -35,11 +46,11 @@
   <mat-form-field class="uk-width-1-1 uk-margin-small">
     <input
       matInput
-      #title
+      #text
       placeholder="Título"
-      id="title"
-      name="title"
-      formControlName="title"
+      id="text"
+      name="text"
+      formControlName="text"
     />
   </mat-form-field>
 

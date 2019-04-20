@@ -7,7 +7,7 @@ import { Config, ConfigService } from '../../shared/services/config.service';
 
 import { PageService } from '../../core/pages/services/page.service';
 
-import { Page, Pages } from '../../core/pages/models/page';
+import { Page } from '../../core/pages/models/page';
 
 @Component({
   selector: 'app-page-view',
@@ -16,7 +16,7 @@ import { Page, Pages } from '../../core/pages/models/page';
 })
 export class PageViewComponent implements OnInit {
   config: Observable<Config>;
-  pages: Observable<Pages>;
+  pages: Observable<Page[]>;
 
   constructor(
     private configService: ConfigService,

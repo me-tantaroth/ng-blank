@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 import { SlideService } from '../../services/slide.service';
 
-import { Slide, Slides } from '../../models/slide';
+import { Slide } from '../../models/slide';
 
 @Component({
   selector: 'app-slide-list',
@@ -15,86 +15,118 @@ import { Slide, Slides } from '../../models/slide';
 })
 export class SlideListComponent implements OnInit {
   @Input() filter: string;
+  @Input() value: string;
 
   ObjectKeys = Object.keys;
   panelOpenState: boolean;
-  slides: Observable<Slides>;
+  currentSlide: Observable<Slide>;
+  slides: Observable<Slide[]>;
+  backSlide: Observable<Slide[]>;
 
   constructor(private slideService: SlideService, private router: Router) {
     router.events.subscribe((data) => {
       if (data instanceof ActivationEnd) {
-        if (!!data.snapshot.params.filter) {
+        if (!!data.snapshot.params.filter && !!data.snapshot.params.value) {
           this.filter = data.snapshot.params.filter;
+          this.value = data.snapshot.params.value;
+          const currentSlide = data.snapshot.params.value.split('|');
 
-          this.slides = this.slideService.list('|' + this.filter);
+          currentSlide.pop();
+
+          switch (data.snapshot.params.filter) {
+            case 'list':
+              if (currentSlide.join('|') !== '') {
+                this.currentSlide = this.slideService.getItem(
+                  currentSlide.join('|')
+                );
+              }
+              this.slides = this.slideService.list(data.snapshot.params.value);
+              break;
+          }
         }
       }
     });
   }
 
   ngOnInit() {
-    this.filter = this.filter || 'enabled';
+    if (!!this.filter && !!this.value) {
+      const currentSlide = this.value.split('|');
 
-    this.slides = this.slideService.list('|' + this.filter);
+      currentSlide.pop();
+
+      switch (this.filter) {
+        case 'list':
+          if (currentSlide.join('|') !== '') {
+            this.currentSlide = this.slideService.getItem(
+              currentSlide.join('|')
+            );
+          }
+          this.slides = this.slideService.list(this.value);
+          break;
+      }
+    } else {
+      this.filter = 'list';
+      this.slides = this.slideService.list('|' + this.filter);
+    }
   }
 
   onBlockSlide(path: string, slide: Slide) {
     slide.blocked = true;
 
-    this.slideService
-      .setItem(path, slide)
-      .pipe(first())
-      .subscribe((status: boolean) => {
-        if (status) {
-          this.slideService
-            .removeItem('|enabled|' + slide.uid)
-            .pipe(first())
-            .subscribe((statusEnabled: boolean) => {
-              if (statusEnabled) {
-                this.slides = this.slideService.list('|enabled');
-              }
-            });
-        }
-      });
+    // this.slideService
+    //   .setItem(path, slide)
+    //   .pipe(first())
+    //   .subscribe((status: boolean) => {
+    //     if (status) {
+    //       this.slideService
+    //         .removeItem('|enabled|' + slide.uid)
+    //         .pipe(first())
+    //         .subscribe((statusEnabled: boolean) => {
+    //           if (statusEnabled) {
+    //             this.slides = this.slideService.list('|enabled');
+    //           }
+    //         });
+    //     }
+    //   });
   }
 
   onUnBlockSlide(path: string, slide: Slide) {
     slide.blocked = false;
 
-    this.slideService
-      .setItem(path, slide)
-      .pipe(first())
-      .subscribe((status: boolean) => {
-        if (status) {
-          this.slideService
-            .removeItem('|blocked|' + slide.uid)
-            .pipe(first())
-            .subscribe((statusRemoved: boolean) => {
-              if (statusRemoved) {
-                this.slides = this.slideService.list('|blocked');
-              }
-            });
-        }
-      });
+    // this.slideService
+    //   .setItem(path, slide)
+    //   .pipe(first())
+    //   .subscribe((status: boolean) => {
+    //     if (status) {
+    //       this.slideService
+    //         .removeItem('|blocked|' + slide.uid)
+    //         .pipe(first())
+    //         .subscribe((statusRemoved: boolean) => {
+    //           if (statusRemoved) {
+    //             this.slides = this.slideService.list('|blocked');
+    //           }
+    //         });
+    //     }
+    //   });
   }
 
-  onDeleteSlide(path: string, slide: Slide) {
-    if (confirm(`Seguro que desea eliminar a '${slide.title}'?`)) {
+  onDeleteSlide(slide: Slide) {
+    if (confirm(`Seguro que desea eliminar a '${slide.text}'?`)) {
       slide.deleted = true;
 
+      const path = slide.customPath.split('|');
+
+      path.pop();
+
       this.slideService
-        .setItem(path, slide)
+        .removeItem(path.join('|'))
         .pipe(first())
-        .subscribe((status: boolean) => {
+        .subscribe(() => {
           if (status) {
             this.slideService
-              .removeItem('|enabled|' + slide.uid)
+              .removeItem('|enabled|' + slide.uuid)
               .pipe(first())
-              .subscribe((statusEnabled: boolean) => {
-                if (statusEnabled) {
-                  this.slides = this.slideService.list('|enabled');
-                }
-              });
+              .subscribe();
           }
         });
     }
@@ -103,20 +135,20 @@ export class SlideListComponent implements OnInit {
   onUnDeletedSlide(path: string, slide: Slide) {
     slide.deleted = false;
 
-    this.slideService
-      .setItem(path, slide)
-      .pipe(first())
-      .subscribe((status: boolean) => {
-        if (status) {
-          this.slideService
-            .removeItem('|deleted|' + slide.uid)
-            .pipe(first())
-            .subscribe((statusDeleted: boolean) => {
-              if (statusDeleted) {
-                this.slides = this.slideService.list('|deleted');
-              }
-            });
-        }
-      });
+    // this.slideService
+    //   .setItem(path, slide)
+    //   .pipe(first())
+    //   .subscribe((status: boolean) => {
+    //     if (status) {
+    //       this.slideService
+    //         .removeItem('|deleted|' + slide.uid)
+    //         .pipe(first())
+    //         .subscribe((statusDeleted: boolean) => {
+    //           if (statusDeleted) {
+    //             this.slides = this.slideService.list('|deleted');
+    //           }
+    //         });
+    //     }
+    //   });
   }
 }

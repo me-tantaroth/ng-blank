@@ -11,8 +11,19 @@
   (submitting)="onSubmitting($event)"
   (submitted)="onSubmitted($event)"
 >
+  <mat-form-field class="uk-width-1-1 uk-margin-small">
+    <input
+      matInput
+      #name
+      placeholder="Nombre"
+      id="name"
+      name="name"
+      formControlName="name"
+    />
+  </mat-form-field>
+
   <app-file-upload
-    [imageURL]="cover.value"
+    [imageURL]="image.value"
     allowed_extensions="image/*"
     (filesChanged)="onFilesChanged($event)"
   >
@@ -21,11 +32,11 @@
     <mat-form-field>
       <div align="center">
         <button mat-raised-button>Seleccionar</button>
-        <input matInput #cover formControlName="cover" style="display: none" />
+        <input matInput #image formControlName="image" style="display: none" />
       </div>
-      <mat-error *ngIf="f.cover.status === 'INVALID'">
-        <span *ngFor="let error of errors('cover')">{{
-          errorMessages['cover'][error]
+      <mat-error *ngIf="f.image.status === 'INVALID'">
+        <span *ngFor="let error of errors('image')">{{
+          errorMessages['image'][error]
         }}</span>
       </mat-error>
     </mat-form-field>
@@ -49,11 +60,11 @@
   <mat-form-field class="uk-width-1-1 uk-margin-small">
     <input
       matInput
-      #title
+      #text
       placeholder="Título"
-      id="title"
-      name="title"
-      formControlName="title"
+      id="text"
+      name="text"
+      formControlName="text"
       (change)="onPathChanged($event)"
     />
   </mat-form-field>
@@ -61,11 +72,11 @@
   <mat-form-field class="uk-width-1-1 uk-margin-small">
     <input
       matInput
-      #principalPath
+      #url
       placeholder="Ruta"
-      id="principalPath"
-      name="principalPath"
-      formControlName="principalPath"
+      id="url"
+      name="url"
+      formControlName="url"
     />
   </mat-form-field>
 

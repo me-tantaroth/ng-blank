@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { first } from 'rxjs/operators';
+import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
+import { Observable } from 'rxjs';
+
+import { SlideService } from '../../../core/slides/services/slide.service';
 
 import { Slide } from '../../../core/slides/models/slide';
-import { SlideService } from '../../../core/slides/services/slide.service';
 
 @Component({
   selector: 'app-slide',
@@ -11,36 +12,49 @@ import { SlideService } from '../../../core/slides/services/slide.service';
   styleUrls: ['./slide.component.scss']
 })
 export class SlideComponent implements OnInit {
-  slide: Slide;
-  path: string;
+  slide: Observable<Slide>;
   filter: string;
+  value: string;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private slideService: SlideService
-  ) {}
+  ) {
+    this.router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (!!data.snapshot.params.filter) {
+          this.filter = data.snapshot.params.filter;
+        }
+        if (!!data.snapshot.params.value) {
+          this.value = data.snapshot.params.value;
+        }
+      }
+    });
+  }
 
   ngOnInit() {
     const value = this.route.snapshot.paramMap.get('value');
 
     if (value) {
-      this.path = value;
+      const valueParser = value.split('|');
 
-      this.slideService
-        .getItem(value)
-        .subscribe((slide: Slide) => (this.slide = slide))
-        .unsubscribe();
+      valueParser.pop();
+
+      this.value = valueParser.join('|');
+
+      this.slide = this.slideService.getItem(valueParser.join('|'));
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          const value = params.get('value');
-          if (value) {
-            this.path = value;
+          if (params.get('value')) {
+            const valueParser = params.get('value').split('|');
 
-            this.slideService
-              .getItem(value)
-              .pipe(first())
-              .subscribe((slide: Slide) => (this.slide = slide));
+            valueParser.pop();
+
+            this.value = valueParser.join('|');
+
+            this.slide = this.slideService.getItem(valueParser.join('|'));
           }
         })
         .unsubscribe();
@@ -48,7 +62,6 @@ export class SlideComponent implements OnInit {
 
     const filter = this.route.snapshot.paramMap.get('filter');
 
-    console.log(filter, 'asdasd')
     if (filter) {
       this.filter = filter;
     } else {

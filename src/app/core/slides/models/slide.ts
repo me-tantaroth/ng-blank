@@ -1,21 +1,22 @@
 import { makeid } from '../../../shared/utils';
 
-export interface Slides {
-  [key: string]: Slide;
-}
-
 export interface Slide {
-  uid: string;
+  uuid: string;
   image: string;
-  title?: string;
+  name: string;
+  text?: string;
   subtitle?: string;
   url?: string;
   externalURL: boolean;
-  currentPath: string;
-  dbPath: string;
+  customPath: string;
+  absolutePath: string;
+  backPath: string;
+  postedAt: Date;
+  root?: boolean;
+  user: string; // uuid of user modifier
   blocked: boolean;
   deleted: boolean;
-  deletedCount: number;
+  deleteCount: number;
   createdAt: Date;
 }
 export class Slide {

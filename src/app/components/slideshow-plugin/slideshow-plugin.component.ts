@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { SlideService } from '../../core/slides/services/slide.service';
 
-import { Slides } from '../../core/slides/models/slide';
+import { Slide } from '../../core/slides/models/slide';
 
 @Component({
   selector: 'app-slideshow-plugin',
@@ -16,11 +16,11 @@ export class SlideshowPluginComponent implements OnInit {
 
   ObjectKeys = Object.keys;
   panelOpenState: boolean;
-  slides: Observable<Slides>;
+  slides: Observable<Slide[]>;
 
   constructor(private slideService: SlideService) {}
 
   ngOnInit() {
-    this.slides = this.slideService.list();
+    this.slides = this.slideService.list('|list');
   }
 }

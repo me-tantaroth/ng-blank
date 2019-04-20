@@ -6,32 +6,31 @@ export interface Theme {
   color: string;
 }
 
-export interface Pages {
-  [key: string]: Page;
-}
-
 export interface Page {
-  uid: string;
-  dbPath: string;
-  backPath: string;
-  currentPath: string;
-  principalPath: string;
-  alias: string[];
-  author: string;
-  cover: string;
+  uuid: string;
+  image: string;
   theme: Theme;
-  title: string;
-  description: string;
+  name: string;
+  text: string;
   keywords: string;
+  description: string;
   content: string;
-  type: string;
+  url?: string;
+  externalURL: boolean;
+  absolutePath?: string;
+  customPath?: string;
+  backPath: string;
+  type: string; // article or section type (image/png)
+  size?: number;
+  lastModifiedDate?: Date;
   views: number;
-  root: boolean;
-  createdAt: Date;
   postedAt: Date;
-  deleted: boolean;
-  deletedCount: number;
+  root?: boolean;
+  user: string; // uuid of user modifier
   blocked: boolean;
+  deleted: boolean;
+  deleteCount: number;
+  createdAt: Date;
 }
 export class Page {
   constructor(page) {
@@ -42,30 +41,16 @@ export class Page {
     if (!page.uid || page.uid === null || page.uid === undefined) {
       page.uid = 'page-' + makeid(15);
     }
-    if (!page.currentPath || page.currentPath === null || page.currentPath === undefined) {
-      page.currentPath = makeid(15);
+    if (!page.url || page.url === null || page.url === undefined) {
+      page.url = makeid(15);
 
-      if (page.title) {
-        page.currentPath = new Accents()
-          .removeDiacritics(page.title)
+      if (page.text) {
+        page.url = new Accents()
+          .removeDiacritics(page.text)
           .toLowerCase()
           .replace(/[^\w\s]/gi, '')
           .replace(/[`~!@#$%^&*()_|+\-=÷¿?;°:'",.<>\{\}\[\]\\\/]/gi, '')
           .replace(/ /g, '-');
-      }
-    }
-    if (!page.alias || page.alias === null || page.alias === undefined) {
-      page.alias = [];
-
-      if (page.title) {
-        page.alias.push(page.uid);
-      }
-    }
-    if (!page.alias || page.author === null || page.author === undefined) {
-      page.author = 'Anonimo';
-
-      if (localStorage.getItem('authenticated-email')) {
-        page.author = localStorage.getItem('authenticated-email');
       }
     }
     if (!page.image || page.image === null || page.image === undefined) {
@@ -74,22 +59,30 @@ export class Page {
     if (!page.theme || page.theme === null || page.theme === undefined) {
       page.theme = environment.theme;
     }
-    if (!page.description || page.description === null || page.description === undefined) {
+    if (
+      !page.description ||
+      page.description === null ||
+      page.description === undefined
+    ) {
       page.description = '';
 
-      if (page.title) {
-        page.description = page.title;
+      if (page.text) {
+        page.description = page.text;
       }
     }
-    if (!page.keywords || page.keywords === null || page.keywords === undefined) {
+    if (
+      !page.keywords ||
+      page.keywords === null ||
+      page.keywords === undefined
+    ) {
       page.keywords = '';
 
-      if (page.title) {
-        page.keywords = page.title;
+      if (page.text) {
+        page.keywords = page.text;
       }
     }
     if (!page.type || page.type === null || page.type === undefined) {
-      page.type = 'page';
+      page.type = 'article';
     }
     if (!page.views || page.views === null || page.views === undefined) {
       page.views = 0;
@@ -100,11 +93,19 @@ export class Page {
     if (page.deleted === null || page.deleted === undefined) {
       page.deleted = false;
     }
-    if (!page.postedAt || page.postedAt === null || page.postedAt === undefined) {
+    if (
+      !page.postedAt ||
+      page.postedAt === null ||
+      page.postedAt === undefined
+    ) {
       page.postedAt = new Date();
     }
-    if (!page.createdAt || page.createdAt === null || page.createdAt === undefined) {
-        page.createdAt = new Date();
+    if (
+      !page.createdAt ||
+      page.createdAt === null ||
+      page.createdAt === undefined
+    ) {
+      page.createdAt = new Date();
     }
 
     return page;

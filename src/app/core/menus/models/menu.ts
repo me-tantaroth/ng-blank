@@ -13,7 +13,7 @@ export interface Menu {
   user: string; // uuid of user modifier
   blocked: boolean;
   deleted: boolean;
-  deletedCount: number;
+  deleteCount: number;
   createdAt: Date;
 }
 export class Menu {

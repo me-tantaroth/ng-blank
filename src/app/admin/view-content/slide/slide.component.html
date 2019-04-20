@@ -7,9 +7,9 @@
         <mat-divider></mat-divider>
         <mat-card-content>
           <app-slide-form
-            [action]="filter"
-            [path]="path"
-            [slide]="slide"
+            [filter]="filter"
+            [value]="value"
+            [slide]="slide | async"
           ></app-slide-form>
         </mat-card-content>
       </mat-card>

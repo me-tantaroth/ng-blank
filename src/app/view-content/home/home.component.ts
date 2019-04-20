@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import { Config, ConfigService } from '../../shared/services/config.service';
 
 import { PageService } from '../../core/pages/services/page.service';
-import { Page, Pages } from '../../core/pages/models/page';
+import { Page } from '../../core/pages/models/page';
 
 @Component({
   selector: 'app-home',
@@ -26,12 +26,12 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.page = this.pageService
-      .list()
+      .list('|list')
       .pipe(
-        map((pages: Pages) => {
+        map((pages: Page[]) => {
           return pages[_.filter(
             Object.keys(pages),
-            (k) => !pages[k].blocked && pages[k].principalPath === 'home'
+            (k) => !pages[k].blocked && pages[k].url === 'home'
           )[0]];
         })
       );

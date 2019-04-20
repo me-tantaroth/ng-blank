@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
-import { first } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 import { PageService } from '../../../core/pages/services/page.service';
 
@@ -12,7 +12,7 @@ import { Page } from '../../../core/pages/models/page';
   styleUrls: ['./page.component.scss']
 })
 export class PageComponent implements OnInit {
-  page: Page;
+  page: Observable<Page>;
   filter: string;
   value: string;
 
@@ -37,22 +37,24 @@ export class PageComponent implements OnInit {
     const value = this.route.snapshot.paramMap.get('value');
 
     if (value) {
-      this.value = value;
+      const valueParser = value.split('|');
 
-      this.pageService
-        .getItem(value)
-        .subscribe((page: Page) => (this.page = page))
-        .unsubscribe();
+      valueParser.pop();
+
+      this.value = valueParser.join('|');
+
+      this.page = this.pageService.getItem(valueParser.join('|'));
     } else {
       this.route.paramMap
         .subscribe((params) => {
           if (params.get('value')) {
-            this.value = params.get('value');
+            const valueParser = params.get('value').split('|');
 
-            this.pageService
-              .getItem(value)
-              .pipe(first())
-              .subscribe((page: Page) => (this.page = page));
+            valueParser.pop();
+
+            this.value = valueParser.join('|');
+
+            this.page = this.pageService.getItem(valueParser.join('|'));
           }
         })
         .unsubscribe();

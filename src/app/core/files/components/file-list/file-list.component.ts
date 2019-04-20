@@ -80,12 +80,6 @@ export class FileListComponent implements OnInit {
     }
   }
 
-  onBackFile(file: File) {
-    if (file) {
-      this.router.navigate(['/admin/file/enabled', file.backPath || '']);
-    }
-  }
-
   onBlockFile(path: string, file: File) {
     const splitPath = path.split('|');
     splitPath.shift();

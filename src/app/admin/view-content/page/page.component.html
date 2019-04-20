@@ -9,7 +9,7 @@
           <app-page-form
             [filter]="filter"
             [value]="value"
-            [page]="page"
+            [page]="page | async"
           ></app-page-form>
         </mat-card-content>
       </mat-card>

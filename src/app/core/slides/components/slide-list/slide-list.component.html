@@ -1,97 +1,141 @@
-<div *ngIf="(slides | async) && ObjectKeys(slides | async).length > 0">
-  <mat-accordion>
-    <mat-expansion-panel
-      role="slide"
-      *ngFor="let key of ObjectKeys(slides | async)"
-      (opened)="panelOpenState = true"
-      (closed)="panelOpenState = false"
-    >
-      <mat-expansion-panel-header>
-        <ng-template
-          let-slide
-          [ngTemplateOutletContext]="{ $implicit: (slides | async)[key] }"
-          [ngTemplateOutlet]="slideT"
-          #slideT
+<ng-template
+  let-currentSlide
+  [ngTemplateOutletContext]="{ $implicit: currentSlide | async }"
+  [ngTemplateOutlet]="currentSlideT"
+  #currentSlideT
+>
+  <div *ngIf="currentSlide">
+    <ul class="uk-breadcrumb">
+      <li>
+        <a [routerLink]="['/admin/page/enabled/list', currentSlide.backPath]"
+          >Atrás</a
         >
-          <mat-panel-title> {{ slide.title }} </mat-panel-title>
-          <mat-panel-description>
-            {{ slide.createdAt | date }}
-          </mat-panel-description>
-        </ng-template></mat-expansion-panel-header
-      >
-      <div>
-        <ng-template
-          let-slide
-          [ngTemplateOutletContext]="{ $implicit: (slides | async)[key] }"
-          [ngTemplateOutlet]="slideDetailT"
-          #slideDetailT
-        >
-          <div align="right" class="uk-margin-small">
-            <span *ngIf="filter === 'enabled'">
-              <a
-                [routerLink]="['/admin/slide/form/edit', slide.currentPath]"
-                class="uk-text-primary"
-                >Edit</a
-              >
-              &nbsp;
-              <!-- <span
+      </li>
+      <li>
+        <span>{{ currentSlide.name || '--' }}</span>
+      </li>
+    </ul>
+  </div>
+</ng-template>
+
+<div *ngIf="(slides | async); else loaderT">
+  <ng-template
+    let-slideList
+    [ngTemplateOutletContext]="{ $implicit: slides | async }"
+    [ngTemplateOutlet]="slidesT"
+    #slidesT
+  >
+    <div *ngIf="slideList; else loaderT">
+      <div *ngIf="slideList.length > 0; else notFoundT">
+        <mat-accordion>
+          <mat-expansion-panel
+            role="slide"
+            *ngFor="let slide of slideList"
+            (opened)="panelOpenState = true"
+            (closed)="panelOpenState = false"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title> {{ slide.name || '--' }} </mat-panel-title>
+              <mat-panel-description>
+                {{ slide.createdAt.toDate() | date }}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div>
+              <div align="right" class="uk-margin-small">
+                <span *ngIf="filter === 'list'">
+                  <a
+                    *ngIf="slide.type === 'folder'"
+                    [routerLink]="[
+                      '/admin/slide/enabled/list',
+                      slide.customPath
+                    ]"
+                    class="uk-text-success"
+                    >Archivos</a
+                  >
+                  &nbsp;
+                  <a
+                    [routerLink]="[
+                      '/admin/slide/form/edit-slide',
+                      slide.customPath
+                    ]"
+                    class="uk-text-primary"
+                    >Editar</a
+                  >
+                  &nbsp;
+                  <!-- <span
                 *ngIf="slide.blocked"
                 class="uk-text-warning uk-text-bold"
                 >{{ slide.blocked ? 'Blocked' : '' }}</span
               >
               <a
                 class="uk-text-warning"
-                (click)="onBlockSlide('|blocked|' + slide.uid, slide)"
+                (click)="onBlockSlide(slide.customPath, slide)"
                 *ngIf="!slide.blocked"
                 >Bloquear</a
               >
               &nbsp; -->
-              <span
-                *ngIf="slide.deleted"
-                class="uk-text-warning uk-text-bold"
-                >{{ slide.deleted ? 'Deleted' : '' }}</span
-              >
-              <a
-                class="uk-text-danger"
-                (click)="onDeleteSlide('|deleted|' + slide.uid, slide)"
-                *ngIf="!slide.deleted"
-                >Eliminar</a
-              >
-            </span>
-            <span *ngIf="filter === 'blocked'">
-              <a
-                class="uk-text-warning uk-text-bold"
-                (click)="onUnBlockSlide('|enabled|' + slide.uid, slide)"
-                >Desbloquear</a
-              >
-            </span>
-            <span *ngIf="filter === 'deleted'">
-              <a
-                class="uk-text-danger uk-text-bold"
-                (click)="onUnDeletedSlide('|enabled|' + slide.uid, slide)"
-                >Recuperar</a
-              >
-            </span>
-          </div>
-          <div
-            class="uk-height-small uk-background-secondary uk-background-cover uk-background-center-center uk-background-norepeat"
-            [ngStyle]="{ 'background-image': 'url(' + slide.image + ')' }"
-          ></div>
-          <blockquote cite="#">
-            <p class="uk-margin-small-bottom">
-              {{ slide.subtitle || '--' }}
-            </p>
-          </blockquote>
-        </ng-template>
+                  <span
+                    *ngIf="slide.deleted"
+                    class="uk-text-warning uk-text-bold"
+                    >{{ slide.deleted ? 'Eliminado' : '' }}</span
+                  >
+                  <a
+                    class="uk-text-danger"
+                    (click)="onDeleteSlide(slide)"
+                    *ngIf="!slide.deleted"
+                    >Eliminar</a
+                  >
+                </span>
+                <span *ngIf="filter === 'blocked'">
+                  <a
+                    class="uk-text-warning uk-text-bold"
+                    (click)="onUnBlockSlide('|enabled|' + slide.uuid, slide)"
+                    >Desbloquear</a
+                  >
+                </span>
+                <span *ngIf="filter === 'deleted'">
+                  <a
+                    class="uk-text-danger uk-text-bold"
+                    (click)="onUnBlockSlide('|enabled|' + slide.uuid, slide)"
+                    >Recuperar</a
+                  >
+                </span>
+              </div>
+              <div *ngIf="slide.type !== 'folder'">
+                <a
+                  [href]="slide.url"
+                  target="{{ slide.externalURL === true ? '_blank' : '_self' }}"
+                >
+                  <img
+                    *ngIf="slide.image"
+                    [src]="slide.image"
+                    [alt]="slide.text"
+                    [title]="slide.text"
+                  />
+                  <span *ngIf="!slide.image">{{ slide.text }}</span>
+                </a>
+                <div class="uk-margin">
+                  <b>Título:</b>
+                  &nbsp;
+                  <span>{{ slide.text }}</span>
+                </div>
+                <div class="uk-margin">
+                  <b>Sub Título:</b>
+                  &nbsp;
+                  <span>{{ slide.subtitle }}</span>
+                </div>
+                <div class="uk-margin">
+                  <b>URL:</b>
+                  &nbsp;
+                  <span>{{ slide.url }}</span>
+                </div>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
       </div>
-    </mat-expansion-panel>
-  </mat-accordion>
+    </div>
+  </ng-template>
 </div>
-<div
-  *ngIf="
-    !(slides | async) ||
-    ((slides | async) && ObjectKeys(slides | async).length === 0)
-  "
->
-  <h2>Not found data</h2>
-</div>
+<ng-template #loaderT> <h2>Cargando...</h2> </ng-template>
+<ng-template #notFoundT><h2>No hay datos</h2> </ng-template>

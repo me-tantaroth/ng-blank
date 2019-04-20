@@ -13,11 +13,11 @@ import * as _ from 'lodash';
 import * as _moment from 'moment';
 import { Observable } from 'rxjs';
 
-import { FileService } from '../../services/file.service';
 import {
   StorageService,
   FileUploaded
 } from '../../../services/storage.service';
+import { FileService } from '../../services/file.service';
 
 import { File } from '../../models/file';
 import { Message } from '../../../../models/message';

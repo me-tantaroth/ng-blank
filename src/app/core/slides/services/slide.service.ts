@@ -1,138 +1,90 @@
 import { Injectable } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { StoreService } from 'ng-barn';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 import { Config, ConfigService } from '../../../shared/services/config.service';
-import { LangsService } from '../../../langs/services/langs.service';
 
-import { Slide, Slides } from '../models/slide';
+import { Slide } from '../models/slide';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SlideService {
-  private rootPath: string;
-  private node;
-  private slides: Slides;
-
   constructor(
+    private afs: AngularFirestore,
     private configService: ConfigService,
-    private store: StoreService,
-    private langs: LangsService
-  ) {
-    // const CONFIG: Config = this.configService.get();
-    // const NODE = this.store.get('node');
-    // const NODE_LANGS = NODE.project[CONFIG.project.uid].lang;
-    // const NODE_SLIDES =
-    //   NODE_LANGS[document.documentElement.lang] ||
-    //   NODE_LANGS[CONFIG.project.lang].modules.slide.enabled;
-    // const LANG = NODE_LANGS[document.documentElement.lang]
-    //   ? document.documentElement.lang
-    //   : CONFIG.project.lang;
+    private store: StoreService
+  ) {}
 
-    // this.node = NODE;
-    // this.rootPath = `|project|${CONFIG.project.uid}|lang|${LANG}|slide`;
-
-    this.slides = {};
-  }
-
-  list(path?: string): Observable<Slides> {
-    let result: Slides = this.slides;
-
-    if (path) {
-      const node = this.node;
-
-      const splitRootPath: string[] = this.rootPath.split('|');
-      const splitPath: string[] = path.split('|');
-
-      splitRootPath.shift();
-      splitPath.shift();
-
-      const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
-      const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
-      const absolutePath = cursorsRoot + cursorsPath;
-
-      const updateAction = `result = node${absolutePath};`;
-
-      eval(updateAction);
-    }
-
-    return new Observable((observer) => {
-      observer.next(result);
-      observer.complete();
-    });
+  list(path: string): Observable<Slide[]> {
+    return this.configService.get().pipe(
+      switchMap(
+        (config: Config): Observable<Slide[]> => {
+          return this.afs
+            .collection<Slide>(
+              `projects/${config.project.uuid}/langs/${
+                config.project.lang
+              }/modules/slide${path.split('|').join('/')}`
+            )
+            .valueChanges();
+        }
+      )
+    );
   }
 
   getItem(path: string): Observable<Slide> {
-    let result: Slide;
-
-    const node = this.node;
-
-    const splitRootPath: string[] = this.rootPath.split('|');
-    const splitPath: string[] = path.split('|');
-
-    splitRootPath.shift();
-    splitPath.shift();
-
-    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
-    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
-    const absolutePath = cursorsRoot + cursorsPath;
-    const updateAction = `result = node${absolutePath};`;
-
-    eval(updateAction);
-
-    return new Observable((observer) => {
-      observer.next(result);
-      observer.complete();
-    });
+    return this.configService
+      .get()
+      .pipe(
+        switchMap(
+          (config: Config): Observable<Slide> =>
+            this.afs
+              .doc<Slide>(
+                `projects/${config.project.uuid}/langs/${
+                  config.project.lang
+                }/modules/slide${path.split('|').join('/')}`
+              )
+              .valueChanges()
+        )
+      );
   }
 
-  setItem(path: string, slide: Slide): Observable<boolean> {
-    const node = this.node;
-
-    slide.dbPath = slide.dbPath;
-
-    const splitRootPath: string[] = this.rootPath.split('|');
-    const splitPath: string[] = path.split('|');
-
-    splitRootPath.shift();
-    splitPath.shift();
-
-    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
-    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
-    const absolutePath = cursorsRoot + cursorsPath;
-    const updateAction = `node${absolutePath} = ${JSON.stringify(slide)};`;
-
-    eval(updateAction);
-
-    return new Observable((observer) => {
-      observer.next(true);
-      observer.complete();
-    });
+  setItem(path: string, slide: Slide): Observable<void> {
+    return this.configService.get().pipe(
+      switchMap(
+        (config: Config): Observable<void> => {
+          return from(
+            this.afs
+              .doc<Slide>(
+                `projects/${config.project.uuid}/langs/${
+                  config.project.lang
+                }/modules/slide${path.split('|').join('/')}`
+              )
+              .set(slide)
+          );
+        }
+      )
+    );
   }
 
-  removeItem(path: string): Observable<boolean> {
-    const node = this.node;
-
-    const splitRootPath: string[] = this.rootPath.split('|');
-    const splitPath: string[] = path.split('|');
-
-    splitRootPath.shift();
-    splitPath.shift();
-
-    const cursorsRoot = splitRootPath.map((o) => `['${o}']`).join('');
-    const cursorsPath = splitPath.map((o) => `['${o}']`).join('');
-    const absolutePath = cursorsRoot + cursorsPath;
-
-    const updateAction = `delete node${absolutePath};`;
-
-    eval(updateAction);
-
-    return new Observable((observer) => {
-      observer.next(true);
-      observer.complete();
-    });
+  removeItem(path: string): Observable<void> {
+    return this.configService.get().pipe(
+      switchMap(
+        (config: Config): Observable<void> => {
+          return from(
+            this.afs
+              .doc<Slide>(
+                `projects/${config.project.uuid}/langs/${
+                  config.project.lang
+                }/modules/slide${path.split('|').join('/')}`
+              )
+              .delete()
+          );
+        }
+      )
+    );
   }
-
 }

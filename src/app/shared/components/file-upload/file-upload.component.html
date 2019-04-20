@@ -7,7 +7,7 @@
     appFileDragDrop
     defaultColor="#5f5f5f"
     dragColor="#71A73E"
-    [ngStyle]="{ backgroundImage: imageURL }"
+    [ngStyle]="{ backgroundImage: 'url(' + imageURL + ')' }"
     (filesChangeEmiter)="onFilesChange($event)"
     (filesInvalidEmiter)="onFileInvalids($event)"
     [allowed_extensions]="allowed_extensions"

@@ -69,9 +69,6 @@ export class MenuFormComponent implements OnInit, OnChanges {
       blocked: new FormControl(true),
       deleted: new FormControl(false)
     });
-    if (this.filter === 'edit') {
-      this.form.patchValue(this.menu);
-    }
   }
 
   ngOnChanges(changes: SimpleChanges) {

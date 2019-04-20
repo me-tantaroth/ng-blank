@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-slides',
@@ -7,19 +7,43 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./slides.component.scss']
 })
 export class SlidesComponent implements OnInit {
-  listFilter: string;
+  filter: string;
+  value: string;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private router: Router, private route: ActivatedRoute) {
+    this.router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (!!data.snapshot.params.filter) {
+          this.filter = data.snapshot.params.filter;
+        }
+        if (!!data.snapshot.params.value) {
+          this.value = data.snapshot.params.value;
+        }
+      }
+    });
+  }
 
   ngOnInit() {
-    const listFilter = this.route.snapshot.paramMap.get('filter');
+    const filter = this.route.snapshot.paramMap.get('filter');
 
-    if (listFilter) {
-      this.listFilter = listFilter;
+    if (filter) {
+      this.filter = filter;
     } else {
       this.route.paramMap
         .subscribe((params) => {
-          this.listFilter = params.get('filter');
+          this.filter = params.get('filter');
+        })
+        .unsubscribe();
+    }
+
+    const value = this.route.snapshot.paramMap.get('value');
+
+    if (value) {
+      this.value = value;
+    } else {
+      this.route.paramMap
+        .subscribe((params) => {
+          this.value = params.get('value');
         })
         .unsubscribe();
     }

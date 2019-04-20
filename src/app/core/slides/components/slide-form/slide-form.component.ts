@@ -1,19 +1,27 @@
-import { Component, OnInit, Input } from '@angular/core';
 import {
-  FormControl,
-  FormGroup,
-  Validators,
-  NgControlStatus
-} from '@angular/forms';
+  Component,
+  ViewChild,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  Input
+} from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 import * as _moment from 'moment';
 import { Observable } from 'rxjs';
 
+import {
+  StorageService,
+  FileUploaded
+} from '../../../services/storage.service';
 import { SlideService } from '../../services/slide.service';
 
-import { Slide, Slides } from '../../models/slide';
+import { Slide } from '../../models/slide';
 import { Message } from '../../../../models/message';
 
 @Component({
@@ -21,12 +29,13 @@ import { Message } from '../../../../models/message';
   templateUrl: './slide-form.component.html',
   styleUrls: ['./slide-form.component.scss']
 })
-export class SlideFormComponent implements OnInit {
+export class SlideFormComponent implements OnInit, OnChanges {
   @Input() slide: Slide;
-  @Input() action: string;
-  @Input() path: string;
+  @Input() filter: string;
+  @Input() value: string;
 
-  slides: Observable<Slides>;
+  fileUploaded: Observable<FileUploaded>;
+  slides: Observable<Slide[]>;
   submitted: boolean;
   form: FormGroup;
   editing: boolean;
@@ -36,7 +45,9 @@ export class SlideFormComponent implements OnInit {
   errorMessages: any;
 
   constructor(
+    private afs: AngularFirestore,
     private store: StoreService,
+    private storageService: StorageService,
     private slideService: SlideService,
     private router: Router
   ) {
@@ -55,24 +66,34 @@ export class SlideFormComponent implements OnInit {
     };
 
     this.form = new FormGroup({
-      uid: new FormControl(),
-      title: new FormControl(''),
+      uuid: new FormControl(''),
+      name: new FormControl('', Validators.required),
+      text: new FormControl(''),
       subtitle: new FormControl(''),
+      image: new FormControl(''),
+      customPath: new FormControl(''),
+      backPath: new FormControl(''),
+      absolutePath: new FormControl(''),
       url: new FormControl(''),
-      currentPath: new FormControl(''),
-      dbPath: new FormControl(''),
-      image: new FormControl('', Validators.required),
       externalURL: new FormControl(false),
+      postedAt: new FormControl(new Date()),
+      root: new FormControl(true),
       blocked: new FormControl(true),
-      deleted: new FormControl(false),
-      deletedCount: new FormControl(0)
+      deleted: new FormControl(false)
     });
+  }
 
-    console.log(this.action);
-    if (this.action === 'edit') {
-      console.log(this.slide);
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.slide.currentValue) {
+      if (this.filter.search('edit') >= 0) {
+        if (changes.slide.currentValue.postedAt) {
+          changes.slide.currentValue.postedAt = changes.slide.currentValue.postedAt.toDate();
+        }
 
-      this.form.patchValue(this.slide);
+        console.log('>>>', changes.slide.currentValue)
+
+        this.form.patchValue(changes.slide.currentValue);
+      }
     }
   }
 
@@ -85,15 +106,45 @@ export class SlideFormComponent implements OnInit {
   }
 
   onFilesChanged(files) {
-    const reader = new FileReader();
+    const file = files[0];
 
-    reader.readAsDataURL(files[0]);
+    if (files && files.length && files.length > 0) {
+      if (file.type.search('image/') >= 0) {
+        const reader = new FileReader();
 
-    reader.onload = (event: any) => {
-      this.form.patchValue({
-        image: event.target.result
+        reader.readAsDataURL(file);
+
+        reader.onload = (event: any) => {
+          // UPLOAD FILE TO FIRESTORAGE
+          // GET DOWNLOAD URL AND ADD THIS URL TO FORM LINK
+          this.form.patchValue({
+            type: file.type,
+            size: file.size,
+            lastModifiedDate: file.lastModifiedDate,
+            image: event.target.result
+          });
+        };
+      }
+
+      this.fileUploaded = this.storageService.uploadFile(file);
+      this.fileUploaded.subscribe((fileUploaded: FileUploaded) => {
+        if (fileUploaded.downloadURL) {
+          fileUploaded.downloadURL.subscribe((url) => {
+            const response = {
+              externalURL: true,
+              image: null,
+              type: file.type,
+              size: file.size,
+              lastModifiedDate: file.lastModifiedDate
+            };
+            if (file.type.search('image/') >= 0) {
+              response.image = url;
+            }
+            this.form.patchValue(response);
+          });
+        }
       });
-    };
+    }
   }
 
   onSubmitting(event: any) {
@@ -104,28 +155,78 @@ export class SlideFormComponent implements OnInit {
     const value = event[event.index];
     const slide: Slide = new Slide(value);
 
-    console.log(slide);
-    if (!this.path) {
-      slide.dbPath = '|enabled';
-      slide.currentPath = '|enabled' + slide.uid;
+    slide.text = slide.name;
+
+    if (this.filter.search('edit') >= 0) {
+      slide.customPath = this.value + '|list';
+
+      this.slideService.setItem(this.value, slide).subscribe(() => {
+        this.message = {
+          show: true,
+          label: 'Info',
+          sublabel: 'Guardado',
+          color: 'accent',
+          icon: 'info'
+        };
+      });
+    } else if (this.filter.search('add') >= 0) {
+      slide.absolutePath =
+        '/projects/blank-fire/langs/es/modules/drive/list/' + slide.uuid;
+
+      if (this.value) {
+        slide.uuid = this.afs.createId();
+        slide.customPath = this.value + '|list|' + slide.uuid + '|list';
+        slide.backPath = this.value + '|list';
+        slide.root = true;
+        slide.absolutePath = `/projects/blank-fire/langs/es/modules/drive${this.value
+          .split('|')
+          .join('/')}/list/${slide.uuid}`;
+
+        this.slideService
+          .setItem(this.value + '|list|' + slide.uuid, slide)
+          .subscribe(() => {
+            this.message = {
+              show: true,
+              label: 'Info',
+              sublabel: 'Guardado',
+              color: 'accent',
+              icon: 'info'
+            };
+          });
+      } else {
+        slide.uuid = this.afs.createId();
+        slide.customPath = '|list|' + slide.uuid + '|list';
+        slide.backPath = '|list';
+        slide.root = true;
+
+        this.slideService
+          .setItem('|list|' + slide.uuid, slide)
+          .subscribe(() => {
+            this.message = {
+              show: true,
+              label: 'Info',
+              sublabel: 'Guardado',
+              color: 'accent',
+              icon: 'info'
+            };
+          });
+      }
+    } else {
+      slide.uuid = this.afs.createId();
+      slide.customPath = '|list|' + slide.uuid + '|list';
+      slide.backPath = '|list';
+      slide.root = true;
+
+      this.slideService.setItem('|list|' + slide.uuid, slide).subscribe(() => {
+        this.message = {
+          show: true,
+          label: 'Info',
+          sublabel: 'Archivo guardado',
+          color: 'accent',
+          icon: 'info'
+        };
+      });
     }
-
-    this.slideService
-      .setItem('|enabled|' + slide.uid, slide)
-      .subscribe((status: boolean) => {
-        if (status) {
-          this.message = {
-            show: true,
-            label: 'Info',
-            sublabel: 'Slide guardado',
-            color: 'accent',
-            icon: 'info'
-          };
-
-          this.router.navigate(['/admin/slide/list']);
-        }
-      })
-      .unsubscribe();
 
     this.reset();
   }

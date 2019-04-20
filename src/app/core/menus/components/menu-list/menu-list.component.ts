@@ -80,12 +80,6 @@ export class MenuListComponent implements OnInit {
     }
   }
 
-  onBackMenu(menu: Menu) {
-    if (menu) {
-      this.router.navigate(['/admin/menu/enabled', menu.backPath || '']);
-    }
-  }
-
   onBlockMenu(path: string, menu: Menu) {
     const splitPath = path.split('|');
     splitPath.shift();
