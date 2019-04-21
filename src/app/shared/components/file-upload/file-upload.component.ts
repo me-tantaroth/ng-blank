@@ -26,7 +26,6 @@ export class FileUploadComponent implements OnInit {
 
   ngAfterViewChecked() {
     if (this.imageURL) {
-      console.log('! changement de la date du composant !', this.imageURL);
       this.imageURL = this.imageURL;
       this.cdRef.detectChanges();
     }

@@ -34,7 +34,7 @@ export class FileFormComponent implements OnInit, OnChanges {
 
   fileUploaded: Observable<FileUploaded>;
   files: Observable<File[]>;
-  submitted: boolean;
+  submitted = true;
   form: FormGroup;
   editing: boolean;
   message: Message = {
@@ -50,6 +50,10 @@ export class FileFormComponent implements OnInit, OnChanges {
     private router: Router
   ) {
     store.select('files');
+  }
+
+  log(url) {
+    console.log('## LOG', url)
   }
 
   get f(): any {
@@ -90,6 +94,13 @@ export class FileFormComponent implements OnInit, OnChanges {
     }
   }
 
+  goTo(url, e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    window.open(url);
+  }
+
   reset() {
     this.form.reset();
   }
@@ -100,6 +111,9 @@ export class FileFormComponent implements OnInit, OnChanges {
 
   onFilesChanged(files) {
     const file = files[0];
+
+    console.log('## FILE EDITED', this.file);
+    file.uuid = this.file.uuid;
 
     if (files && files.length && files.length > 0) {
       if (file.type.search('image/') >= 0) {
@@ -126,19 +140,23 @@ export class FileFormComponent implements OnInit, OnChanges {
       this.fileUploaded.subscribe((fileUploaded: FileUploaded) => {
         if (fileUploaded.downloadURL) {
           fileUploaded.downloadURL.subscribe((url) => {
-            const response = {
-              externalURL: true,
-              previewImage: null,
-              url,
-              text: file.text,
-              type: file.type,
-              size: file.size,
-              lastModifiedDate: file.lastModifiedDate
-            };
-            if (file.type.search('image/') >= 0) {
-              response.previewImage = url;
+            if (url) {
+              const response = {
+                externalURL: true,
+                previewImage: null,
+                url,
+                text: file.text,
+                type: file.type,
+                size: file.size,
+                lastModifiedDate: file.lastModifiedDate
+              };
+              if (file.type.search('image/') >= 0) {
+                response.previewImage = url;
+              }
+              console.log('## RESPONSE FILE UPLOAD', response)
+              this.form.patchValue(response);
+              this.submitted = false;
             }
-            this.form.patchValue(response);
           });
         }
       });
@@ -153,6 +171,7 @@ export class FileFormComponent implements OnInit, OnChanges {
     const value = event[event.index];
     const file: File = new File(value);
 
+    console.log('>>> FILE', file);
     if (this.filter.search('edit') >= 0) {
       file.customPath = this.value + '|list';
 

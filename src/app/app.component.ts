@@ -22,7 +22,7 @@ export class AppComponent {
     function getDomainName(hostName) {
       return hostName
         .substring(hostName.lastIndexOf('.', hostName.lastIndexOf('.') - 1) + 1)
-        .split('.');
+        .split('.')[0];
     }
 
     function getSubdomain(hostname) {
@@ -31,8 +31,10 @@ export class AppComponent {
       return hostname.replace(urlParts[0], '').slice(0, -1);
     }
 
+    console.log('## PRODUCTION', environment.production);
     if (environment.production) {
-      if ((PROJECT_ID = getDomainName(window.location.hostname))) {
+      console.log('## DOMAIN NAME', getDomainName(window.location.hostname));
+      if (getDomainName(window.location.hostname)) {
         PROJECT_ID = getDomainName(window.location.hostname);
       } else {
         PROJECT_ID = environment.project.uuid;
@@ -42,6 +44,9 @@ export class AppComponent {
         PROJECT_ID = environment.project.uuid;
       }
     }
+
+
+    console.log('## PROJECT ID', PROJECT_ID);
 
     const NODE = this.store.get('node');
 
