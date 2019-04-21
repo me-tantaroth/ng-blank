@@ -1,7 +1,16 @@
 <app-load-layout [config]="config | async">
   <app-slideshow-plugin></app-slideshow-plugin>
 
-  <div *ngIf="(page | async)">
-    <div [innerHtml]="(page | async).content | safe: 'html'"></div>
+  <div>
+    <ng-template
+      let-pageItem
+      [ngTemplateOutletContext]="{ $implicit: page | async }"
+      [ngTemplateOutlet]="pageItemT"
+      #pageItemT
+    >
+      <div *ngIf="pageItem && pageItem.content">
+        <div [innerHtml]="pageItem.content | safe: 'html'"></div>
+      </div>
+    </ng-template>
   </div>
 </app-load-layout>

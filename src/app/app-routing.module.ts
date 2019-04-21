@@ -20,6 +20,10 @@ const routes: Routes = [
     component: HomeComponent
   },
   {
+    path: 'home',
+    component: HomeComponent
+  },
+  {
     path: 'esal',
     children: [
       {
@@ -78,11 +82,11 @@ const routes: Routes = [
     path: 'page',
     children: [
       {
-        path: 'view/:path',
+        path: ':path',
         component: PageViewComponent
       },
       {
-        path: 'view/:path/:filter/:value',
+        path: ':path/:filter/:value',
         component: PageViewComponent
       }
     ]

@@ -9,6 +9,7 @@ import {
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AngularFireStorage } from '@angular/fire/storage';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
@@ -35,6 +36,8 @@ import { Message } from '../../../../models/message';
   providers: []
 })
 export class PageFormComponent implements OnInit, OnChanges {
+  public static storage = 'hoas';
+
   @ViewChild('froalaEditor') froalaEditor;
   @Input() page: Page;
   @Input() filter: string;
@@ -50,6 +53,7 @@ export class PageFormComponent implements OnInit, OnChanges {
   };
   errorMessages: any;
   optionsEditor: Object = {
+    htmlAllowedAttrs: ['.*'],
     htmlAllowedTags: ['.*'],
     charCounterCount: true,
     toolbarButtons: [
@@ -102,8 +106,42 @@ export class PageFormComponent implements OnInit, OnChanges {
       'customHTML'
     ],
     events: {
-      'froalaEditor.contentChanged': function(e, editor) {
-        // CODE
+      'froalaEditor.image.beforeUpload': function(e, editor, images) {
+        for (const image of images) {
+          $._storageService
+            .uploadFile(image)
+            .subscribe((fileUploaded: FileUploaded) => {
+              if (fileUploaded.downloadURL) {
+                fileUploaded.downloadURL.subscribe((url) => {
+                  if (url) {
+                    editor.image.insert(url);
+                  }
+                });
+              }
+            });
+        }
+
+        return false;
+      },
+      'froalaEditor.video.beforeUpload': function(e, editor, videos) {
+        for (const video of videos) {
+          $._storageService
+            .uploadFile(video)
+            .subscribe((fileUploaded: FileUploaded) => {
+              if (fileUploaded.downloadURL) {
+                fileUploaded.downloadURL.subscribe((url) => {
+                  if (url) {
+                    console.log('video inserted', url);
+                    editor.video.insert(
+                      `<video controls> <source src="${url}"> Your browser does not support HTML5 video. </video>`
+                    );
+                  }
+                });
+              }
+            });
+        }
+
+        return false;
       }
     }
   };
@@ -123,6 +161,7 @@ export class PageFormComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    $._storageService = this.storageService;
     this.errorMessages = {
       image: {
         required: 'La foto de perfíl es requerida.'
@@ -153,7 +192,9 @@ export class PageFormComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.page.currentValue) {
       if (this.filter.search('edit') >= 0) {
-        changes.page.currentValue.postedAt = changes.page.currentValue.postedAt.toDate();
+        if (changes.page.currentValue) {
+          changes.page.currentValue.postedAt = changes.page.currentValue.postedAt.toDate();
+        }
 
         this.form.patchValue(changes.page.currentValue);
       }
@@ -177,7 +218,7 @@ export class PageFormComponent implements OnInit, OnChanges {
   onPathChanged(event) {
     this.form.patchValue({
       url:
-        '/' +
+        '/page/' +
         new Accents()
           .removeDiacritics(event.target.value)
           .toLowerCase()
@@ -255,7 +296,7 @@ export class PageFormComponent implements OnInit, OnChanges {
         '/projects/blank-fire/langs/es/modules/drive/list/' + page.uuid;
 
       if (this.value) {
-        page.uuid = this.afs.createId();
+        page.uuid = page.url;
         page.customPath = this.value + '|list|' + page.uuid + '|list';
         page.backPath = this.value + '|list';
         page.root = true;
@@ -275,7 +316,9 @@ export class PageFormComponent implements OnInit, OnChanges {
             };
           });
       } else {
-        page.uuid = this.afs.createId();
+        const PageURLSplit = page.url.split('/');
+
+        page.uuid = PageURLSplit[PageURLSplit.length - 1];
         page.customPath = '|list|' + page.uuid + '|list';
         page.backPath = '|list';
         page.root = true;
@@ -291,7 +334,7 @@ export class PageFormComponent implements OnInit, OnChanges {
         });
       }
     } else {
-      page.uuid = this.afs.createId();
+      page.uuid = page.url;
       page.customPath = '|list|' + page.uuid + '|list';
       page.backPath = '|list';
       page.root = true;
@@ -310,7 +353,6 @@ export class PageFormComponent implements OnInit, OnChanges {
     this.reset();
   }
   onSubmitted(event: boolean) {
-    console.log('SUBMIT', event);
     this.submitted = true;
 
     if (event) {

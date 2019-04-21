@@ -2,16 +2,11 @@
   <div class="uk-navbar-left">
     <ul class="uk-navbar-nav">
       <li *ngFor="let item of (menu | async)">
-        <a [routerLink]="[item.link]">{{ item.text || 'Link' }}</a>
-        <div
-          class="uk-navbar-dropdown"
-          *ngIf="item.menu && item.menu.length && item.menu.length > 0"
+        <a
+          [href]="[item.url]"
+          [target]="item.externalURL ? '_blank' : '_self'"
+          >{{ item.text || 'Link' }}</a
         >
-          <ul
-            class="uk-nav uk-navbar-dropdown-nav"
-            [innerHTML]="submenu(item.menu)"
-          ></ul>
-        </div>
       </li>
     </ul>
   </div>
@@ -34,4 +29,3 @@
     </ul>
   </div>
 </nav>
-

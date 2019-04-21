@@ -22,8 +22,8 @@ export class Menu {
   }
 
   format(menu) {
-    if (!menu.uid || menu.uid === null || menu.uid === undefined) {
-      menu.uid = 'menu-' + makeid(15);
+    if (!menu.text || menu.text === null || menu.text === undefined) {
+      menu.text = menu.name;
     }
     if (
       !menu.createdAt ||

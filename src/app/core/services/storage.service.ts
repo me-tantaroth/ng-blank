@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/storage';
+import * as firebase from 'firebase/app';
 import { Observable, of } from 'rxjs';
 import { finalize, first } from 'rxjs/operators';
 
@@ -12,12 +13,18 @@ export interface FileUploaded {
   providedIn: 'root'
 })
 export class StorageService {
+  private storage: AngularFireStorage;
   downloadURL: Observable<string>;
 
-  constructor(private storage: AngularFireStorage) {}
+  constructor(private _storage: AngularFireStorage) {
+    console.log(
+      '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><',
+      this._storage
+    );
+  }
 
   uploadFile(file): Observable<FileUploaded> {
-    const storageRef = this.storage.ref('drive/' + file.name);
+    const storageRef = this._storage.ref('drive/' + file.name);
     const task = storageRef.put(file);
 
     return new Observable((observer) => {

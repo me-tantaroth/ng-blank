@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { MenuService } from '../../../core/menus/services/menu.service';
@@ -13,7 +13,7 @@ import { Menu } from '../../../core/menus/models/menu';
 })
 export class NavbarCorpayandeComponent implements OnInit {
   authenticated: Observable<boolean>;
-  menu: Observable<Menu[]> = of([]);
+  menu: Observable<Menu[]>;
 
   constructor(
     private authService: AuthService,
@@ -22,9 +22,7 @@ export class NavbarCorpayandeComponent implements OnInit {
 
   ngOnInit() {
     this.authenticated = this.authService.authenticated;
-    // this.menu = this.menuService.filter({
-    //   deleted: false
-    // });
+    this.menu = this.menuService.list('|list');
   }
 
   submenu(menu: Menu[]) {

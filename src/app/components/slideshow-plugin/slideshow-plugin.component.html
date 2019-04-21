@@ -1,4 +1,4 @@
-<div *ngIf="(slides | async)">
+<div>
   <ng-template
     let-slideList
     [ngTemplateOutletContext]="{ $implicit: slides | async }"
@@ -6,31 +6,34 @@
     #slidesT
   >
     <div
+      *ngIf="slideList && slideList.length > 0"
       class="uk-position-relative uk-visible-toggle uk-light"
       tabindex="-1"
       uk-slideshow="min-height: 300; max-height: 450"
     >
       <ul class="uk-slideshow-items">
-        <li *ngFor="let slide of slideList">
+        <li
+          *ngFor="let slide of slideList"
+          (click)="goTo(slide)"
+          [ngStyle]="{ cursor: slide.url ? 'pointer' : 'normal' }"
+        >
           <img
             [src]="slide.image"
-            [alt]="slide.title"
-            [title]="slide.title"
+            [alt]="slide.text"
+            [src]="slide.image"
             uk-cover
           />
           <div
             *ngIf="
-              (slide.title && slide.title !== '') ||
+              (slide.text && slide.text !== '') ||
               (slide.subtitle && slide.subtitle !== '')
             "
             class="uk-overlay uk-overlay-primary uk-position-bottom"
           >
             <p>
-              <a [href]="slide.redirect" target="_blank">
-                {{ slide.title }}
-                <br />
-                <span class="uk-text-meta">{{ slide.subtitle }}</span>
-              </a>
+              {{ slide.text }}
+              <br />
+              <span class="uk-text-meta">{{ slide.subtitle }}</span>
             </p>
           </div>
         </li>

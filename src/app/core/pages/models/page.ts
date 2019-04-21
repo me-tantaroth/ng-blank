@@ -38,9 +38,6 @@ export class Page {
   }
 
   format(page): Page {
-    if (!page.uid || page.uid === null || page.uid === undefined) {
-      page.uid = 'page-' + makeid(15);
-    }
     if (!page.url || page.url === null || page.url === undefined) {
       page.url = makeid(15);
 

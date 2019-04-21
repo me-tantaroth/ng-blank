@@ -64,7 +64,8 @@ export class FileFormComponent implements OnInit, OnChanges {
     };
 
     this.form = new FormGroup({
-      text: new FormControl('', Validators.required),
+      name: new FormControl('', Validators.required),
+      text: new FormControl(''),
       uuid: new FormControl(''),
       customPath: new FormControl(''),
       backPath: new FormControl(''),
@@ -110,7 +111,6 @@ export class FileFormComponent implements OnInit, OnChanges {
           // UPLOAD FILE TO FIRESTORAGE
           // GET DOWNLOAD URL AND ADD THIS URL TO FORM LINK
           this.form.patchValue({
-            name: file.text,
             type: file.type,
             size: file.size,
             lastModifiedDate: file.lastModifiedDate,
@@ -152,8 +152,6 @@ export class FileFormComponent implements OnInit, OnChanges {
 
     const value = event[event.index];
     const file: File = new File(value);
-
-    file.text = file.name;
 
     if (this.filter.search('edit') >= 0) {
       file.customPath = this.value + '|list';

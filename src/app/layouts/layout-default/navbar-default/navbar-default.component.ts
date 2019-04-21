@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { MenuService } from '../../../core/menus/services/menu.service';
@@ -14,7 +13,7 @@ import { Menu } from '../../../core/menus/models/menu';
 })
 export class NavbarDefaultComponent implements OnInit {
   @Input() authenticated: boolean;
-  menu: Observable<Menu[]> = of([]);
+  menu: Observable<Menu[]>;
 
   constructor(
     private authService: AuthService,
@@ -22,13 +21,11 @@ export class NavbarDefaultComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.menu = this.menuService.filter({
-    //   deleted: false
-    // });
+    this.menu = this.menuService.list('|list');
   }
 
   submenu(menu: Menu[]) {
-    let html = '';
+    // let html = '';
     // if (menu && menu.length && menu.length > 0) {
     //   for (let item of menu) {
     //     html += `<li>`;
@@ -44,8 +41,8 @@ export class NavbarDefaultComponent implements OnInit {
     //   }
     // }
 
-    console.log(html);
-    return html;
+    // console.log(html);
+    // return html;
   }
 
   signOut() {

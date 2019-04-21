@@ -95,8 +95,6 @@ export class MenuFormComponent implements OnInit, OnChanges {
     const value = event[event.index];
     const menu: Menu = new Menu(value);
 
-    menu.text = menu.name;
-
     if (this.filter.search('edit') >= 0) {
       menu.customPath = this.value + '|list';
 

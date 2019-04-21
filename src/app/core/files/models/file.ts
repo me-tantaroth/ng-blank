@@ -26,8 +26,8 @@ export class File {
   }
 
   format(file) {
-    if (!file.uuid || file.uuid === null || file.uuid === undefined) {
-      file.uuid = 'file-' + makeid(15);
+    if (!file.text || file.text === null || file.text === undefined) {
+      file.text = file.name;
     }
     if (!file.type || file.type === null || file.type === undefined) {
       file.type = 'folder';

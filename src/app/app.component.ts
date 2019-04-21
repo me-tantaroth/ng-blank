@@ -22,7 +22,7 @@ export class AppComponent {
     function getDomainName(hostName) {
       return hostName
         .substring(hostName.lastIndexOf('.', hostName.lastIndexOf('.') - 1) + 1)
-        .split('.')[0];
+        .split('.');
     }
 
     function getSubdomain(hostname) {

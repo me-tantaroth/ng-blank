@@ -1,5 +1,12 @@
 <app-load-layout [config]="config | async">
-  <h1>Files</h1>
+  <div class="uk-section uk-section-default">
+    <div class="uk-container uk-container-small">
+      <h2 class="uk-heading-bullet">ESAL</h2>
 
-  <app-file-list-plugin [filter]="filter" [value]="value"></app-file-list-plugin>
+      <app-file-list-plugin
+        [filter]="filter"
+        [value]="value"
+      ></app-file-list-plugin>
+    </div>
+  </div>
 </app-load-layout>

@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 
@@ -18,9 +19,19 @@ export class SlideshowPluginComponent implements OnInit {
   panelOpenState: boolean;
   slides: Observable<Slide[]>;
 
-  constructor(private slideService: SlideService) {}
+  constructor(private router: Router, private slideService: SlideService) {}
 
   ngOnInit() {
     this.slides = this.slideService.list('|list');
+  }
+
+  goTo(slide: Slide) {
+    if (slide.url) {
+      if (slide.externalURL) {
+        window.open(slide.url);
+      } else {
+        this.router.navigate([slide.url]);
+      }
+    }
   }
 }
