@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { MenuService } from '../../../core/menus/services/menu.service';
+import { ConfigService, Config } from '../../../shared/services/config.service';
 
 import { Menu } from '../../../core/menus/models/menu';
 
@@ -14,13 +15,16 @@ import { Menu } from '../../../core/menus/models/menu';
 export class NavbarCorpayandeComponent implements OnInit {
   authenticated: Observable<boolean>;
   menu: Observable<Menu[]>;
+  config: Observable<Config>;
 
   constructor(
+    private configService: ConfigService,
     private authService: AuthService,
     private menuService: MenuService
   ) {}
 
   ngOnInit() {
+    this.config = this.configService.get();
     this.authenticated = this.authService.authenticated;
     this.menu = this.menuService.list('|list');
   }

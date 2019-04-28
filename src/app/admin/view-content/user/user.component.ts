@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
 import { first } from 'rxjs/operators';
 
-import { UserService } from '../../../core/users/services/users.service';
+import { UserService } from '../../../core/users/services/user.service';
 
 import { User } from '../../../core/users/models/user';
 

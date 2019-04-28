@@ -4,10 +4,10 @@ import { auth } from 'firebase/app';
 import { Observable, Subject } from 'rxjs';
 import * as _ from 'lodash';
 
-import { UserService } from '../../../core/users/services/users.service';
+import { UserService } from '../../../core/users/services/user.service';
 
-import { User, Users } from '../../../core/users/models/user';
-import { first, map } from 'rxjs/operators';
+import { User } from '../../../core/users/models/user';
+import { map } from 'rxjs/operators';
 
 export interface ServiceResponse {
   status: boolean;
@@ -19,7 +19,7 @@ export interface ServiceResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private users: Observable<Users>;
+  private users: Observable<User[]>;
   private authResponse: Subject<ServiceResponse> = new Subject<
     ServiceResponse
   >();
@@ -28,7 +28,7 @@ export class AuthService {
     public afAuth: AngularFireAuth,
     private usersService: UserService
   ) {
-    this.users = this.usersService.list();
+    this.users = this.usersService.list('|list');
   }
 
   get authenticated(): Observable<boolean> {
@@ -61,7 +61,6 @@ export class AuthService {
     this.afAuth.auth
       .signInWithEmailAndPassword(email, passowrd)
       .then((snap) => {
-        console.log('>>>', snap);
         if (snap) {
           if (snap.user) {
             const user: User = new User(snap.user);

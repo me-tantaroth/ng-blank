@@ -32,9 +32,11 @@ export class FileFormComponent implements OnInit, OnChanges {
   @Input() filter: string;
   @Input() value: string;
 
+  fileId: string;
   fileUploaded: Observable<FileUploaded>;
   files: Observable<File[]>;
-  submitted = true;
+  loader: boolean;
+  submitted: boolean;
   form: FormGroup;
   editing: boolean;
   message: Message = {
@@ -53,7 +55,7 @@ export class FileFormComponent implements OnInit, OnChanges {
   }
 
   log(url) {
-    console.log('## LOG', url)
+    console.log('## LOG', url);
   }
 
   get f(): any {
@@ -61,6 +63,8 @@ export class FileFormComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.fileId = this.afs.createId();
+
     this.errorMessages = {
       image: {
         required: 'La foto de perfíl es requerida.'
@@ -89,6 +93,8 @@ export class FileFormComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.file.currentValue) {
       if (this.filter.search('edit') >= 0) {
+        this.fileId = changes.file.currentValue.uuid;
+
         this.form.patchValue(changes.file.currentValue);
       }
     }
@@ -112,8 +118,9 @@ export class FileFormComponent implements OnInit, OnChanges {
   onFilesChanged(files) {
     const file = files[0];
 
-    console.log('## FILE EDITED', this.file);
-    file.uuid = this.file.uuid;
+    this.submitted = true;
+
+    file.uuid = this.fileId;
 
     if (files && files.length && files.length > 0) {
       if (file.type.search('image/') >= 0) {
@@ -125,6 +132,7 @@ export class FileFormComponent implements OnInit, OnChanges {
           // UPLOAD FILE TO FIRESTORAGE
           // GET DOWNLOAD URL AND ADD THIS URL TO FORM LINK
           this.form.patchValue({
+            name: file.name,
             type: file.type,
             size: file.size,
             lastModifiedDate: file.lastModifiedDate,
@@ -145,6 +153,7 @@ export class FileFormComponent implements OnInit, OnChanges {
                 externalURL: true,
                 previewImage: null,
                 url,
+                name: this.f.name.value || file.name,
                 text: file.text,
                 type: file.type,
                 size: file.size,
@@ -153,7 +162,6 @@ export class FileFormComponent implements OnInit, OnChanges {
               if (file.type.search('image/') >= 0) {
                 response.previewImage = url;
               }
-              console.log('## RESPONSE FILE UPLOAD', response)
               this.form.patchValue(response);
               this.submitted = false;
             }
@@ -171,7 +179,6 @@ export class FileFormComponent implements OnInit, OnChanges {
     const value = event[event.index];
     const file: File = new File(value);
 
-    console.log('>>> FILE', file);
     if (this.filter.search('edit') >= 0) {
       file.customPath = this.value + '|list';
 
@@ -189,7 +196,7 @@ export class FileFormComponent implements OnInit, OnChanges {
         '/projects/blank-fire/langs/es/modules/drive/list/' + file.uuid;
 
       if (this.value) {
-        file.uuid = this.afs.createId();
+        file.uuid = this.fileId;
         file.customPath = this.value + '|list|' + file.uuid + '|list';
         file.backPath = this.value + '|list';
         file.root = true;
@@ -207,9 +214,11 @@ export class FileFormComponent implements OnInit, OnChanges {
               color: 'accent',
               icon: 'info'
             };
+
+            this.router.navigate(['/admin/file/enabled/list/', file.backPath]);
           });
       } else {
-        file.uuid = this.afs.createId();
+        file.uuid = this.fileId;
         file.customPath = '|list|' + file.uuid + '|list';
         file.backPath = '|list';
         file.root = true;
@@ -222,10 +231,12 @@ export class FileFormComponent implements OnInit, OnChanges {
             color: 'accent',
             icon: 'info'
           };
+
+          this.router.navigate(['/admin/file/enabled/list/', file.backPath]);
         });
       }
     } else {
-      file.uuid = this.afs.createId();
+      file.uuid = this.fileId;
       file.customPath = '|list|' + file.uuid + '|list';
       file.backPath = '|list';
       file.root = true;
@@ -238,6 +249,8 @@ export class FileFormComponent implements OnInit, OnChanges {
           color: 'accent',
           icon: 'info'
         };
+
+        this.router.navigate(['/admin/file/enabled/list/', file.backPath]);
       });
     }
 

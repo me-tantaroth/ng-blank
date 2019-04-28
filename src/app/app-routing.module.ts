@@ -106,7 +106,7 @@ const routes: Routes = [
   },
   {
     path: 'admin',
-    loadChildren: './admin/admin.module#AdminModule' // loadChildren: () => AdminModule
+    loadChildren: () => AdminModule // loadChildren: () => AdminModule or loadChildren: './admin/admin.module#AdminModule'
   },
   {
     path: '**',

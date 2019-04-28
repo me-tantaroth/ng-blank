@@ -13,6 +13,7 @@ export interface Project {
   name?: string;
   layout?: string;
   lang?: string;
+  icon?: string;
 }
 
 export interface Config {
@@ -42,6 +43,7 @@ export class ConfigService {
               this.config.project.uuid = project.uuid;
               this.config.project.name = project.name;
               this.config.project.layout = project.layout;
+              this.config.project.icon = project.icon;
 
               this.projectsCollection
                 .doc(this.config.project.uuid)

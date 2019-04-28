@@ -13,7 +13,24 @@
 
   <div class="uk-navbar-center">
     <ul class="uk-navbar-nav">
-      <li class="uk-active"><a routerLink="/">CORPAYANDE</a></li>
+      <li class="uk-active">
+        <ng-template
+          let-configItem
+          [ngTemplateOutletContext]="{ $implicit: config | async }"
+          [ngTemplateOutlet]="configT"
+          #configT
+        >
+          <a class="uk-navbar-item uk-logo" routerLink="/">
+            <img
+              *ngIf="configItem?.project.icon"
+              [src]="configItem?.project.icon"
+              [title]="configItem?.project.name"
+              width="70"
+            />
+            <span *ngIf="!configItem?.project.icon">{{ configItem?.project.name }}</span>
+          </a>
+        </ng-template>
+      </li>
     </ul>
   </div>
 

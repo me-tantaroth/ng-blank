@@ -114,7 +114,9 @@ export class PageFormComponent implements OnInit, OnChanges {
               if (fileUploaded.downloadURL) {
                 fileUploaded.downloadURL.subscribe((url) => {
                   if (url) {
-                    editor.image.insert(url);
+                    editor.image.insert(
+                      `<iframe src="${url}"> <p>Your browser does not support iframes.</p> </iframe>`
+                    );
                   }
                 });
               }
@@ -131,9 +133,27 @@ export class PageFormComponent implements OnInit, OnChanges {
               if (fileUploaded.downloadURL) {
                 fileUploaded.downloadURL.subscribe((url) => {
                   if (url) {
-                    console.log('video inserted', url);
                     editor.video.insert(
-                      `<video controls> <source src="${url}"> Your browser does not support HTML5 video. </video>`
+                      `<iframe src="${url}"> <p>Your browser does not support iframes.</p> </iframe>`
+                    );
+                  }
+                });
+              }
+            });
+        }
+
+        return false;
+      },
+      'froalaEditor.file.beforeUpload': function(e, editor, files) {
+        for (const file of files) {
+          $._storageService
+            .uploadFile(file)
+            .subscribe((fileUploaded: FileUploaded) => {
+              if (fileUploaded.downloadURL) {
+                fileUploaded.downloadURL.subscribe((url) => {
+                  if (url) {
+                    editor.file.insert(
+                      `<iframe src="${url}"> <p>Your browser does not support iframes.</p> </iframe>`
                     );
                   }
                 });

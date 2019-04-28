@@ -9,20 +9,20 @@
       *ngIf="slideList && slideList.length > 0"
       class="uk-position-relative uk-visible-toggle uk-light"
       tabindex="-1"
-      uk-slideshow="min-height: 300; max-height: 450"
+      uk-slideshow="min-height: 300; max-height: 400"
     >
       <ul class="uk-slideshow-items">
         <li
+          style="background-repeat: repeat-x; background-color: #666666"
           *ngFor="let slide of slideList"
           (click)="goTo(slide)"
-          [ngStyle]="{ cursor: slide.url ? 'pointer' : 'normal' }"
+          [ngStyle]="{
+            cursor: slide.url ? 'pointer' : 'normal',
+            backgroundImage: 'url(' + slide.image + ')'
+          }"
+          class="uk-background-contain uk-background-center-center"
+          [title]="slide.text"
         >
-          <img
-            [src]="slide.image"
-            [alt]="slide.text"
-            [src]="slide.image"
-            uk-cover
-          />
           <div
             *ngIf="
               (slide.text && slide.text !== '') ||

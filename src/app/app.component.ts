@@ -1,8 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import {
+  Router,
+  Event,
+  NavigationStart,
+  NavigationEnd,
+  NavigationError
+} from '@angular/router';
+import { TdLoadingService } from './covalent.module';
 
 import { StoreService } from 'ng-barn';
 import { ConfigService } from './shared/services/config.service';
 import { LAYOUTS } from './layouts';
+
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -10,13 +19,35 @@ import { environment } from 'src/environments/environment';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  loader: boolean;
   title = 'ng-blank';
 
   constructor(
+    private router: Router,
+    private _loadingService: TdLoadingService,
     private store: StoreService,
     private configService: ConfigService
   ) {
+    this._loadingService.register('loader');
+
+    router.events.subscribe((event: Event) => {
+      if (event instanceof NavigationStart) {
+        this._loadingService.register('loader');
+      }
+
+      if (event instanceof NavigationEnd) {
+        this._loadingService.resolve('loader');
+      }
+
+      if (event instanceof NavigationError) {
+        this._loadingService.resolve('loader');
+        // Hide loading indicator
+
+        // Present error to user
+        console.error(event.error);
+      }
+    });
     let PROJECT_ID: string;
 
     function getDomainName(hostName) {
@@ -31,10 +62,11 @@ export class AppComponent {
       return hostname.replace(urlParts[0], '').slice(0, -1);
     }
 
-    console.log('## PRODUCTION', environment.production);
     if (environment.production) {
-      console.log('## DOMAIN NAME', getDomainName(window.location.hostname));
-      if (getDomainName(window.location.hostname)) {
+      if (
+        getDomainName(window.location.hostname) &&
+        getDomainName(window.location.hostname) !== 'firebaseapp'
+      ) {
         PROJECT_ID = getDomainName(window.location.hostname);
       } else {
         PROJECT_ID = environment.project.uuid;
@@ -44,7 +76,6 @@ export class AppComponent {
         PROJECT_ID = environment.project.uuid;
       }
     }
-
 
     console.log('## PROJECT ID', PROJECT_ID);
 
@@ -57,5 +88,9 @@ export class AppComponent {
         lang: navigator.language.split('-')[0]
       }
     });
+  }
+
+  ngOnInit() {
+    this._loadingService.resolve('loader');
   }
 }

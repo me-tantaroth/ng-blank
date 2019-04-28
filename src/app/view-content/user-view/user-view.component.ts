@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 import { Config, ConfigService } from '../../shared/services/config.service';
 
-import { UserService } from '../../core/users/services/users.service';
+import { UserService } from '../../core/users/services/user.service';
 
 import { User } from '../../core/users/models/user';
 

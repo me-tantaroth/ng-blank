@@ -25,7 +25,10 @@ import {
   LoadLayoutComponent,
   LayoutCorpayandeComponent,
   NavbarCorpayandeComponent,
-  FooterCorpayandeComponent
+  FooterCorpayandeComponent,
+  LayoutTeatroJueteComponent,
+  NavbarTeatroJueteComponent,
+  FooterTeatroJueteComponent
 } from './layouts';
 import { AppComponent } from './app.component';
 import {
@@ -52,6 +55,9 @@ import {
     LayoutCorpayandeComponent,
     NavbarCorpayandeComponent,
     FooterCorpayandeComponent,
+    LayoutTeatroJueteComponent,
+    NavbarTeatroJueteComponent,
+    FooterTeatroJueteComponent,
     HomeComponent,
     NotFoundComponent,
     SignInComponent,
@@ -76,6 +82,9 @@ import {
     AngularFireStorageModule, // imports firebase/storage only needed for storage features,
     NgBarnModule.forRoot({
       store: {
+        loader: {
+          status: true
+        },
         node: {
           project: {
             'ng-fire-blank': {
@@ -309,7 +318,8 @@ import {
         menu: [],
         files: [],
         authentications: [],
-        authenticated: {}
+        authenticated: {},
+        currentUserPermissions: {}
       }
     }),
     MaterialModule,

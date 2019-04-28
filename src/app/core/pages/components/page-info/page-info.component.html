@@ -1,11 +1,1 @@
-<div *ngIf="page">
-  <div
-    class="uk-background-center-center uk-background-cover uk-background-no-repeat uk-background-primary uk-height-large"
-    [ngStyle]="{ backgroundImage: 'url(' + page.image + ')' }"
-  ></div>
-
-  <h2>{{ page.text }}</h2>
-  <p>{{ page.description }}</p>
-
-  <div [innerHtml]="page.content | safe: 'html'"></div>
-</div>
+<div *ngIf="page?.content" [innerHtml]="page?.content | safe: 'html'"></div>

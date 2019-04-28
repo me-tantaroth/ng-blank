@@ -1,11 +1,16 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivationEnd } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
 import * as _ from 'lodash';
+import { StoreService } from 'ng-barn';
 
+import { ModulesService } from '../../../modules/services/modules.service';
+import { UsersService } from '../../../users/services/users.service';
 import { SlideService } from '../../services/slide.service';
 
+import { Module } from 'src/app/core/modules/models/module';
+import { User } from 'src/app/core/users/models/user';
 import { Slide } from '../../models/slide';
 
 @Component({
@@ -23,7 +28,13 @@ export class SlideListComponent implements OnInit {
   slides: Observable<Slide[]>;
   backSlide: Observable<Slide[]>;
 
-  constructor(private slideService: SlideService, private router: Router) {
+  constructor(
+    private store: StoreService,
+    private modulesService: ModulesService,
+    private usersService: UsersService,
+    private slideService: SlideService,
+    private router: Router
+  ) {
     router.events.subscribe((data) => {
       if (data instanceof ActivationEnd) {
         if (!!data.snapshot.params.filter && !!data.snapshot.params.value) {
@@ -111,22 +122,44 @@ export class SlideListComponent implements OnInit {
   }
 
   onDeleteSlide(slide: Slide) {
+    const slideModule$: Observable<Module> = this.modulesService.getItem(
+      '|slide'
+    );
+    const currentUser$: Observable<User> = this.usersService.getItem(
+      this.store.get('currentUserPermissions').path
+    );
+
     if (confirm(`Seguro que desea eliminar a '${slide.text}'?`)) {
-      slide.deleted = true;
-
-      const path = slide.customPath.split('|');
-
-      path.pop();
-
-      this.slideService
-        .removeItem(path.join('|'))
+      combineLatest([slideModule$, currentUser$])
         .pipe(first())
-        .subscribe(() => {
-          if (status) {
-            this.slideService
-              .removeItem('|enabled|' + slide.uuid)
+        .subscribe(([slideModule, currentUser]) => {
+          if (currentUser.permissions.slide_delete) {
+            slideModule.count = slideModule.count - 1;
+
+            this.modulesService
+              .setItem('|slide', slideModule)
               .pipe(first())
-              .subscribe();
+              .subscribe(() => {
+                slide.deleted = true;
+
+                const path = slide.customPath.split('|');
+
+                path.pop();
+
+                this.slideService
+                  .removeItem(path.join('|'))
+                  .pipe(first())
+                  .subscribe(() => {
+                    if (status) {
+                      this.slideService
+                        .removeItem('|enabled|' + slide.uuid)
+                        .pipe(first())
+                        .subscribe();
+                    }
+                  });
+              });
+          } else {
+            alert('Error!: Su plan no le permite hacer esta acción!');
           }
         });
     }

@@ -2,8 +2,8 @@ import { environment } from '../../../../environments/environment';
 
 import { makeid } from '../../../shared/utils';
 
-export interface Users {
-  [key: string]: User;
+export interface Permissions {
+  [key: string]: any;
 }
 
 export interface User {
@@ -22,6 +22,7 @@ export interface User {
   backPath: string;
   currentPath: string;
   principalPath: string;
+  permissions: Permissions;
   alias: string[];
   blocked: boolean;
   deleted: boolean;

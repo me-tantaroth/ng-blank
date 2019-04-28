@@ -87,8 +87,6 @@ export class MenuListComponent implements OnInit {
 
     menu.blocked = true;
 
-    console.log('## BLOCKED', path, menu, '|blocked|' + splitPath.join('|'));
-
     // this.menuService
     //   .setItem('|blocked|' + splitPath.join('|'), menu)
     //   .pipe(first())

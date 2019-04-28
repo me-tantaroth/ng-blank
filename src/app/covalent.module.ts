@@ -7,6 +7,7 @@ import {
   CovalentExpansionPanelModule,
   CovalentStepsModule,
   CovalentLoadingModule,
+  TdLoadingService,
   CovalentDialogsModule,
   CovalentSearchModule,
   CovalentPagingModule,
@@ -54,3 +55,4 @@ import {
   ]
 })
 export class CovalentModule {}
+export { TdLoadingService };

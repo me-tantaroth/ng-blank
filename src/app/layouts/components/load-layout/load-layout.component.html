@@ -16,6 +16,13 @@
     </div>
   </app-layout-corpayande>
 </ng-template>
+<ng-template #teatroJuete>
+  <app-layout-teatro-juete>
+    <div *ngIf="config.project.layout === 'teatroJuete'">
+      <ng-container [ngTemplateOutlet]="content"> </ng-container>
+    </div>
+  </app-layout-teatro-juete>
+</ng-template>
 
 <ng-container [ngTemplateOutlet]="templates[config?.project.layout]"> </ng-container>
 

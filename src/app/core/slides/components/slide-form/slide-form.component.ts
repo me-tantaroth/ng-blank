@@ -1,6 +1,5 @@
 import {
   Component,
-  ViewChild,
   OnInit,
   OnChanges,
   SimpleChanges,
@@ -9,20 +8,25 @@ import {
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 import * as _moment from 'moment';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 
 import {
   StorageService,
   FileUploaded
 } from '../../../services/storage.service';
+import { ModulesService } from '../../../modules/services/modules.service';
+import { UsersService } from '../../../users/services/users.service';
 import { SlideService } from '../../services/slide.service';
+import { UserService } from '../../../users/services/user.service';
 
 import { Slide } from '../../models/slide';
 import { Message } from '../../../../models/message';
+import { first } from 'rxjs/operators';
+import { Module } from 'src/app/core/modules/models/module';
+import { User } from 'src/app/core/users/models/user';
 
 @Component({
   selector: 'app-slide-form',
@@ -34,6 +38,7 @@ export class SlideFormComponent implements OnInit, OnChanges {
   @Input() filter: string;
   @Input() value: string;
 
+  uuid: string;
   fileUploaded: Observable<FileUploaded>;
   slides: Observable<Slide[]>;
   submitted: boolean;
@@ -48,7 +53,10 @@ export class SlideFormComponent implements OnInit, OnChanges {
     private afs: AngularFirestore,
     private store: StoreService,
     private storageService: StorageService,
+    private modulesService: ModulesService,
+    private usersService: UsersService,
     private slideService: SlideService,
+    private userService: UserService,
     private router: Router
   ) {
     this.store.select('slides');
@@ -89,8 +97,6 @@ export class SlideFormComponent implements OnInit, OnChanges {
         if (changes.slide.currentValue.postedAt) {
           changes.slide.currentValue.postedAt = changes.slide.currentValue.postedAt.toDate();
         }
-
-        console.log('>>>', changes.slide.currentValue)
 
         this.form.patchValue(changes.slide.currentValue);
       }
@@ -154,26 +160,27 @@ export class SlideFormComponent implements OnInit, OnChanges {
 
     const value = event[event.index];
     const slide: Slide = new Slide(value);
+    const slideModule$: Observable<Module> = this.modulesService.getItem(
+      '|slide'
+    );
+    const currentUser$: Observable<User> = this.usersService.getItem(
+      this.store.get('currentUserPermissions').path
+    );
+
+    this.uuid = '|list|' + slide.uuid;
 
     slide.text = slide.name;
 
     if (this.filter.search('edit') >= 0) {
+      this.uuid = this.value;
       slide.customPath = this.value + '|list';
-
-      this.slideService.setItem(this.value, slide).subscribe(() => {
-        this.message = {
-          show: true,
-          label: 'Info',
-          sublabel: 'Guardado',
-          color: 'accent',
-          icon: 'info'
-        };
-      });
     } else if (this.filter.search('add') >= 0) {
       slide.absolutePath =
         '/projects/blank-fire/langs/es/modules/drive/list/' + slide.uuid;
 
       if (this.value) {
+        this.uuid = this.value + '|list|' + slide.uuid;
+
         slide.uuid = this.afs.createId();
         slide.customPath = this.value + '|list|' + slide.uuid + '|list';
         slide.backPath = this.value + '|list';
@@ -181,54 +188,79 @@ export class SlideFormComponent implements OnInit, OnChanges {
         slide.absolutePath = `/projects/blank-fire/langs/es/modules/drive${this.value
           .split('|')
           .join('/')}/list/${slide.uuid}`;
-
-        this.slideService
-          .setItem(this.value + '|list|' + slide.uuid, slide)
-          .subscribe(() => {
-            this.message = {
-              show: true,
-              label: 'Info',
-              sublabel: 'Guardado',
-              color: 'accent',
-              icon: 'info'
-            };
-          });
       } else {
         slide.uuid = this.afs.createId();
         slide.customPath = '|list|' + slide.uuid + '|list';
         slide.backPath = '|list';
         slide.root = true;
-
-        this.slideService
-          .setItem('|list|' + slide.uuid, slide)
-          .subscribe(() => {
-            this.message = {
-              show: true,
-              label: 'Info',
-              sublabel: 'Guardado',
-              color: 'accent',
-              icon: 'info'
-            };
-          });
       }
     } else {
       slide.uuid = this.afs.createId();
       slide.customPath = '|list|' + slide.uuid + '|list';
       slide.backPath = '|list';
       slide.root = true;
-
-      this.slideService.setItem('|list|' + slide.uuid, slide).subscribe(() => {
-        this.message = {
-          show: true,
-          label: 'Info',
-          sublabel: 'Archivo guardado',
-          color: 'accent',
-          icon: 'info'
-        };
-      });
     }
 
-    this.reset();
+    combineLatest([slideModule$, currentUser$])
+      .pipe(first())
+      .subscribe(([slideModule, currentUser]) => {
+        if (
+          (currentUser.permissions.slide_write &&
+            !currentUser.permissions.slide_write_limit) ||
+          (currentUser.permissions.slide_write &&
+            currentUser.permissions.slide_write_limit &&
+            currentUser.permissions.slide_write_limit_max &&
+            slideModule.count <
+              currentUser.permissions.slide_write_limit_max) ||
+          ((this.filter.search('add') >= 0 &&
+            currentUser.permissions.slide_create &&
+            !currentUser.permissions.slide_create_limit) ||
+            (currentUser.permissions.slide_create &&
+              currentUser.permissions.slide_create_limit &&
+              currentUser.permissions.slide_create_limit_max &&
+              slideModule.count <
+                currentUser.permissions.slide_create_limit_max)) ||
+          ((this.filter.search('edit') >= 0 &&
+            currentUser.permissions.slide_update &&
+            !currentUser.permissions.slide_update_limit) ||
+            (currentUser.permissions.slide_update &&
+              currentUser.permissions.slide_update_limit &&
+              currentUser.permissions.slide_update_limit_max &&
+              slideModule.count <
+                currentUser.permissions.slide_update_limit_max))
+        ) {
+          this.slideService.setItem(this.uuid, slide).subscribe(() => {
+            if (this.filter.search('add') >= 0) {
+              slideModule.count = slideModule.count + 1;
+            }
+
+            this.modulesService
+              .setItem('|slide', slideModule)
+              .pipe(first())
+              .subscribe(() => {
+                this.message = {
+                  show: true,
+                  label: 'Info',
+                  sublabel: 'Guardado',
+                  color: 'accent',
+                  icon: 'info'
+                };
+              });
+          });
+        } else {
+          this.message = {
+            show: true,
+            label: 'Error!',
+            sublabel: 'Su plan no le permite hacer esta acción!',
+            color: 'warn',
+            icon: 'error'
+          };
+        }
+      });
+
+    if (this.filter.search('add') >= 0) {
+      this.reset();
+    }
   }
   onSubmitted(event: boolean) {
     this.submitted = true;

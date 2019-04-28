@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 
 import { Accents } from '../../../../shared/utils';
 
-import { UserService } from '../../services/users.service';
+import { UserService } from '../../services/user.service';
 import {
   AuthService,
   ServiceResponse as AuthServiceResponse
@@ -16,7 +16,7 @@ import {
 
 import { ConfirmPasswordValidator } from '../../../../shared/validators/confirm-password-validator';
 
-import { User, Users } from '../../models/user';
+import { User } from '../../models/user';
 import { Message } from '../../../../models/message';
 import { first } from 'rxjs/operators';
 
@@ -31,7 +31,7 @@ export class UserFormComponent implements OnInit {
   @Input() filter: string;
   @Input() value: string;
 
-  users: Observable<Users>;
+  users: Observable<User[]>;
   submitted: boolean;
   form: FormGroup;
   editing: boolean;
@@ -145,7 +145,7 @@ export class UserFormComponent implements OnInit {
       this.userService
         .setItem(this.value, user)
         .pipe(first())
-        .subscribe((status: boolean) => {
+        .subscribe((status: any) => {
           if (status) {
             this.message = {
               show: true,
@@ -160,7 +160,7 @@ export class UserFormComponent implements OnInit {
         });
     } else if (this.filter === 'add') {
       user.uid = this.afs.createId();
-      console.log('## USER', user)
+
       if (this.value) {
         user.dbPath = this.value + '|enabled|list';
         user.currentPath = this.value + '|enabled|list|' + user.uid;
@@ -175,7 +175,7 @@ export class UserFormComponent implements OnInit {
               this.userService
                 .setItem(user.currentPath, user)
                 .pipe(first())
-                .subscribe((status: boolean) => {
+                .subscribe((status: any) => {
                   if (status) {
                     this.message = {
                       show: true,
@@ -222,7 +222,7 @@ export class UserFormComponent implements OnInit {
               this.userService
                 .setItem(user.currentPath, user)
                 .pipe(first())
-                .subscribe((status: boolean) => {
+                .subscribe((status: any) => {
                   if (status) {
                     this.message = {
                       show: true,
@@ -271,7 +271,7 @@ export class UserFormComponent implements OnInit {
             this.userService
               .setItem(user.currentPath, user)
               .pipe(first())
-              .subscribe((status: boolean) => {
+              .subscribe((status: any) => {
                 if (status) {
                   this.message = {
                     show: true,

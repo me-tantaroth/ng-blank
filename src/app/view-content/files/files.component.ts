@@ -49,7 +49,6 @@ export class FilesComponent implements OnInit {
     const value = this.route.snapshot.paramMap.get('value');
 
     if (value) {
-      console.log('## VALUE', value);
       this.value = value;
     } else {
       this.route.paramMap
