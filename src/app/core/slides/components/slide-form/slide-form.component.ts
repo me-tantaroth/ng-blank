@@ -193,12 +193,16 @@ export class SlideFormComponent implements OnInit, OnChanges {
         slide.customPath = '|list|' + slide.uuid + '|list';
         slide.backPath = '|list';
         slide.root = true;
+
+        this.uuid = '|list|' + slide.uuid;
       }
     } else {
       slide.uuid = this.afs.createId();
       slide.customPath = '|list|' + slide.uuid + '|list';
       slide.backPath = '|list';
       slide.root = true;
+
+      this.uuid = '|list|' + slide.uuid;
     }
 
     combineLatest([slideModule$, currentUser$])
@@ -229,6 +233,7 @@ export class SlideFormComponent implements OnInit, OnChanges {
               slideModule.count <
                 currentUser.permissions.slide_update_limit_max))
         ) {
+          console.log('>>> SAVING!', this.filter, this.uuid, slide);
           this.slideService.setItem(this.uuid, slide).subscribe(() => {
             if (this.filter.search('add') >= 0) {
               slideModule.count = slideModule.count + 1;
