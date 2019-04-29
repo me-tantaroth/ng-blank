@@ -1,11 +1,16 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivationEnd } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
 import * as _ from 'lodash';
+import { StoreService } from 'ng-barn';
 
+import { ModulesService } from '../../../modules/services/modules.service';
+import { UsersService } from '../../../users/services/users.service';
 import { PageService } from '../../services/page.service';
 
+import { Module } from 'src/app/core/modules/models/module';
+import { User } from 'src/app/core/users/models/user';
 import { Page } from '../../models/page';
 
 @Component({
@@ -23,7 +28,13 @@ export class PageListComponent implements OnInit {
   pages: Observable<Page[]>;
   backPage: Observable<Page[]>;
 
-  constructor(private pageService: PageService, private router: Router) {
+  constructor(
+    private store: StoreService,
+    private modulesService: ModulesService,
+    private usersService: UsersService,
+    private pageService: PageService,
+    private router: Router
+  ) {
     router.events.subscribe((data) => {
       if (data instanceof ActivationEnd) {
         if (!!data.snapshot.params.filter && !!data.snapshot.params.value) {
@@ -84,11 +95,8 @@ export class PageListComponent implements OnInit {
     // const splitPath = path.split('|');
     // splitPath.shift();
     // splitPath.shift();
-
     // page.blocked = true;
-
     // console.log('## BLOCKED', path, page, '|blocked|' + splitPath.join('|'));
-
     // this.pageService
     //   .setItem('|blocked|' + splitPath.join('|'), page)
     //   .pipe(first())
@@ -108,7 +116,6 @@ export class PageListComponent implements OnInit {
 
   onUnBlockPage(path: string, page: Page) {
     // page.blocked = false;
-
     // this.pageService
     //   .setItem(path, page)
     //   .pipe(first())
@@ -127,22 +134,44 @@ export class PageListComponent implements OnInit {
   }
 
   onDeletePage(page: Page) {
+    const pageModule$: Observable<Module> = this.modulesService.getItem(
+      '|page'
+    );
+    const currentUser$: Observable<User> = this.usersService.getItem(
+      this.store.get('currentUserPermissions').path
+    );
+
     if (confirm(`Seguro que desea eliminar a '${page.text}'?`)) {
-      page.deleted = true;
-
-      const path = page.customPath.split('|');
-
-      path.pop();
-
-      this.pageService
-        .removeItem(path.join('|'))
+      combineLatest([pageModule$, currentUser$])
         .pipe(first())
-        .subscribe(() => {
-          if (status) {
-            this.pageService
-              .removeItem('|enabled|' + page.uuid)
+        .subscribe(([pageModule, currentUser]) => {
+          if (currentUser.permissions.page_delete) {
+            pageModule.count = pageModule.count - 1;
+
+            this.modulesService
+              .setItem('|page', pageModule)
               .pipe(first())
-              .subscribe();
+              .subscribe(() => {
+                page.deleted = true;
+
+                const path = page.customPath.split('|');
+
+                path.pop();
+
+                this.pageService
+                  .removeItem(path.join('|'))
+                  .pipe(first())
+                  .subscribe(() => {
+                    if (status) {
+                      this.pageService
+                        .removeItem('|enabled|' + page.uuid)
+                        .pipe(first())
+                        .subscribe();
+                    }
+                  });
+              });
+          } else {
+            alert('Error!: Su plan no le permite hacer esta acción!');
           }
         });
     }

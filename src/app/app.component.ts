@@ -1,11 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  Router,
-  Event,
-  NavigationStart,
-  NavigationEnd,
-  NavigationError
-} from '@angular/router';
+import { Router, Event, NavigationEnd } from '@angular/router';
 import { TdLoadingService } from './covalent.module';
 
 import { StoreService } from 'ng-barn';
@@ -31,23 +25,12 @@ export class AppComponent implements OnInit {
   ) {
     this._loadingService.register('loader');
 
-    router.events.subscribe((event: Event) => {
-      if (event instanceof NavigationStart) {
-        this._loadingService.register('loader');
-      }
-
+    this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {
         this._loadingService.resolve('loader');
       }
-
-      if (event instanceof NavigationError) {
-        this._loadingService.resolve('loader');
-        // Hide loading indicator
-
-        // Present error to user
-        console.error(event.error);
-      }
     });
+
     let PROJECT_ID: string;
 
     function getDomainName(hostName) {

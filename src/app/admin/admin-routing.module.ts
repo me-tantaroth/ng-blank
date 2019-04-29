@@ -35,7 +35,7 @@ const routes: Routes = [
         component: UsersComponent,
         canActivate: [PermissionGuard],
         data: {
-          route: ['|user|list|read'],
+          route: ['user_read']
         }
       },
       {
@@ -43,7 +43,7 @@ const routes: Routes = [
         component: UsersComponent,
         canActivate: [PermissionGuard],
         data: {
-          route: ['|user|list|read'],
+          route: ['user_read']
         }
       },
       {
@@ -51,7 +51,7 @@ const routes: Routes = [
         component: UsersComponent,
         canActivate: [PermissionGuard],
         data: {
-          route: ['|user|list|read'],
+          route: ['user_read']
         }
       },
       {
@@ -59,7 +59,7 @@ const routes: Routes = [
         component: UserComponent,
         canActivate: [SignInGuard],
         data: {
-          route: ['|user|list|write', '|user|list|create', '|user|list|update'],
+          route: ['|user|list|write', '|user|list|create', '|user|list|update']
         }
       },
       {
@@ -67,7 +67,7 @@ const routes: Routes = [
         component: UserComponent,
         canActivate: [SignInGuard],
         data: {
-          route: ['|user|list|write', '|user|list|create', '|user|list|update'],
+          route: ['|user|list|write', '|user|list|create', '|user|list|update']
         }
       },
       {
@@ -75,7 +75,7 @@ const routes: Routes = [
         component: UserComponent,
         canActivate: [SignInGuard],
         data: {
-          route: ['|user|list|write', '|user|list|create', '|user|list|update'],
+          route: ['|user|list|write', '|user|list|create', '|user|list|update']
         }
       }
     ]
@@ -89,7 +89,7 @@ const routes: Routes = [
         component: SlidesComponent,
         canActivate: [PermissionGuard],
         data: {
-          route: ['slide_read'],
+          route: ['slide_read']
         }
       },
       {
@@ -97,7 +97,7 @@ const routes: Routes = [
         component: SlidesComponent,
         canActivate: [PermissionGuard],
         data: {
-          route: ['slide_read'],
+          route: ['slide_read']
         }
       },
       {
@@ -105,7 +105,7 @@ const routes: Routes = [
         component: SlidesComponent,
         canActivate: [PermissionGuard],
         data: {
-          route: ['slide_read'],
+          route: ['slide_read']
         }
       },
       {
@@ -113,7 +113,7 @@ const routes: Routes = [
         component: SlideComponent,
         canActivate: [PermissionGuard],
         data: {
-          route: ['slide_write'],
+          route: ['slide_create', 'slide_write']
         }
       },
       {
@@ -121,7 +121,7 @@ const routes: Routes = [
         component: SlideComponent,
         canActivate: [PermissionGuard],
         data: {
-          route: ['slide_write'],
+          route: ['slide_write', 'slide_create']
         }
       },
       {
@@ -129,7 +129,7 @@ const routes: Routes = [
         component: SlideComponent,
         canActivate: [PermissionGuard],
         data: {
-          route: ['slide_write'],
+          route: ['slide_write', 'slide_update']
         }
       }
     ]
@@ -141,49 +141,49 @@ const routes: Routes = [
       {
         path: 'enabled',
         component: PagesComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'SLIDES_VIEW',
+          route: ['page_read']
         }
       },
       {
         path: 'enabled/:filter',
         component: PagesComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'SLIDES_VIEW',
+          route: ['page_read']
         }
       },
       {
         path: 'enabled/:filter/:value',
         component: PagesComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'SLIDES_VIEW',
+          route: ['page_read']
         }
       },
       {
         path: 'form',
         component: PageComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'SLIDES_WRITE',
+          route: ['page_write', 'page_create']
         }
       },
       {
         path: 'form/:filter',
         component: PageComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'SLIDES_WRITE',
+          route: ['page_write', 'page_create']
         }
       },
       {
         path: 'form/:filter/:value',
         component: PageComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'SLIDES_WRITE',
+          route: ['page_write', 'page_update']
         }
       }
     ]
@@ -197,7 +197,7 @@ const routes: Routes = [
         component: MenusComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'MENU_VIEW',
+          route: 'MENU_VIEW'
         }
       },
       {
@@ -205,7 +205,7 @@ const routes: Routes = [
         component: MenusComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'MENU_VIEW',
+          route: 'MENU_VIEW'
         }
       },
       {
@@ -213,7 +213,7 @@ const routes: Routes = [
         component: MenusComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'MENU_VIEW',
+          route: 'MENU_VIEW'
         }
       },
       {
@@ -221,7 +221,7 @@ const routes: Routes = [
         component: MenuComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'MENU_WRITE',
+          route: 'MENU_WRITE'
         }
       },
       {
@@ -229,7 +229,7 @@ const routes: Routes = [
         component: MenuComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'MENU_WRITE',
+          route: 'MENU_WRITE'
         }
       },
       {
@@ -237,7 +237,7 @@ const routes: Routes = [
         component: MenuComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'MENU_WRITE',
+          route: 'MENU_WRITE'
         }
       }
     ]
@@ -251,7 +251,7 @@ const routes: Routes = [
         component: FilesComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'DRIVE_VIEW',
+          route: 'DRIVE_VIEW'
         }
       },
       {
@@ -259,7 +259,7 @@ const routes: Routes = [
         component: FilesComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'DRIVE_VIEW',
+          route: 'DRIVE_VIEW'
         }
       },
       {
@@ -267,7 +267,7 @@ const routes: Routes = [
         component: FilesComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'DRIVE_VIEW',
+          route: 'DRIVE_VIEW'
         }
       },
       {
@@ -275,7 +275,7 @@ const routes: Routes = [
         component: FileComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'DRIVE_WRITE',
+          route: 'DRIVE_WRITE'
         }
       },
       {
@@ -283,7 +283,7 @@ const routes: Routes = [
         component: FileComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'DRIVE_WRITE',
+          route: 'DRIVE_WRITE'
         }
       },
       {
@@ -291,7 +291,7 @@ const routes: Routes = [
         component: FileComponent,
         canActivate: [SignInGuard],
         data: {
-          route: 'DRIVE_WRITE',
+          route: 'DRIVE_WRITE'
         }
       }
     ]

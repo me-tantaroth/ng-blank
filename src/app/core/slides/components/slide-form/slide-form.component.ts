@@ -39,6 +39,7 @@ export class SlideFormComponent implements OnInit, OnChanges {
   @Input() value: string;
 
   uuid: string;
+  ref: string;
   fileUploaded: Observable<FileUploaded>;
   slides: Observable<Slide[]>;
   submitted: boolean;
@@ -67,6 +68,8 @@ export class SlideFormComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.uuid = this.afs.createId();
+
     this.errorMessages = {
       image: {
         required: 'La foto de perfíl es requerida.'
@@ -111,8 +114,20 @@ export class SlideFormComponent implements OnInit, OnChanges {
     return Object.keys(this.f[controlField].errors);
   }
 
+  goTo(url, e) {
+    console.log(url, e);
+    e.stopPropagation();
+    e.preventDefault();
+
+    window.open(url);
+  }
+
   onFilesChanged(files) {
     const file = files[0];
+
+    this.submitted = true;
+
+    file.uuid = this.uuid;
 
     if (files && files.length && files.length > 0) {
       if (file.type.search('image/') >= 0) {
@@ -124,29 +139,38 @@ export class SlideFormComponent implements OnInit, OnChanges {
           // UPLOAD FILE TO FIRESTORAGE
           // GET DOWNLOAD URL AND ADD THIS URL TO FORM LINK
           this.form.patchValue({
+            name: this.f.name.value || file.name,
             type: file.type,
             size: file.size,
             lastModifiedDate: file.lastModifiedDate,
-            image: event.target.result
+            previewImage: event.target.result
           });
         };
+      } else {
+        // UPLOAD FILE TO FIRESTORAGE
+        // GET DOWNLOAD URL AND ADD THIS URL TO FORM LINK
       }
 
       this.fileUploaded = this.storageService.uploadFile(file);
       this.fileUploaded.subscribe((fileUploaded: FileUploaded) => {
         if (fileUploaded.downloadURL) {
           fileUploaded.downloadURL.subscribe((url) => {
-            const response = {
-              externalURL: true,
-              image: null,
-              type: file.type,
-              size: file.size,
-              lastModifiedDate: file.lastModifiedDate
-            };
-            if (file.type.search('image/') >= 0) {
-              response.image = url;
+            if (url) {
+              const response = {
+                previewImage: null,
+                image: url,
+                name: this.f.name.value || file.name,
+                text: file.text,
+                type: file.type,
+                size: file.size,
+                lastModifiedDate: file.lastModifiedDate
+              };
+              if (file.type.search('image/') >= 0) {
+                response.previewImage = url;
+              }
+              this.form.patchValue(response);
+              this.submitted = false;
             }
-            this.form.patchValue(response);
           });
         }
       });
@@ -167,21 +191,21 @@ export class SlideFormComponent implements OnInit, OnChanges {
       this.store.get('currentUserPermissions').path
     );
 
-    this.uuid = '|list|' + slide.uuid;
+    this.ref = '|list|' + this.uuid;
 
-    slide.text = slide.name;
+    slide.text = slide.text || slide.name;
 
     if (this.filter.search('edit') >= 0) {
-      this.uuid = this.value;
+      this.ref = this.value;
       slide.customPath = this.value + '|list';
     } else if (this.filter.search('add') >= 0) {
       slide.absolutePath =
         '/projects/blank-fire/langs/es/modules/drive/list/' + slide.uuid;
 
       if (this.value) {
-        this.uuid = this.value + '|list|' + slide.uuid;
+        this.ref = this.value + '|list|' + slide.uuid;
 
-        slide.uuid = this.afs.createId();
+        slide.uuid = this.uuid;
         slide.customPath = this.value + '|list|' + slide.uuid + '|list';
         slide.backPath = this.value + '|list';
         slide.root = true;
@@ -189,20 +213,20 @@ export class SlideFormComponent implements OnInit, OnChanges {
           .split('|')
           .join('/')}/list/${slide.uuid}`;
       } else {
-        slide.uuid = this.afs.createId();
+        slide.uuid = this.uuid;
         slide.customPath = '|list|' + slide.uuid + '|list';
         slide.backPath = '|list';
         slide.root = true;
 
-        this.uuid = '|list|' + slide.uuid;
+        this.ref = '|list|' + slide.uuid;
       }
     } else {
-      slide.uuid = this.afs.createId();
+      slide.uuid = this.uuid;
       slide.customPath = '|list|' + slide.uuid + '|list';
       slide.backPath = '|list';
       slide.root = true;
 
-      this.uuid = '|list|' + slide.uuid;
+      this.ref = '|list|' + slide.uuid;
     }
 
     combineLatest([slideModule$, currentUser$])
@@ -233,10 +257,9 @@ export class SlideFormComponent implements OnInit, OnChanges {
               slideModule.count <
                 currentUser.permissions.slide_update_limit_max))
         ) {
-          console.log('>>> SAVING!', this.filter, this.uuid, slide);
-          this.slideService.setItem(this.uuid, slide).subscribe(() => {
+          this.slideService.setItem(this.ref, slide).subscribe(() => {
             if (this.filter.search('add') >= 0) {
-              slideModule.count = slideModule.count + 1;
+              slideModule.count = (slideModule.count || 0) + 1;
             }
 
             this.modulesService

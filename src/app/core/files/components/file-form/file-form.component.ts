@@ -132,7 +132,7 @@ export class FileFormComponent implements OnInit, OnChanges {
           // UPLOAD FILE TO FIRESTORAGE
           // GET DOWNLOAD URL AND ADD THIS URL TO FORM LINK
           this.form.patchValue({
-            name: file.name,
+            name: this.f.name.value || file.name,
             type: file.type,
             size: file.size,
             lastModifiedDate: file.lastModifiedDate,

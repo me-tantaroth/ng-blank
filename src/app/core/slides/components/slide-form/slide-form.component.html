@@ -24,23 +24,59 @@
   </mat-form-field>
 
   <app-file-upload
-    [imageURL]="image.value"
+    [imageURL]="slide && slide.image"
     allowed_extensions="image/*"
     (filesChanged)="onFilesChanged($event)"
   >
     <div><mat-icon>cloud_upload</mat-icon></div>
-    <p>Arrastre su foto de perfíl aquí.</p>
-    <mat-form-field>
-      <div align="center">
-        <button mat-raised-button>Seleccionar</button>
-        <input matInput #image formControlName="image" style="display: none" />
-      </div>
-      <mat-error *ngIf="f.image.status === 'INVALID'">
-        <span *ngFor="let error of errors('image')">{{
-          errorMessages['image'][error]
-        }}</span>
-      </mat-error>
-    </mat-form-field>
+    <p>Arrastre una imagen aquí.</p>
+    <div align="center">
+      <button mat-raised-button>Seleccionar</button>
+    </div>
+    <ng-template
+      let-fileUploaded
+      [ngTemplateOutletContext]="{ $implicit: fileUploaded | async }"
+      [ngTemplateOutlet]="fileUploadedT"
+      #fileUploadedT
+    >
+      <ng-template
+        let-uploadPercent
+        [ngTemplateOutletContext]="{
+          $implicit: fileUploaded?.percent | async
+        }"
+        [ngTemplateOutlet]="uploadPercentT"
+        #uploadPercentT
+      >
+        <mat-form-field class="uk-width-1-1">
+          <input matInput formControlName="image" class="uk-hidden" />
+          <mat-hint
+            align="end"
+            [ngClass]="{
+              'uk-text-warning': (uploadPercent || 0) < 100,
+              'uk-text-emphasis': (uploadPercent || 0) >= 100
+            }"
+          >
+            {{ (uploadPercent | number: '1.0-0') || 0 }}%
+          </mat-hint>
+        </mat-form-field>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="uploadPercent"
+        ></mat-progress-bar>
+
+        <div
+          *ngIf="uploadPercent >= 100 || (slide && slide.image)"
+          class="uk-text-center"
+        >
+          <a
+            href="javascript:;"
+            class="uk-text-success"
+            (click)="goTo(slide?.image || f.image.value, $event)"
+            >Archivo subido</a
+          >
+        </div>
+      </ng-template>
+    </ng-template>
   </app-file-upload>
 
   <mat-form-field class="uk-width-1-1 uk-margin-small">

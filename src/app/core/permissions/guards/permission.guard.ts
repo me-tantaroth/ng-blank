@@ -12,7 +12,6 @@ import { switchMap, first } from 'rxjs/operators';
 import { StoreService } from 'ng-barn';
 import { AuthService } from '../../auth/services/auth.service';
 import { UsersService } from '../../users/services/users.service';
-import { TdLoadingService } from '../../../covalent.module';
 
 import { User } from '../../users/models/user';
 
@@ -24,8 +23,7 @@ export class PermissionGuard implements CanActivate {
     private store: StoreService,
     private auth: AuthService,
     private usersService: UsersService,
-    private router: Router,
-    private _tdLoadingService: TdLoadingService
+    private router: Router
   ) {}
 
   canActivate(
@@ -49,18 +47,14 @@ export class PermissionGuard implements CanActivate {
 
           return new Observable((observer) => {
             if (route_data.length > 0) {
-              for (const path of route_data) {
-                this.store.set(
-                  {
-                    path: '|' + user.uid
-                  },
-                  'currentUserPermissions'
-                );
+              this.usersService
+                .getItem('|' + user.uid)
+                .pipe(first())
+                .subscribe((userPermissions: User) => {
+                  let routeValid: boolean;
+                  let userValid: User;
 
-                this.usersService
-                  .getItem('|' + user.uid)
-                  .pipe(first())
-                  .subscribe((userPermissions: User) => {
+                  for (const path of route_data) {
                     const userVerified: boolean =
                       user &&
                       user.emailVerified &&
@@ -69,16 +63,31 @@ export class PermissionGuard implements CanActivate {
                       !userPermissions.blocked &&
                       typeof userPermissions === 'object' &&
                       Object.keys(userPermissions) &&
-                      Object.keys(userPermissions).length > 0;
+                      Object.keys(userPermissions).length > 0 &&
+                      JSON.stringify(userPermissions.permissions).search(
+                        path
+                      ) >= 0 &&
+                      userPermissions.permissions[path];
 
-                    if (!userVerified) {
-                      this.router.navigate(['/not-found']);
+                    if (userVerified) {
+                      userValid = userPermissions;
+                      routeValid = true;
                     }
+                  }
+                  if (routeValid) {
+                    this.store.set(
+                      {
+                        path: '|' + user.uid
+                      },
+                      'currentUserPermissions'
+                    );
 
-                    observer.next(userVerified ? true : null);
+                    observer.next(routeValid ? true : null);
                     observer.complete();
-                  });
-              }
+                  } else {
+                    this.router.navigate(['/not-found']);
+                  }
+                });
             } else {
               this.router.navigate(['/not-found']);
             }

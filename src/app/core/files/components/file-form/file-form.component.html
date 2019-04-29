@@ -86,7 +86,7 @@
           ></mat-progress-bar>
 
           <div *ngIf="uploadPercent >= 100 || file && file.url" class="uk-text-center">
-            <a href="javascript:;" class="uk-text-success" (click)="goTo(file.url || f.url.value, $event)">Archivo subido</a>
+            <a href="javascript:;" class="uk-text-success" (click)="goTo(file?.url || f.url.value, $event)">Archivo subido</a>
           </div>
         </ng-template>
       </ng-template>
