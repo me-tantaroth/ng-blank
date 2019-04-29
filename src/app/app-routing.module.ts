@@ -5,6 +5,7 @@ import { AdminModule } from './admin/admin.module';
 import {
   HomeComponent,
   NotFoundComponent,
+  DeniedPageComponent,
   SignInComponent,
   SignUpComponent,
   SignOutComponent,
@@ -99,6 +100,10 @@ const routes: Routes = [
         component: UserViewComponent
       }
     ]
+  },
+  {
+    path: 'denied-page',
+    component: DeniedPageComponent
   },
   {
     path: 'not-found',

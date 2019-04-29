@@ -51,46 +51,53 @@ export class PermissionGuard implements CanActivate {
                 .getItem('|list|' + user.uid)
                 .pipe(first())
                 .subscribe((userPermissions: User) => {
-                  let routeValid: boolean;
-                  let userValid: User;
+                  if (
+                    userPermissions &&
+                    Object.keys(userPermissions) &&
+                    Object.keys(userPermissions).length > 0
+                  ) {
+                    let routeValid: boolean;
+                    let userValid: User;
 
-                  for (const path of route_data) {
-                    console.log('>>', path, userPermissions.permissions)
-                    const userVerified: boolean =
-                      user &&
-                      user.emailVerified &&
-                      userPermissions &&
-                      !userPermissions.deleted &&
-                      !userPermissions.blocked &&
-                      typeof userPermissions === 'object' &&
-                      Object.keys(userPermissions) &&
-                      Object.keys(userPermissions).length > 0 &&
-                      JSON.stringify(userPermissions.permissions).search(
-                        path
-                      ) >= 0 &&
-                      userPermissions.permissions[path];
+                    for (const path of route_data) {
+                      const userVerified: boolean =
+                        user &&
+                        user.emailVerified &&
+                        userPermissions &&
+                        !userPermissions.deleted &&
+                        !userPermissions.blocked &&
+                        typeof userPermissions === 'object' &&
+                        Object.keys(userPermissions) &&
+                        Object.keys(userPermissions).length > 0 &&
+                        JSON.stringify(userPermissions.permissions).search(
+                          path
+                        ) >= 0 &&
+                        userPermissions.permissions[path];
 
-                    if (userVerified) {
-                      userValid = userPermissions;
-                      routeValid = true;
+                      if (userVerified) {
+                        userValid = userPermissions;
+                        routeValid = true;
+                      }
                     }
-                  }
-                  if (routeValid) {
-                    this.store.set(
-                      {
-                        path: '|list|' + user.uid
-                      },
-                      'currentUserPermissions'
-                    );
+                    if (routeValid) {
+                      this.store.set(
+                        {
+                          path: '|list|' + user.uid
+                        },
+                        'currentUserPermissions'
+                      );
 
-                    observer.next(routeValid ? true : null);
-                    observer.complete();
+                      observer.next(routeValid ? true : null);
+                      observer.complete();
+                    } else {
+                      this.router.navigate(['/denied-page']);
+                    }
                   } else {
-                    this.router.navigate(['/not-found']);
+                    this.router.navigate(['/denied-page']);
                   }
                 });
             } else {
-              this.router.navigate(['/not-found']);
+              this.router.navigate(['/denied-page']);
             }
           });
         }

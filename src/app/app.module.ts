@@ -34,6 +34,7 @@ import { AppComponent } from './app.component';
 import {
   HomeComponent,
   NotFoundComponent,
+  DeniedPageComponent,
   SignInComponent,
   SignOutComponent,
   SignUpComponent,
@@ -60,6 +61,7 @@ import {
     FooterTeatroJueteComponent,
     HomeComponent,
     NotFoundComponent,
+    DeniedPageComponent,
     SignInComponent,
     SignOutComponent,
     SignUpComponent,
