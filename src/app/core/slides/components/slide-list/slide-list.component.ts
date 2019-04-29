@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import { StoreService } from 'ng-barn';
 
 import { ModulesService } from '../../../modules/services/modules.service';
-import { UsersService } from '../../../users/services/users.service';
+import { UserService } from '../../../users/services/user.service';
 import { SlideService } from '../../services/slide.service';
 
 import { Module } from 'src/app/core/modules/models/module';
@@ -31,7 +31,7 @@ export class SlideListComponent implements OnInit {
   constructor(
     private store: StoreService,
     private modulesService: ModulesService,
-    private usersService: UsersService,
+    private userService: UserService,
     private slideService: SlideService,
     private router: Router
   ) {
@@ -125,7 +125,7 @@ export class SlideListComponent implements OnInit {
     const slideModule$: Observable<Module> = this.modulesService.getItem(
       '|slide'
     );
-    const currentUser$: Observable<User> = this.usersService.getItem(
+    const currentUser$: Observable<User> = this.userService.getItem(
       this.store.get('currentUserPermissions').path
     );
 
@@ -159,7 +159,7 @@ export class SlideListComponent implements OnInit {
                   });
               });
           } else {
-            alert('Error!: Su plan no le permite hacer esta acción!');
+            alert('Error!: No tiene los permisos suficientes para hacer esta acción!');
           }
         });
     }

@@ -11,7 +11,7 @@ import { switchMap, first } from 'rxjs/operators';
 
 import { StoreService } from 'ng-barn';
 import { AuthService } from '../../auth/services/auth.service';
-import { UsersService } from '../../users/services/users.service';
+import { UserService } from '../../users/services/user.service';
 
 import { User } from '../../users/models/user';
 
@@ -22,7 +22,7 @@ export class PermissionGuard implements CanActivate {
   constructor(
     private store: StoreService,
     private auth: AuthService,
-    private usersService: UsersService,
+    private userService: UserService,
     private router: Router
   ) {}
 
@@ -36,7 +36,7 @@ export class PermissionGuard implements CanActivate {
     | UrlTree {
     return this.auth.currentUser().pipe(
       switchMap(
-        (user: User): Observable<boolean> => {
+        (user: any): Observable<boolean> => {
           const route_data: string[] =
             next.data.route &&
             typeof next.data.route === 'object' &&
@@ -47,8 +47,8 @@ export class PermissionGuard implements CanActivate {
 
           return new Observable((observer) => {
             if (route_data.length > 0) {
-              this.usersService
-                .getItem('|' + user.uid)
+              this.userService
+                .getItem('|list|' + user.uid)
                 .pipe(first())
                 .subscribe((userPermissions: User) => {
                   let routeValid: boolean;
@@ -77,7 +77,7 @@ export class PermissionGuard implements CanActivate {
                   if (routeValid) {
                     this.store.set(
                       {
-                        path: '|' + user.uid
+                        path: '|list|' + user.uid
                       },
                       'currentUserPermissions'
                     );

@@ -1,11 +1,16 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivationEnd } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
 import * as _ from 'lodash';
+import { StoreService } from 'ng-barn';
 
+import { ModulesService } from '../../../modules/services/modules.service';
+import { UserService } from '../../../users/services/user.service';
 import { MenuService } from '../../services/menu.service';
 
+import { Module } from 'src/app/core/modules/models/module';
+import { User } from 'src/app/core/users/models/user';
 import { Menu } from '../../models/menu';
 
 @Component({
@@ -23,7 +28,13 @@ export class MenuListComponent implements OnInit {
   menus: Observable<Menu[]>;
   backMenu: Observable<Menu[]>;
 
-  constructor(private menuService: MenuService, private router: Router) {
+  constructor(
+    private store: StoreService,
+    private modulesService: ModulesService,
+    private userService: UserService,
+    private menuService: MenuService,
+    private router: Router
+  ) {
     router.events.subscribe((data) => {
       if (data instanceof ActivationEnd) {
         if (!!data.snapshot.params.filter && !!data.snapshot.params.value) {
@@ -123,22 +134,46 @@ export class MenuListComponent implements OnInit {
   }
 
   onDeleteMenu(menu: Menu) {
+    const menuModule$: Observable<Module> = this.modulesService.getItem(
+      '|menu'
+    );
+    const currentUser$: Observable<User> = this.userService.getItem(
+      this.store.get('currentUserPermissions').path
+    );
+
     if (confirm(`Seguro que desea eliminar a '${menu.text}'?`)) {
-      menu.deleted = true;
-
-      const path = menu.customPath.split('|');
-
-      path.pop();
-
-      this.menuService
-        .removeItem(path.join('|'))
+      combineLatest([menuModule$, currentUser$])
         .pipe(first())
-        .subscribe(() => {
-          if (status) {
-            this.menuService
-              .removeItem('|enabled|' + menu.uuid)
+        .subscribe(([menuModule, currentUser]) => {
+          if (currentUser.permissions.menu_delete) {
+            menuModule.count = menuModule.count - 1;
+
+            this.modulesService
+              .setItem('|menu', menuModule)
               .pipe(first())
-              .subscribe();
+              .subscribe(() => {
+                menu.deleted = true;
+
+                const path = menu.customPath.split('|');
+
+                path.pop();
+
+                this.menuService
+                  .removeItem(path.join('|'))
+                  .pipe(first())
+                  .subscribe(() => {
+                    if (status) {
+                      this.menuService
+                        .removeItem('|enabled|' + menu.uuid)
+                        .pipe(first())
+                        .subscribe();
+                    }
+                  });
+              });
+          } else {
+            alert(
+              'Error!: No tiene los permisos suficientes para hacer esta acción!'
+            );
           }
         });
     }

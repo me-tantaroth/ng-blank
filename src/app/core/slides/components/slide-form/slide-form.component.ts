@@ -12,19 +12,18 @@ import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 import * as _moment from 'moment';
 import { Observable, combineLatest } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 import {
   StorageService,
   FileUploaded
 } from '../../../services/storage.service';
 import { ModulesService } from '../../../modules/services/modules.service';
-import { UsersService } from '../../../users/services/users.service';
 import { SlideService } from '../../services/slide.service';
 import { UserService } from '../../../users/services/user.service';
 
 import { Slide } from '../../models/slide';
 import { Message } from '../../../../models/message';
-import { first } from 'rxjs/operators';
 import { Module } from 'src/app/core/modules/models/module';
 import { User } from 'src/app/core/users/models/user';
 
@@ -55,7 +54,6 @@ export class SlideFormComponent implements OnInit, OnChanges {
     private store: StoreService,
     private storageService: StorageService,
     private modulesService: ModulesService,
-    private usersService: UsersService,
     private slideService: SlideService,
     private userService: UserService,
     private router: Router
@@ -187,7 +185,7 @@ export class SlideFormComponent implements OnInit, OnChanges {
     const slideModule$: Observable<Module> = this.modulesService.getItem(
       '|slide'
     );
-    const currentUser$: Observable<User> = this.usersService.getItem(
+    const currentUser$: Observable<User> = this.userService.getItem(
       this.store.get('currentUserPermissions').path
     );
 
@@ -232,6 +230,8 @@ export class SlideFormComponent implements OnInit, OnChanges {
     combineLatest([slideModule$, currentUser$])
       .pipe(first())
       .subscribe(([slideModule, currentUser]) => {
+        slideModule.count = slideModule.count || 0;
+
         if (
           (currentUser.permissions.slide_write &&
             !currentUser.permissions.slide_write_limit) ||
@@ -279,7 +279,7 @@ export class SlideFormComponent implements OnInit, OnChanges {
           this.message = {
             show: true,
             label: 'Error!',
-            sublabel: 'Su plan no le permite hacer esta acción!',
+            sublabel: 'No tiene los permisos suficientes para hacer esta acción!',
             color: 'warn',
             icon: 'error'
           };

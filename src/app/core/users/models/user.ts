@@ -7,27 +7,29 @@ export interface Permissions {
 }
 
 export interface User {
-  uid: string;
-  displayName?: string;
+  absolutePath: string;
+  blocked: boolean;
+  cover: string;
+  createdAt: Date;
+  deletedCount: number;
+  deleted: boolean;
+  displayName: string;
   email: string;
-  username: string;
-  phoneNumber?: string;
-  cover: string; // PATH ABSOLUTE
-  photoURL?: string; // PATH ABSOLUTE
   emailVerified: boolean;
+  firstName: string;
+  lastName: string;
+  name: string;
+  permissions: Permissions;
+  photoURL: string;
+  uuid: string;
+  phoneNumber?: string;
   aboutMe?: string;
   cite?: string;
   root: boolean;
-  dbPath: string;
   backPath: string;
-  currentPath: string;
+  postedAt: Date;
+  customPath: string;
   principalPath: string;
-  permissions: Permissions;
-  alias: string[];
-  blocked: boolean;
-  deleted: boolean;
-  deletedCount: number;
-  createdAt: Date;
 }
 export class User {
   constructor(user) {
@@ -60,25 +62,25 @@ export class User {
       };
     }
 
-    if (!user.uid || user.uid === null || user.uid === undefined) {
-      user.uid = 'user-' + makeid(15);
+    if (!user.uuid || user.uuid === null || user.uuid === undefined) {
+      user.uuid = 'user-' + makeid(15);
     }
     if (
-      !user.username ||
-      user.username === null ||
-      user.username === undefined
+      !user.name ||
+      user.name === null ||
+      user.name === undefined
     ) {
-      user.username = '';
+      user.name = '';
 
       if (user.email) {
-        user.username = user.email.split('@')[0];
+        user.name = user.email.split('@')[0];
       }
     }
-    if (!user.username || user.cover === null || user.cover === undefined) {
+    if (!user.name || user.cover === null || user.cover === undefined) {
       user.cover = environment.backgroundImage;
     }
     if (
-      !user.username ||
+      !user.name ||
       user.createdAt === null ||
       user.createdAt === undefined
     ) {

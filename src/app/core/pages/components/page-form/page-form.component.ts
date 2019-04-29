@@ -9,7 +9,6 @@ import {
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AngularFireStorage } from '@angular/fire/storage';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
@@ -26,7 +25,7 @@ import {
   FileUploaded
 } from '../../../services/storage.service';
 import { ModulesService } from '../../../modules/services/modules.service';
-import { UsersService } from '../../../users/services/users.service';
+import { UserService } from '../../../users/services/user.service';
 import { PageService } from '../../services/page.service';
 
 import { Module } from 'src/app/core/modules/models/module';
@@ -178,7 +177,7 @@ export class PageFormComponent implements OnInit, OnChanges {
     private store: StoreService,
     private storageService: StorageService,
     private modulesService: ModulesService,
-    private usersService: UsersService,
+    private userService: UserService,
     private pageService: PageService,
     private router: Router
   ) {
@@ -190,6 +189,8 @@ export class PageFormComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.uuid = this.afs.createId();
+
     $._storageService = this.storageService;
     this.errorMessages = {
       image: {
@@ -329,7 +330,7 @@ export class PageFormComponent implements OnInit, OnChanges {
     const pageModule$: Observable<Module> = this.modulesService.getItem(
       '|page'
     );
-    const currentUser$: Observable<User> = this.usersService.getItem(
+    const currentUser$: Observable<User> = this.userService.getItem(
       this.store.get('currentUserPermissions').path
     );
 
@@ -345,9 +346,10 @@ export class PageFormComponent implements OnInit, OnChanges {
         '/projects/blank-fire/langs/es/modules/drive/list/' + page.uuid;
 
       if (this.value) {
+        page.uuid = page.url.split('/page/').join('');
+
         this.ref = this.value + '|list|' + page.uuid;
 
-        page.uuid = this.uuid;
         page.customPath = this.value + '|list|' + page.uuid + '|list';
         page.backPath = this.value + '|list';
         page.root = true;
@@ -355,7 +357,7 @@ export class PageFormComponent implements OnInit, OnChanges {
           .split('|')
           .join('/')}/list/${page.uuid}`;
       } else {
-        page.uuid = this.uuid;
+        page.uuid = page.url.split('/page/').join('');
         page.customPath = '|list|' + page.uuid + '|list';
         page.backPath = '|list';
         page.root = true;
@@ -363,7 +365,7 @@ export class PageFormComponent implements OnInit, OnChanges {
         this.ref = '|list|' + page.uuid;
       }
     } else {
-      page.uuid = this.uuid;
+      page.uuid = page.url.split('/page/').join('');
       page.customPath = '|list|' + page.uuid + '|list';
       page.backPath = '|list';
       page.root = true;
@@ -374,6 +376,7 @@ export class PageFormComponent implements OnInit, OnChanges {
     combineLatest([pageModule$, currentUser$])
       .pipe(first())
       .subscribe(([pageModule, currentUser]) => {
+        pageModule.count = pageModule.count || 0;
         if (
           (currentUser.permissions.page_write &&
             !currentUser.permissions.page_write_limit) ||
@@ -419,7 +422,8 @@ export class PageFormComponent implements OnInit, OnChanges {
           this.message = {
             show: true,
             label: 'Error!',
-            sublabel: 'Su plan no le permite hacer esta acción!',
+            sublabel:
+              'No tiene los permisos suficientes para hacer esta acción!',
             color: 'warn',
             icon: 'error'
           };

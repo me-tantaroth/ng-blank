@@ -57,25 +57,25 @@ const routes: Routes = [
       {
         path: 'form',
         component: UserComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: ['|user|list|write', '|user|list|create', '|user|list|update']
+          route: ['user_write', 'user_create']
         }
       },
       {
         path: 'form/:filter',
         component: UserComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: ['|user|list|write', '|user|list|create', '|user|list|update']
+          route: ['user_write', 'user_create']
         }
       },
       {
         path: 'form/:filter/:value',
         component: UserComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: ['|user|list|write', '|user|list|create', '|user|list|update']
+          route: ['user_write', 'user_update']
         }
       }
     ]
@@ -195,49 +195,49 @@ const routes: Routes = [
       {
         path: 'enabled',
         component: MenusComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'MENU_VIEW'
+          route: ['menu_read']
         }
       },
       {
         path: 'enabled/:filter',
         component: MenusComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'MENU_VIEW'
+          route: ['menu_read']
         }
       },
       {
         path: 'enabled/:filter/:value',
         component: MenusComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'MENU_VIEW'
+          route: ['menu_read']
         }
       },
       {
         path: 'form',
         component: MenuComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'MENU_WRITE'
+          route: ['menu_write', 'menu_create']
         }
       },
       {
         path: 'form/:filter',
         component: MenuComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'MENU_WRITE'
+          route: ['menu_write', 'menu_create']
         }
       },
       {
         path: 'form/:filter/:value',
         component: MenuComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'MENU_WRITE'
+          route: ['menu_write', 'menu_update']
         }
       }
     ]
@@ -249,49 +249,49 @@ const routes: Routes = [
       {
         path: 'enabled',
         component: FilesComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'DRIVE_VIEW'
+          route: ['drive_read']
         }
       },
       {
         path: 'enabled/:filter',
         component: FilesComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'DRIVE_VIEW'
+          route: ['drive_read']
         }
       },
       {
         path: 'enabled/:filter/:value',
         component: FilesComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'DRIVE_VIEW'
+          route: ['drive_read']
         }
       },
       {
         path: 'form',
         component: FileComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'DRIVE_WRITE'
+          route: ['drive_write', 'drive_create']
         }
       },
       {
         path: 'form/:filter',
         component: FileComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'DRIVE_WRITE'
+          route: ['drive_write', 'drive_create']
         }
       },
       {
         path: 'form/:filter/:value',
         component: FileComponent,
-        canActivate: [SignInGuard],
+        canActivate: [PermissionGuard],
         data: {
-          route: 'DRIVE_WRITE'
+          route: ['drive_write', 'drive_update']
         }
       }
     ]

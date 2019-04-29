@@ -1,13 +1,16 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivationEnd } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
 import * as _ from 'lodash';
+import { StoreService } from 'ng-barn';
 
-import { AuthService } from '../../../../core/auth/services/auth.service';
-import { UserService } from '../../services/user.service';
+import { ModulesService } from '../../../modules/services/modules.service';
+import { UsersService } from '../../../users/services/users.service';
+import { UserService } from '../../../users/services/user.service';
 
-import { User } from '../../../../core/users/models/user';
+import { Module } from 'src/app/core/modules/models/module';
+import { User } from 'src/app/core/users/models/user';
 
 @Component({
   selector: 'app-user-list',
@@ -21,54 +24,58 @@ export class UserListComponent implements OnInit {
   ObjectKeys = Object.keys;
   panelOpenState: boolean;
   currentUser: Observable<User>;
-  userList: Observable<User[]>;
+  users: Observable<User[]>;
   backUser: Observable<User[]>;
 
-  constructor(private userService: UserService, private router: Router) {
-    // router.events.subscribe((data) => {
-    //   if (data instanceof ActivationEnd) {
-    //     if (
-    //       !!data.snapshot.params.filter &&
-    //       data.snapshot.params.filter === 'enabled|list' &&
-    //       !!data.snapshot.params.value
-    //     ) {
-    //       this.currentUser = this.userService.getItem(
-    //         data.snapshot.params.value
-    //       );
-    //       this.userList = this.userService.list(
-    //         data.snapshot.params.value + '|enabled|list'
-    //       );
-    //     } else {
-    //       if (
-    //         !!data.snapshot.params.filter &&
-    //         (data.snapshot.params.filter === 'enabled|list' ||
-    //           data.snapshot.params.filter === 'blocked' ||
-    //           data.snapshot.params.filter === 'deleted') &&
-    //         !data.snapshot.params.value
-    //       ) {
-    //         console.log('¡?¡¡¡¡¡¡¡¡', data.snapshot.params.filter);
-    //         this.userList = this.userService.list(
-    //           '|' + data.snapshot.params.filter
-    //         );
-    //       }
-    //     }
-    //   }
-    // });
+  constructor(
+    private store: StoreService,
+    private modulesService: ModulesService,
+    private usersService: UsersService,
+    private userService: UserService,
+    private router: Router
+  ) {
+    router.events.subscribe((data) => {
+      if (data instanceof ActivationEnd) {
+        if (!!data.snapshot.params.filter && !!data.snapshot.params.value) {
+          this.filter = data.snapshot.params.filter;
+          this.value = data.snapshot.params.value;
+          const currentUser = data.snapshot.params.value.split('|');
+
+          currentUser.pop();
+
+          switch (data.snapshot.params.filter) {
+            case 'list':
+              if (currentUser.join('|') !== '') {
+                this.currentUser = this.userService.getItem(
+                  currentUser.join('|')
+                );
+              }
+              this.users = this.userService.list(data.snapshot.params.value);
+              break;
+          }
+        }
+      }
+    });
   }
 
   ngOnInit() {
-    // if (!!this.filter && this.filter === 'enabled|list' && !!this.value) {
-    //   console.log('## FILTER PATH');
-    //   this.currentUser = this.userService.getItem(this.value);
+    if (!!this.filter && !!this.value) {
+      const currentUser = this.value.split('|');
 
-    //   this.userList = this.userService.list(this.value + '|enabled|list');
-    // } else {
-    //   this.filter = this.filter || 'enabled|list';
+      currentUser.pop();
 
-    //   console.log('## ONLY NOT DELETED');
-    //   this.userList = this.userService.list('|' + this.filter);
-    //   this.userList.subscribe((data) => console.log('QQQQ', data));
-    // }
+      switch (this.filter) {
+        case 'list':
+          if (currentUser.join('|') !== '') {
+            this.currentUser = this.userService.getItem(currentUser.join('|'));
+          }
+          this.users = this.userService.list(this.value);
+          break;
+      }
+    } else {
+      this.filter = 'list';
+      this.users = this.userService.list('|' + this.filter);
+    }
   }
 
   onAddUser(user: User) {
@@ -96,11 +103,8 @@ export class UserListComponent implements OnInit {
     // const splitPath = path.split('|');
     // splitPath.shift();
     // splitPath.shift();
-
     // user.blocked = true;
-
     // console.log('## BLOCKED', path, user, '|blocked|' + splitPath.join('|'));
-
     // this.userService
     //   .setItem('|blocked|' + splitPath.join('|'), user)
     //   .pipe(first())
@@ -120,7 +124,6 @@ export class UserListComponent implements OnInit {
 
   onUnBlockUser(path: string, user: User) {
     // user.blocked = false;
-
     // this.userService
     //   .setItem(path, user)
     //   .pipe(first())
@@ -139,30 +142,53 @@ export class UserListComponent implements OnInit {
   }
 
   onDeleteUser(path: string, user: User) {
-    // if (confirm(`Seguro que desea eliminar a '${user.displayName}'?`)) {
-    //   user.deleted = true;
+    const userModule$: Observable<Module> = this.modulesService.getItem(
+      '|user'
+    );
+    const currentUser$: Observable<User> = this.usersService.getItem(
+      this.store.get('currentUserPermissions').path
+    );
 
-    //   this.userService
-    //     .setItem(path, user)
-    //     .pipe(first())
-    //     .subscribe((status: boolean) => {
-    //       if (status) {
-    //         this.userService
-    //           .removeItem('|enabled|lis|' + user.uid)
-    //           .pipe(first())
-    //           .subscribe((statusEnabled: boolean) => {
-    //             if (statusEnabled) {
-    //               this.userList = this.userService.list('|enabled|lis');
-    //             }
-    //           });
-    //       }
-    //     });
-    // }
+    if (confirm(`Seguro que desea eliminar a '${user.displayName}'?`)) {
+      combineLatest([userModule$, currentUser$])
+        .pipe(first())
+        .subscribe(([userModule, currentUser]) => {
+          if (currentUser.permissions.user_delete) {
+            userModule.count = userModule.count - 1;
+
+            this.modulesService
+              .setItem('|user', userModule)
+              .pipe(first())
+              .subscribe(() => {
+                user.deleted = true;
+
+                const path = user.customPath.split('|');
+
+                path.pop();
+
+                this.usersService
+                  .removeItem(path.join('|'))
+                  .pipe(first())
+                  .subscribe(() => {
+                    if (status) {
+                      this.usersService
+                        .removeItem('|enabled|' + user.uuid)
+                        .pipe(first())
+                        .subscribe();
+                    }
+                  });
+              });
+          } else {
+            alert(
+              'Error!: No tiene los permisos suficientes para hacer esta acción!'
+            );
+          }
+        });
+    }
   }
 
   onUnDeletedUser(path: string, user: User) {
     // user.deleted = false;
-
     // this.userService
     //   .setItem(path, user)
     //   .pipe(first())

@@ -7,123 +7,137 @@
   <div *ngIf="currentUser">
     <ul class="uk-breadcrumb">
       <li>
-        <a (click)="onBackUser(currentUser)">Atrás</a>
+        <a [routerLink]="['/admin/user/enabled/list', currentUser.backPath]"
+          >Atrás</a
+        >
       </li>
       <li>
-        <span>{{ currentUser.displayName || '--' }}</span>
+        <span>{{ currentUser.name || '--' }}</span>
       </li>
     </ul>
   </div>
 </ng-template>
 
-<div *ngIf="(userList | async) && ObjectKeys(userList | async).length > 0">
-  <mat-accordion>
-    <mat-expansion-panel
-      role="user"
-      *ngFor="let key of ObjectKeys(userList | async)"
-      (opened)="panelOpenState = true"
-      (closed)="panelOpenState = false"
-    >
-      <mat-expansion-panel-header>
-        <ng-template
-          let-user
-          [ngTemplateOutletContext]="{ $implicit: (userList | async)[key] }"
-          [ngTemplateOutlet]="userT"
-          #userT
-        >
-          <mat-panel-title> {{ user.displayName }} </mat-panel-title>
-          <mat-panel-description> {{ user.email }} </mat-panel-description>
-        </ng-template>
-      </mat-expansion-panel-header>
-      <div>
-        <ng-template
-          let-user
-          [ngTemplateOutletContext]="{ $implicit: (userList | async)[key] }"
-          [ngTemplateOutlet]="userDetailT"
-          #userDetailT
-        >
-          <div>
-            <div align="right" class="uk-margin-small">
-              <a
-                [routerLink]="['/admin/user/form/edit', user.currentPath]"
-                class="uk-text-primary"
-                >Edit</a
+<div *ngIf="users | async; else loaderT">
+  <ng-template
+    let-userList
+    [ngTemplateOutletContext]="{ $implicit: users | async }"
+    [ngTemplateOutlet]="usersT"
+    #usersT
+  >
+    <div *ngIf="userList; else loaderT">
+      <div *ngIf="userList.length > 0; else notFoundT">
+        <mat-accordion>
+          <mat-expansion-panel
+            role="user"
+            *ngFor="let user of userList"
+            (opened)="panelOpenState = true"
+            (closed)="panelOpenState = false"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title> {{ user.name || '--' }} </mat-panel-title>
+              <mat-panel-description>
+                {{ user.createdAt.toDate() | date }}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div>
+              <div align="right" class="uk-margin-small">
+                <span *ngIf="filter === 'list'">
+                  <a
+                    *ngIf="user.type === 'folder'"
+                    [routerLink]="['/admin/user/enabled/list', user.customPath]"
+                    class="uk-text-success"
+                    >Archivos</a
+                  >
+                  &nbsp;
+                  <a
+                    [routerLink]="[
+                      '/admin/user/form/edit-user',
+                      user.customPath
+                    ]"
+                    class="uk-text-primary"
+                    >Editar</a
+                  >
+                  &nbsp;
+                  <!-- <span
+                *ngIf="user.blocked"
+                class="uk-text-warning uk-text-bold"
+                >{{ user.blocked ? 'Blocked' : '' }}</span
               >
-              &nbsp;
-              <span *ngIf="user.emailVerified" class="uk-text-success">{{
-                user.emailVerified ? 'Email Verified' : ''
-              }}</span>
               <a
                 class="uk-text-warning"
-                (click)="verfifyEmail(user.uid, user)"
-                *ngIf="!user.emailVerified"
-                >Verify Email</a
-              >
-              &nbsp;
-              <!-- <span *ngIf="user.blocked" class="uk-text-warning uk-text-bold">{{
-                user.blocked ? 'Blocked' : ''
-              }}</span>
-              <a
-                [routerLink]="['/admin/user/list']"
-                class="uk-text-warning"
-                (click)="blockUser(user.uid, user)"
+                (click)="onBlockUser(user.customPath, user)"
                 *ngIf="!user.blocked"
-                >Block</a
+                >Bloquear</a
               >
               &nbsp; -->
-              <span *ngIf="user.deleted" class="uk-text-danger uk-text-bold">{{
-                user.deleted ? 'Deleted' : ''
-              }}</span>
-              <a
-                class="uk-text-danger"
-                (click)="onDeleteUser('|deleted|' + user.uid, user)"
-                *ngIf="!user.deleted"
-                >Delete</a
-              >
+                  <span
+                    *ngIf="user.deleted"
+                    class="uk-text-warning uk-text-bold"
+                    >{{ user.deleted ? 'Eliminado' : '' }}</span
+                  >
+                  <a
+                    class="uk-text-danger"
+                    (click)="onDeleteUser(user)"
+                    *ngIf="!user.deleted"
+                    >Eliminar</a
+                  >
+                </span>
+                <span *ngIf="filter === 'blocked'">
+                  <a
+                    class="uk-text-warning uk-text-bold"
+                    (click)="onUnBlockUser('|enabled|' + user.uuid, user)"
+                    >Desbloquear</a
+                  >
+                </span>
+                <span *ngIf="filter === 'deleted'">
+                  <a
+                    class="uk-text-danger uk-text-bold"
+                    (click)="onUnBlockUser('|enabled|' + user.uuid, user)"
+                    >Recuperar</a
+                  >
+                </span>
+              </div>
+              <div>
+                <h4>{{ user.createdAt | date }}</h4>
+                <blockquote *ngIf="user.cite" cite="#">
+                  <p class="uk-margin-small-bottom">{{ user.cite || '--' }}</p>
+                  <footer>
+                    by
+                    <cite
+                      ><a
+                        [routerLink]="['/admin/user/form', i]"
+                        class="uk-text-primary"
+                        >{{ user.displayName }}</a
+                      ></cite
+                    >
+                  </footer>
+                </blockquote>
+                <p *ngIf="user.aboutMe">{{ user.aboutMe || '--' }}</p>
+                <h3 class="uk-heading-bullet">Contact</h3>
+                <div uk-grid>
+                  <div class="uk-width-1-3" *ngIf="user.phoneNumber">
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>phone</mat-icon>
+                      <h4 mat-line>Phone</h4>
+                      <span mat-line>{{ user.phoneNumber || '--' }}</span>
+                    </mat-list-item>
+                  </div>
+                  <div class="uk-width-1-3" *ngIf="user.email">
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>mail</mat-icon>
+                      <h4 mat-line>Email</h4>
+                      <span mat-line>{{ user.email || '--' }}</span>
+                    </mat-list-item>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h4>{{ user.createdAt | date }}</h4>
-            <blockquote *ngIf="user.cite" cite="#">
-              <p class="uk-margin-small-bottom">{{ user.cite || '--' }}</p>
-              <footer>
-                by
-                <cite
-                  ><a
-                    [routerLink]="['/admin/user/form', i]"
-                    class="uk-text-primary"
-                    >{{ user.displayName }}</a
-                  ></cite
-                >
-              </footer>
-            </blockquote>
-            <p *ngIf="user.aboutMe">{{ user.aboutMe || '--' }}</p>
-          </div>
-          <h3 class="uk-heading-bullet">Contact</h3>
-          <div uk-grid>
-            <div class="uk-width-1-3" *ngIf="user.phoneNumber">
-              <mat-list-item>
-                <mat-icon mat-list-icon>phone</mat-icon>
-                <h4 mat-line>Phone</h4>
-                <span mat-line>{{ user.phoneNumber || '--' }}</span>
-              </mat-list-item>
-            </div>
-            <div class="uk-width-1-3" *ngIf="user.email">
-              <mat-list-item>
-                <mat-icon mat-list-icon>mail</mat-icon>
-                <h4 mat-line>Email</h4>
-                <span mat-line>{{ user.email || '--' }}</span>
-              </mat-list-item>
-            </div>
-          </div>
-        </ng-template>
+          </mat-expansion-panel>
+        </mat-accordion>
       </div>
-    </mat-expansion-panel>
-  </mat-accordion>
+    </div>
+  </ng-template>
 </div>
-<div
-  *ngIf="
-    !(userList | async) ||
-    ((userList | async) && ObjectKeys(userList | async).length === 0)
-  "
->
-  <h2>Not found data</h2>
-</div>
+<ng-template #loaderT> <h2>Cargando...</h2> </ng-template>
+<ng-template #notFoundT><h2>No hay datos</h2> </ng-template>
