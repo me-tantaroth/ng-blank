@@ -37,31 +37,6 @@ export class User {
   }
 
   format(user) {
-    if (!user) {
-      user = {
-        uid: 'user-' + makeid(15),
-        displayName: '',
-        email: '',
-        username: '',
-        phoneNumber: '',
-        cover: '', // PATH ABSOLUTE
-        photoURL: '', // PATH ABSOLUTE
-        emailVerified: false,
-        aboutMe: '',
-        cite: '',
-        root: false,
-        dbPath: '',
-        backPath: '',
-        currentPath: '',
-        principalPath: '',
-        alias: [''],
-        blocked: false,
-        deleted: false,
-        deletedCount: 0,
-        createdAt: new Date(),
-      };
-    }
-
     if (!user.uuid || user.uuid === null || user.uuid === undefined) {
       user.uuid = 'user-' + makeid(15);
     }

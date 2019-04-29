@@ -15,7 +15,7 @@ import { User } from '../../../core/users/models/user';
   styleUrls: ['./layout-admin.component.scss']
 })
 export class LayoutAdminComponent implements OnInit {
-  name = 'NG Blank';
+  name = 'Blank Fire';
 
   user: Observable<User>;
 

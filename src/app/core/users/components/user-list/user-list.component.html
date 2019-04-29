@@ -99,22 +99,21 @@
                 </span>
               </div>
               <div>
-                <h4>{{ user.createdAt | date }}</h4>
                 <blockquote *ngIf="user.cite" cite="#">
                   <p class="uk-margin-small-bottom">{{ user.cite || '--' }}</p>
                   <footer>
                     by
                     <cite
-                      ><a
-                        [routerLink]="['/admin/user/form', i]"
-                        class="uk-text-primary"
-                        >{{ user.displayName }}</a
-                      ></cite
+                      ><a class="uk-text-primary">{{
+                        user.displayName
+                      }}</a></cite
                     >
                   </footer>
                 </blockquote>
                 <p *ngIf="user.aboutMe">{{ user.aboutMe || '--' }}</p>
-                <h3 class="uk-heading-bullet">Contact</h3>
+                <h3 class="uk-heading-bullet">
+                  Contact
+                </h3>
                 <div uk-grid>
                   <div class="uk-width-1-3" *ngIf="user.phoneNumber">
                     <mat-list-item>

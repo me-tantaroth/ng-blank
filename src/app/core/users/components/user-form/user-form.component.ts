@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { StoreService } from 'ng-barn';
 import * as _ from 'lodash';
 import * as _moment from 'moment';
@@ -17,12 +16,8 @@ import { first } from 'rxjs/operators';
 import { ConfirmPasswordValidator } from '../../../../shared/validators/confirm-password-validator';
 import { Accents } from '../../../../shared/utils';
 
-import {
-  StorageService,
-  FileUploaded
-} from '../../../services/storage.service';
 import { ModulesService } from '../../../modules/services/modules.service';
-import { UsersService } from '../../../users/services/users.service';
+import { UserService } from '../../../users/services/user.service';
 import {
   AuthService,
   ServiceResponse as AuthServiceResponse
@@ -44,7 +39,6 @@ export class UserFormComponent implements OnInit, OnChanges {
 
   uuid: string;
   ref: string;
-  fileUploaded: Observable<FileUploaded>;
   users: Observable<User[]>;
   submitted: boolean;
   form: FormGroup;
@@ -57,11 +51,9 @@ export class UserFormComponent implements OnInit, OnChanges {
   constructor(
     private afs: AngularFirestore,
     private store: StoreService,
-    private storageService: StorageService,
     private modulesService: ModulesService,
-    private usersService: UsersService,
-    private authService: AuthService,
-    private router: Router
+    private userService: UserService,
+    private authService: AuthService
   ) {
     this.store.select('users');
   }
@@ -74,8 +66,6 @@ export class UserFormComponent implements OnInit, OnChanges {
     this.uuid = this.afs.createId();
 
     this.form = new FormGroup({
-      uid: new FormControl(),
-      index: new FormControl(),
       displayName: new FormControl(''),
       email: new FormControl('', [
         Validators.required,
@@ -103,23 +93,21 @@ export class UserFormComponent implements OnInit, OnChanges {
       aboutMe: new FormControl(''),
       emailVerified: new FormControl(false),
       principalPath: new FormControl(''),
-      currentPath: new FormControl(''),
-      dbPath: new FormControl(''),
+      customPath: new FormControl(''),
       postedAt: new FormControl(),
-      externalURL: new FormControl(false),
-      blocked: new FormControl(true),
+      blocked: new FormControl(false),
       deleted: new FormControl(false)
     });
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.slide.currentValue) {
+    if (changes.user.currentValue) {
       if (this.filter.search('edit') >= 0) {
-        if (changes.slide.currentValue.postedAt) {
-          changes.slide.currentValue.postedAt = changes.slide.currentValue.postedAt.toDate();
+        if (changes.user.currentValue.postedAt) {
+          changes.user.currentValue.postedAt = changes.user.currentValue.postedAt.toDate();
         }
 
-        this.form.patchValue(changes.slide.currentValue);
+        this.form.patchValue(changes.user.currentValue);
       }
     }
   }
@@ -149,6 +137,27 @@ export class UserFormComponent implements OnInit, OnChanges {
     }
   }
 
+  onSave(user: User, userModule: Module) {
+    this.userService.setItem(this.ref, user).subscribe(() => {
+      if (this.filter.search('add') >= 0) {
+        userModule.count = (userModule.count || 0) + 1;
+      }
+
+      this.modulesService
+        .setItem('|user', userModule)
+        .pipe(first())
+        .subscribe(() => {
+          this.message = {
+            show: true,
+            label: 'Info',
+            sublabel: 'Guardado',
+            color: 'accent',
+            icon: 'info'
+          };
+        });
+    });
+  }
+
   onSubmitting(event: any) {
     this.message = {
       show: false
@@ -156,11 +165,15 @@ export class UserFormComponent implements OnInit, OnChanges {
 
     const value = event[event.index];
     const password = value.password;
+
+    delete value.confirmPassword;
+    delete value.password;
+
     const user: User = new User(value);
     const userModule$: Observable<Module> = this.modulesService.getItem(
       '|user'
     );
-    const currentUser$: Observable<User> = this.usersService.getItem(
+    const currentUser$: Observable<User> = this.userService.getItem(
       this.store.get('currentUserPermissions').path
     );
 
@@ -228,39 +241,29 @@ export class UserFormComponent implements OnInit, OnChanges {
               currentUser.permissions.user_update_limit_max &&
               userModule.count < currentUser.permissions.user_update_limit_max))
         ) {
-          this.authService
-            .emailSignUp(user.email, password)
-            .pipe(first())
-            .subscribe((authServiceResponse: AuthServiceResponse) => {
-              if (authServiceResponse.status) {
-                this.usersService.setItem(this.ref, user).subscribe(() => {
-                  if (this.filter.search('add') >= 0) {
-                    userModule.count = (userModule.count || 0) + 1;
-                  }
+          if (this.filter.search('edit') >= 0) {
+            this.onSave(user, userModule);
+          } else {
+            this.authService
+              .emailSignUp(user.email, password)
+              .pipe(first())
+              .subscribe((authServiceResponse: AuthServiceResponse) => {
+                if (authServiceResponse.status) {
+                  user.uuid = authServiceResponse.data.uid;
+                  this.ref = '|list|' + user.uuid;
 
-                  this.modulesService
-                    .setItem('|user', userModule)
-                    .pipe(first())
-                    .subscribe(() => {
-                      this.message = {
-                        show: true,
-                        label: 'Info',
-                        sublabel: 'Guardado',
-                        color: 'accent',
-                        icon: 'info'
-                      };
-                    });
-                });
-              } else {
-                this.message = {
-                  show: true,
-                  label: 'Error!',
-                  sublabel: authServiceResponse.error.message,
-                  color: 'warn',
-                  icon: 'error'
-                };
-              }
-            });
+                  this.onSave(user, userModule);
+                } else {
+                  this.message = {
+                    show: true,
+                    label: 'Error!',
+                    sublabel: authServiceResponse.error.message,
+                    color: 'warn',
+                    icon: 'error'
+                  };
+                }
+              });
+          }
         } else {
           this.message = {
             show: true,

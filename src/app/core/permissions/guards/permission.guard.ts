@@ -55,6 +55,7 @@ export class PermissionGuard implements CanActivate {
                   let userValid: User;
 
                   for (const path of route_data) {
+                    console.log('>>', path, userPermissions.permissions)
                     const userVerified: boolean =
                       user &&
                       user.emailVerified &&
