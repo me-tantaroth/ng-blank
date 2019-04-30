@@ -376,7 +376,9 @@ export class PageFormComponent implements OnInit, OnChanges {
     combineLatest([pageModule$, currentUser$])
       .pipe(first())
       .subscribe(([pageModule, currentUser]) => {
-        pageModule.count = pageModule.count || 0;
+        pageModule.count =
+          pageModule && pageModule.count ? pageModule.count : 0;
+
         if (
           (currentUser.permissions.page_write &&
             !currentUser.permissions.page_write_limit) ||

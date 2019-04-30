@@ -69,7 +69,7 @@ export class PermissionGuard implements CanActivate {
                         typeof userPermissions === 'object' &&
                         Object.keys(userPermissions) &&
                         Object.keys(userPermissions).length > 0 &&
-                        JSON.stringify(userPermissions.permissions).search(
+                        JSON.stringify(userPermissions.permissions || {}).search(
                           path
                         ) >= 0 &&
                         userPermissions.permissions[path];

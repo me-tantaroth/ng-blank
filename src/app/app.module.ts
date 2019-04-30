@@ -28,7 +28,11 @@ import {
   FooterCorpayandeComponent,
   LayoutTeatroJueteComponent,
   NavbarTeatroJueteComponent,
-  FooterTeatroJueteComponent
+  FooterTeatroJueteComponent,
+  LayoutPijaosCaciquesComponent,
+  NavbarPijaosCaciquesComponent,
+  FooterPijaosCaciquesComponent,
+  LayoutDisabledComponent
 } from './layouts';
 import { AppComponent } from './app.component';
 import {
@@ -59,6 +63,10 @@ import {
     LayoutTeatroJueteComponent,
     NavbarTeatroJueteComponent,
     FooterTeatroJueteComponent,
+    LayoutPijaosCaciquesComponent,
+    NavbarPijaosCaciquesComponent,
+    FooterPijaosCaciquesComponent,
+    LayoutDisabledComponent,
     HomeComponent,
     NotFoundComponent,
     DeniedPageComponent,

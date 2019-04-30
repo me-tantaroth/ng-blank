@@ -153,9 +153,8 @@ export class MenuFormComponent implements OnInit, OnChanges {
     combineLatest([menuModule$, currentUser$])
       .pipe(first())
       .subscribe(([menuModule, currentUser]) => {
-        menuModule.count = menuModule.count || 0;
+        menuModule.count = menuModule && menuModule.count ? menuModule.count : 0;
 
-        console.log('>>>>', menuModule.count, currentUser)
         if (
           (currentUser.permissions.menu_write &&
             !currentUser.permissions.menu_write_limit) ||

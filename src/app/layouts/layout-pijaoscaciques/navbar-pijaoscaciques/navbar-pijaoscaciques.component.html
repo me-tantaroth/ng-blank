@@ -1,0 +1,99 @@
+<div uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
+  <nav class="uk-navbar-container" uk-navbar style="position: relative; z-index: 980;">
+    <div class="uk-navbar-center">
+      <div class="uk-navbar-center-left">
+        <div>
+          <ul class="uk-navbar-nav">
+            <li *ngFor="let item of (menu | async)">
+              <a
+                [href]="[item.url]"
+                [target]="item.externalURL ? '_blank' : '_self'"
+                >{{ item.text || 'Link' }}</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <ng-template
+        let-configItem
+        [ngTemplateOutletContext]="{ $implicit: config | async }"
+        [ngTemplateOutlet]="configT"
+        #configT
+      >
+        <a class="uk-navbar-item uk-logo" routerLink="/">
+          <img
+            *ngIf="configItem?.project.icon"
+            [src]="configItem?.project.icon"
+            [title]="configItem?.project.name"
+            width="90"
+          />
+          <span *ngIf="!configItem?.project.icon">{{
+            configItem?.project.name
+          }}</span>
+        </a>
+      </ng-template>
+      <div class="uk-navbar-center-right">
+        <div>
+          <ul class="uk-navbar-nav">
+            <li><a routerLink="/esal">Documentos ESAL</a></li>
+            <li *ngIf="!(authenticated | async)">
+              <a routerLink="/auth/sign-in">Sign In</a>
+            </li>
+            <li *ngIf="(authenticated | async)">
+              <a routerLink="/auth/sign-out" (click)="signOut()">Sign Out</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<!-- <nav class="uk-navbar-container" uk-navbar>
+  <div class="uk-navbar-left">
+    <ul class="uk-navbar-nav">
+      <li *ngFor="let item of (menu | async)">
+        <a
+          [href]="[item.url]"
+          [target]="item.externalURL ? '_blank' : '_self'"
+          >{{ item.text || 'Link' }}</a
+        >
+      </li>
+    </ul>
+  </div>
+
+  <div class="uk-navbar-center">
+    <ul class="uk-navbar-nav">
+      <li class="uk-active">
+        <ng-template
+          let-configItem
+          [ngTemplateOutletContext]="{ $implicit: config | async }"
+          [ngTemplateOutlet]="configT"
+          #configT
+        >
+          <a routerLink="/">
+            <img
+              *ngIf="configItem?.project.icon"
+              [src]="configItem?.project.icon"
+              [title]="configItem?.project.name"
+              width="200"
+            />
+            <span *ngIf="!configItem?.project.icon">{{ configItem?.project.name }}</span>
+          </a>
+        </ng-template>
+      </li>
+    </ul>
+  </div>
+
+  <div class="uk-navbar-right">
+    <ul class="uk-navbar-nav">
+      <li><a routerLink="/esal">Documentos ESAL</a></li>
+      <li *ngIf="!(authenticated | async)">
+        <a routerLink="/auth/sign-in">Sign In</a>
+      </li>
+      <li *ngIf="(authenticated | async)">
+        <a routerLink="/auth/sign-out" (click)="signOut()">Sign Out</a>
+      </li>
+    </ul>
+  </div>
+</nav> -->

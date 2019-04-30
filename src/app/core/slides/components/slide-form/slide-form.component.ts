@@ -158,7 +158,6 @@ export class SlideFormComponent implements OnInit, OnChanges {
                 previewImage: null,
                 image: url,
                 name: this.f.name.value || file.name,
-                text: file.text,
                 type: file.type,
                 size: file.size,
                 lastModifiedDate: file.lastModifiedDate
@@ -191,7 +190,7 @@ export class SlideFormComponent implements OnInit, OnChanges {
 
     this.ref = '|list|' + this.uuid;
 
-    slide.text = slide.text || slide.name;
+    console.log('>>>', slide)
 
     if (this.filter.search('edit') >= 0) {
       this.ref = this.value;
@@ -230,7 +229,7 @@ export class SlideFormComponent implements OnInit, OnChanges {
     combineLatest([slideModule$, currentUser$])
       .pipe(first())
       .subscribe(([slideModule, currentUser]) => {
-        slideModule.count = slideModule.count || 0;
+        slideModule.count = slideModule && slideModule.count ? slideModule.count : 0;
 
         if (
           (currentUser.permissions.slide_write &&

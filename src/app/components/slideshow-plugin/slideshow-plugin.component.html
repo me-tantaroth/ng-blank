@@ -13,28 +13,37 @@
     >
       <ul class="uk-slideshow-items">
         <li
-          style="background-repeat: repeat-x; background-color: #666666"
           *ngFor="let slide of slideList"
           (click)="goTo(slide)"
-          [ngStyle]="{
-            cursor: slide.url ? 'pointer' : 'normal',
-            backgroundImage: 'url(' + slide.image + ')'
-          }"
-          class="uk-background-contain uk-background-center-center"
           [title]="slide.text"
         >
           <div
-            *ngIf="
-              (slide.text && slide.text !== '') ||
-              (slide.subtitle && slide.subtitle !== '')
-            "
-            class="uk-overlay uk-overlay-primary uk-position-bottom"
+            [ngStyle]="{
+              cursor: slide.url ? 'pointer' : 'normal',
+              backgroundImage: 'url(' + slide.image + ')'
+            }"
+            class="background-image-blur uk-background-secondary uk-background-blend-multiply uk-position-center uk-background-cover uk-background-center-center"
+          ></div>
+          <div
+            class="uk-position-center uk-background-primary"
+            style="height: 400px"
           >
-            <p>
-              {{ slide.text }}
-              <br />
-              <span class="uk-text-meta">{{ slide.subtitle }}</span>
-            </p>
+            <img [src]="slide.image" [alt]="slide.text" style="height: 400px" />
+          </div>
+          <div>
+            <div
+              *ngIf="
+                (slide.text && slide.text !== '') ||
+                (slide.subtitle && slide.subtitle !== '')
+              "
+              class="uk-overlay uk-overlay-primary uk-position-bottom"
+            >
+              <p>
+                {{ slide.text }}
+                <br />
+                <span class="uk-text-meta">{{ slide.subtitle }}</span>
+              </p>
+            </div>
           </div>
         </li>
       </ul>

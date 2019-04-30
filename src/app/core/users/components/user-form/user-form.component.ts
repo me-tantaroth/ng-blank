@@ -216,7 +216,8 @@ export class UserFormComponent implements OnInit, OnChanges {
     combineLatest([userModule$, currentUser$])
       .pipe(first())
       .subscribe(([userModule, currentUser]) => {
-        userModule.count = userModule.count || 0;
+        userModule.count =
+          userModule && userModule.count ? userModule.count : 0;
 
         if (
           (currentUser.permissions.user_write &&

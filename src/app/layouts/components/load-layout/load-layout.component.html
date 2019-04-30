@@ -9,6 +9,13 @@
     </div>
   </app-layout-default>
 </ng-template>
+<ng-template #disabled>
+  <app-layout-disabled>
+    <div *ngIf="config.project.layout === 'disabled'">
+      <ng-container [ngTemplateOutlet]="content"> </ng-container>
+    </div>
+  </app-layout-disabled>
+</ng-template>
 <ng-template #corpayande>
   <app-layout-corpayande>
     <div *ngIf="config.project.layout === 'corpayande'">
@@ -22,6 +29,13 @@
       <ng-container [ngTemplateOutlet]="content"> </ng-container>
     </div>
   </app-layout-teatro-juete>
+</ng-template>
+<ng-template #pijaoscaciques>
+  <app-layout-pijaoscaciques>
+    <div *ngIf="config.project.layout === 'pijaoscaciques'">
+      <ng-container [ngTemplateOutlet]="content"> </ng-container>
+    </div>
+  </app-layout-pijaoscaciques>
 </ng-template>
 
 <ng-container [ngTemplateOutlet]="templates[config?.project.layout]"> </ng-container>

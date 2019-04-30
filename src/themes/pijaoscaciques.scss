@@ -1,0 +1,23 @@
+.pijaoscaciques {
+  .uk-section-primary {
+    background: #f3543a;
+    color: rgba($color: #ffffff, $alpha: .7);
+  }
+  .uk-background-primary {
+    background-color: #f3543a;
+    color: rgba($color: #ffffff, $alpha: .7);
+  }
+  .uk-section-muted {
+    background: #000000;
+    * {
+      color: rgba($color: #ffffff, $alpha: .8);
+    }
+  }
+  .uk-background-muted {
+    background-color: #000000;
+    color: rgba($color: #ffffff, $alpha: .7);
+    * {
+      color: rgba($color: #ffffff, $alpha: .8);
+    }
+  }
+}
