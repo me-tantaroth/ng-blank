@@ -9,7 +9,7 @@
       *ngIf="slideList && slideList.length > 0"
       class="uk-position-relative uk-visible-toggle uk-light"
       tabindex="-1"
-      uk-slideshow="min-height: 300; max-height: 400"
+      uk-slideshow="animation: scale; autoplay: true; autoplay-interval: 5000; min-height: 300; max-height: 400"
     >
       <ul class="uk-slideshow-items">
         <li
@@ -50,16 +50,17 @@
 
       <a
         class="uk-position-center-left uk-position-small uk-hidden-hover"
-        href="#"
+        href="javascript:;"
         uk-slidenav-previous
         uk-slideshow-item="previous"
       ></a>
       <a
         class="uk-position-center-right uk-position-small uk-hidden-hover"
-        href="#"
+        href="javascript:;"
         uk-slidenav-next
         uk-slideshow-item="next"
       ></a>
+
     </div>
   </ng-template>
 </div>
