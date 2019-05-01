@@ -32,7 +32,8 @@ import {
   LayoutPijaosCaciquesComponent,
   NavbarPijaosCaciquesComponent,
   FooterPijaosCaciquesComponent,
-  LayoutDisabledComponent
+  LayoutDisabledComponent,
+  LayoutUnconnectedComponent
 } from './layouts';
 import { AppComponent } from './app.component';
 import {
@@ -67,6 +68,7 @@ import {
     NavbarPijaosCaciquesComponent,
     FooterPijaosCaciquesComponent,
     LayoutDisabledComponent,
+    LayoutUnconnectedComponent,
     HomeComponent,
     NotFoundComponent,
     DeniedPageComponent,

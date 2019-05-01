@@ -16,11 +16,14 @@
       matInput
       #displayName
       type="text"
-      placeholder="Name"
+      placeholder="Nombre"
       id="displayName"
       name="displayName"
       formControlName="displayName"
     />
+    <mat-error *ngIf="f.displayName.hasError('required')">
+      Nombre es <strong>requerido</strong>
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="uk-width-1-1 uk-margin-small">
@@ -28,20 +31,20 @@
       matInput
       #email
       type="email"
-      placeholder="E-mail"
+      placeholder="Correo electrónico"
       id="email"
       name="email"
       formControlName="email"
       (change)="onPathChanged($event)"
     />
     <mat-error *ngIf="f.email.hasError('required')">
-      E-mail is <strong>required</strong>
+      Correo electrónico es <strong>requerido</strong>
     </mat-error>
     <mat-error *ngIf="f.email.hasError('email')">
-      E-mail is <strong>wrong</strong>
+      Correo electrónico es <strong>erroneo</strong>
     </mat-error>
     <mat-error *ngIf="f.email.hasError('pattern')">
-      E-mail is not correct
+      Correo electrónico no es correcto
     </mat-error>
   </mat-form-field>
 
@@ -50,7 +53,7 @@
       <input
         matInput
         type="text"
-        placeholder="Username"
+        placeholder="Usuario"
         formControlName="username"
         name="username"
         #username
@@ -61,7 +64,7 @@
         matInput
         #phoneNumber
         type="tel"
-        placeholder="Phone Number"
+        placeholder="Télefono"
         id="phoneNumber"
         name="phoneNumber"
         formControlName="phoneNumber"
@@ -72,7 +75,7 @@
     <input
       matInput
       type="password"
-      [placeholder]="(value ? 'Current ' : '') + 'Password'"
+      [placeholder]="(value ? 'Actual ' : '') + 'Contraseña'"
       formControlName="password"
       name="password"
       required
@@ -80,17 +83,17 @@
       (change)="addConfirmPassword(password.value)"
     />
     <mat-error *ngIf="f.password.hasError('required')">
-      Password is <strong>required</strong>
+      Contraseña es <strong>requerida</strong>
     </mat-error>
     <mat-error *ngIf="f.password.hasError('pattern')">
-      Password pattern is not correct, example: <strong>(P@ssw0rd)</strong>
+      Contraseña no es correcta, ejemplo: <strong>(P@ssw0rd)</strong>
     </mat-error>
     <mat-error *ngIf="f.password.hasError('minlength')">
-      Required min length
+      Requerido mínima longitud de
       <strong>{{ f.password.errors.minlength.requiredLength }}</strong>
     </mat-error>
     <mat-error *ngIf="f.password.hasError('maxlength')">
-      Required max length
+      Required máxima longitud de
       <strong>{{ f.password.errors.maxlength.requiredLength }}</strong>
     </mat-error>
   </mat-form-field>
@@ -100,28 +103,28 @@
       <input
         matInput
         type="password"
-        placeholder="Confirm Password"
+        placeholder="Confirmar Contraseña"
         formControlName="confirmPassword"
         name="confirmPassword"
         required
         #confirmPassword
       />
       <mat-error *ngIf="f.confirmPassword.hasError('required')">
-        Confirm Password is <strong>required</strong>
+        Confirmar Contraseña es <strong>requerida</strong>
       </mat-error>
       <mat-error *ngIf="f.confirmPassword.hasError('notMatched')">
-        Confirm Password is not <strong>match</strong>
+        Confirmar Contraseña no <strong>coincide</strong>
       </mat-error>
       <mat-error *ngIf="f.confirmPassword.hasError('pattern')">
-        Confirm Password pattern is not correct, example:
+        Confirmar Contraseña no es correcta, ejemplo:
         <strong>(P@ssw0rd)</strong>
       </mat-error>
       <mat-error *ngIf="f.confirmPassword.hasError('minlength')">
-        Required min length
+        Requerido mínima longitud de
         <strong>{{ f.confirmPassword.errors.minlength.requiredLength }}</strong>
       </mat-error>
       <mat-error *ngIf="f.confirmPassword.hasError('maxlength')">
-        Required max length
+        Required máxima longitud de
         <strong>{{ f.confirmPassword.errors.maxlength.requiredLength }}</strong>
       </mat-error>
     </mat-form-field>
@@ -135,7 +138,7 @@
       type="submit"
       [disabled]="submitted"
     >
-      Save
+      Guardar
     </button>
   </mat-card-actions>
 </tnt-barn-form>

@@ -66,7 +66,7 @@ export class UserFormComponent implements OnInit, OnChanges {
     this.uuid = this.afs.createId();
 
     this.form = new FormGroup({
-      displayName: new FormControl(''),
+      displayName: new FormControl('', Validators.required),
       email: new FormControl('', [
         Validators.required,
         Validators.email,

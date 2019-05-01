@@ -16,6 +16,7 @@ export class LoadLayoutComponent implements OnInit {
 
   @ViewChild('default') default;
   @ViewChild('disabled') disabled;
+  @ViewChild('unconnected') unconnected;
   @ViewChild('corpayande') corpayande;
   @ViewChild('teatroJuete') teatroJuete;
   @ViewChild('pijaoscaciques') pijaoscaciques;
@@ -25,6 +26,7 @@ export class LoadLayoutComponent implements OnInit {
   templates = {
     default: null,
     disabled: null,
+    unconnected: null,
     corpayande: null,
     teatroJuete: null,
     pijaoscaciques: null
@@ -37,6 +39,7 @@ export class LoadLayoutComponent implements OnInit {
 
     this.templates.default = this.default;
     this.templates.disabled = this.disabled;
+    this.templates.unconnected = this.unconnected;
     this.templates.corpayande = this.corpayande;
     this.templates.teatroJuete = this.teatroJuete;
     this.templates.pijaoscaciques = this.pijaoscaciques;

@@ -21,6 +21,9 @@
       name="name"
       formControlName="name"
     />
+    <mat-error *ngIf="f.name.hasError('required')">
+      Nombre es <strong>requerido</strong>
+    </mat-error>
   </mat-form-field>
 
   <app-file-upload
@@ -49,6 +52,9 @@
       >
         <mat-form-field class="uk-width-1-1">
           <input matInput formControlName="image" class="uk-hidden" />
+          <mat-error *ngIf="f.name.hasError('required')">
+            Imagen es <strong>requerida</strong>
+          </mat-error>
           <mat-hint
             align="end"
             [ngClass]="{

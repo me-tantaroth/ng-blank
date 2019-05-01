@@ -16,6 +16,9 @@ export {
   LayoutDisabledComponent
 } from './layout-disabled/layout-disabled.component';
 export {
+  LayoutUnconnectedComponent
+} from './layout-unconnected/layout-unconnected.component';
+export {
   NavbarCorpayandeComponent,
   FooterCorpayandeComponent
 } from './layout-corpayande';
@@ -31,6 +34,7 @@ export {
 export const LAYOUTS: object = {
   default: true,
   disabled: true,
+  unconnected: true,
   corpayande: true,
   teatroJuete: true,
   pijaoscaciques: true

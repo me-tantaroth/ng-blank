@@ -102,6 +102,9 @@
       name="name"
       formControlName="name"
     />
+    <mat-error *ngIf="f.name.hasError('required')">
+      Nombre es <strong>requerido</strong>
+    </mat-error>
   </mat-form-field>
 
   <mat-divider></mat-divider>

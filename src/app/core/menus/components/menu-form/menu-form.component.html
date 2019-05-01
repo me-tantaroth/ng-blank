@@ -42,6 +42,9 @@
       name="name"
       formControlName="name"
     />
+    <mat-error *ngIf="f.name.hasError('required')">
+      Nombre es <strong>requerido</strong>
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="uk-width-1-1 uk-margin-small">
@@ -53,6 +56,9 @@
       name="url"
       formControlName="url"
     />
+    <mat-error *ngIf="f.name.hasError('required')">
+      URL es <strong>requerida</strong>
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="uk-width-1-1 uk-margin-small">
@@ -64,6 +70,9 @@
       name="text"
       formControlName="text"
     />
+    <mat-error *ngIf="f.name.hasError('required')">
+      Texto es <strong>requerido</strong>
+    </mat-error>
   </mat-form-field>
 
   <div class="uk-width-1-1 uk-margin-small">

@@ -23,32 +23,32 @@ export class LayoutAdminComponent implements OnInit {
     {
       icon: 'home',
       route: '/admin/dashboard',
-      title: 'Dashboard'
+      title: 'Tablero'
     },
     {
       icon: 'people',
       route: '/admin/user/enabled',
-      title: 'Users'
+      title: 'Usuarios'
     },
     {
       icon: 'insert_drive_file',
       route: '/admin/page/enabled',
-      title: 'Pages'
+      title: 'Páginas'
     },
     {
       icon: 'slideshow',
       route: '/admin/slide/enabled',
-      title: 'Slides'
+      title: 'Carrusel'
     },
     {
       icon: 'menu',
       route: '/admin/menu/enabled',
-      title: 'Menus'
+      title: 'Menú'
     },
     {
       icon: 'folder',
       route: '/admin/file/enabled',
-      title: 'Folder'
+      title: 'Archivos'
     }
     // {
     //   icon: 'delete',
@@ -57,20 +57,20 @@ export class LayoutAdminComponent implements OnInit {
     // }
   ];
   usermenu: any[] = [
-    {
-      icon: 'swap_horiz',
-      route: '.',
-      title: 'Switch account'
-    },
+    // {
+    //   icon: 'swap_horiz',
+    //   route: '.',
+    //   title: 'Switch account'
+    // },
     {
       icon: 'tune',
       route: '/admin/user/profile',
-      title: 'Account settings'
+      title: 'Cuenta'
     },
     {
       icon: 'exit_to_app',
       route: '/auth/sign-out',
-      title: 'Sign out'
+      title: 'Salir'
     }
   ];
 

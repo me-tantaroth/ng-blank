@@ -79,7 +79,7 @@ export class SlideFormComponent implements OnInit, OnChanges {
       name: new FormControl('', Validators.required),
       text: new FormControl(''),
       subtitle: new FormControl(''),
-      image: new FormControl(''),
+      image: new FormControl('', Validators.required),
       customPath: new FormControl(''),
       backPath: new FormControl(''),
       absolutePath: new FormControl(''),
@@ -113,7 +113,6 @@ export class SlideFormComponent implements OnInit, OnChanges {
   }
 
   goTo(url, e) {
-    console.log(url, e);
     e.stopPropagation();
     e.preventDefault();
 
@@ -189,8 +188,6 @@ export class SlideFormComponent implements OnInit, OnChanges {
     );
 
     this.ref = '|list|' + this.uuid;
-
-    console.log('>>>', slide)
 
     if (this.filter.search('edit') >= 0) {
       this.ref = this.value;

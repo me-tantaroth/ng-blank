@@ -16,6 +16,13 @@
     </div>
   </app-layout-disabled>
 </ng-template>
+<ng-template #unconnected>
+  <app-layout-unconnected>
+    <div *ngIf="config.project.layout === 'unconnected'">
+      <ng-container [ngTemplateOutlet]="content"> </ng-container>
+    </div>
+  </app-layout-unconnected>
+</ng-template>
 <ng-template #corpayande>
   <app-layout-corpayande>
     <div *ngIf="config.project.layout === 'corpayande'">

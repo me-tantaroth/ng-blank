@@ -69,12 +69,12 @@ export class MenuFormComponent implements OnInit, OnChanges {
     };
     this.form = new FormGroup({
       name: new FormControl('', Validators.required),
-      text: new FormControl(''),
+      text: new FormControl('', Validators.required),
       uuid: new FormControl(''),
       customPath: new FormControl(''),
       backPath: new FormControl(''),
       absolutePath: new FormControl(''),
-      url: new FormControl(''),
+      url: new FormControl('', Validators.required),
       externalURL: new FormControl(false),
       root: new FormControl(true),
       blocked: new FormControl(true),

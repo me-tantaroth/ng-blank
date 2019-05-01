@@ -20,6 +20,9 @@
       name="name"
       formControlName="name"
     />
+    <mat-error *ngIf="f.name.hasError('required')">
+      Nombre es <strong>requerido</strong>
+    </mat-error>
   </mat-form-field>
 
   <app-file-upload
@@ -91,6 +94,9 @@
     />
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
+    <mat-error *ngIf="f.postedAt.hasError('required')">
+      Fecha de publicación es <strong>requerido</strong>
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="uk-width-1-1 uk-margin-small">
@@ -103,6 +109,9 @@
       formControlName="text"
       (change)="onPathChanged($event)"
     />
+    <mat-error *ngIf="f.text.hasError('required')">
+      Título es <strong>requerido</strong>
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="uk-width-1-1 uk-margin-small">
@@ -114,6 +123,9 @@
       name="url"
       formControlName="url"
     />
+    <mat-error *ngIf="f.url.hasError('required')">
+      Ruta es <strong>requerido</strong>
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="uk-width-1-1 uk-margin-small">
@@ -148,6 +160,9 @@
       [froalaEditor]="optionsEditor"
       formControlName="content"
     ></textarea>
+    <mat-error *ngIf="f.content.hasError('required')">
+      Contenido es <strong>requerido</strong>
+    </mat-error>
   </mat-form-field>
 
   <mat-divider></mat-divider>

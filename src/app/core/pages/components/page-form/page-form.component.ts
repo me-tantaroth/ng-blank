@@ -59,6 +59,7 @@ export class PageFormComponent implements OnInit, OnChanges {
   };
   errorMessages: any;
   optionsEditor: Object = {
+    placeholderText: 'Empieza escribiendo algo..',
     htmlAllowedAttrs: ['.*'],
     htmlAllowedTags: ['.*'],
     charCounterCount: true,
@@ -200,10 +201,10 @@ export class PageFormComponent implements OnInit, OnChanges {
     this.form = new FormGroup({
       uuid: new FormControl(''),
       name: new FormControl('', Validators.required),
-      text: new FormControl(''),
+      text: new FormControl('', Validators.required),
       description: new FormControl(''),
       keywords: new FormControl(''),
-      content: new FormControl(''),
+      content: new FormControl('', Validators.required),
       image: new FormControl(''),
       customPath: new FormControl(''),
       backPath: new FormControl(''),
@@ -211,8 +212,8 @@ export class PageFormComponent implements OnInit, OnChanges {
       type: new FormControl(),
       size: new FormControl(''),
       lastModifiedDate: new FormControl(''),
-      url: new FormControl(''),
-      postedAt: new FormControl(new Date()),
+      url: new FormControl('', Validators.required),
+      postedAt: new FormControl(new Date(), Validators.required),
       root: new FormControl(true),
       blocked: new FormControl(true),
       deleted: new FormControl(false)
