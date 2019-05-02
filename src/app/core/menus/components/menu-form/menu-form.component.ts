@@ -20,8 +20,8 @@ import { MenuService } from '../../services/menu.service';
 
 import { Menu } from '../../models/menu';
 import { Message } from '../../../../models/message';
-import { Module } from 'src/app/core/modules/models/module';
-import { User } from 'src/app/core/users/models/user';
+import { Module } from '../../../../core/modules/models/module';
+import { User } from '../../../../core/users/models/user';
 
 @Component({
   selector: 'app-menu-form',

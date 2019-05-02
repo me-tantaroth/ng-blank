@@ -6,7 +6,7 @@ import { StoreService } from 'ng-barn';
 import { ConfigService } from './shared/services/config.service';
 import { LAYOUTS } from './layouts';
 
-import { environment } from 'src/environments/environment';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',

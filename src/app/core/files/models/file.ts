@@ -21,7 +21,7 @@ export interface File {
   createdAt: Date;
 }
 export class File {
-  constructor(file) {
+  constructor(file = {}) {
     return this.format(file);
   }
 

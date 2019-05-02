@@ -17,7 +17,7 @@ export interface Menu {
   createdAt: Date;
 }
 export class Menu {
-  constructor(menu) {
+  constructor(menu = {}) {
     return this.format(menu);
   }
 

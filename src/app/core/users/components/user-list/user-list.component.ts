@@ -9,8 +9,8 @@ import { ModulesService } from '../../../modules/services/modules.service';
 import { UsersService } from '../../../users/services/users.service';
 import { UserService } from '../../../users/services/user.service';
 
-import { Module } from 'src/app/core/modules/models/module';
-import { User } from 'src/app/core/users/models/user';
+import { Module } from '../../../../core/modules/models/module';
+import { User } from '../../../../core/users/models/user';
 
 @Component({
   selector: 'app-user-list',

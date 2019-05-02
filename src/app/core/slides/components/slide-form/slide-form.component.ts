@@ -24,8 +24,8 @@ import { UserService } from '../../../users/services/user.service';
 
 import { Slide } from '../../models/slide';
 import { Message } from '../../../../models/message';
-import { Module } from 'src/app/core/modules/models/module';
-import { User } from 'src/app/core/users/models/user';
+import { Module } from '../../../../core/modules/models/module';
+import { User } from '../../../../core/users/models/user';
 
 @Component({
   selector: 'app-slide-form',

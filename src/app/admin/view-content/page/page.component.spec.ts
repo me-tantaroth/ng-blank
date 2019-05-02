@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PageSaveComponent } from './page-save.component';
+import { PageComponent } from './page.component';
 
-describe('PageSaveComponent', () => {
-  let component: PageSaveComponent;
-  let fixture: ComponentFixture<PageSaveComponent>;
+describe('PageComponent', () => {
+  let component: PageComponent;
+  let fixture: ComponentFixture<PageComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PageSaveComponent ]
+      declarations: [ PageComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PageSaveComponent);
+    fixture = TestBed.createComponent(PageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

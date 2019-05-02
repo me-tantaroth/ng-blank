@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Title, Meta } from '@angular/platform-browser';
 import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
 import { Observable } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 import { Config, ConfigService } from '../../shared/services/config.service';
@@ -21,6 +22,8 @@ export class PageViewComponent implements OnInit {
   path: string;
 
   constructor(
+    private title: Title,
+    private meta: Meta,
     private configService: ConfigService,
     private router: Router,
     private route: ActivatedRoute,
@@ -50,6 +53,22 @@ export class PageViewComponent implements OnInit {
   }
 
   getPage(path) {
-    this.page = this.pageService.getItem('|list|' + path);
+    this.page = this.pageService.getItem('|list|' + path).pipe(
+      map((page: Page) => {
+        this.title.setTitle(page.text);
+        this.meta.addTags([
+          { name: 'description', content: page.description },
+          { name: 'keywords', content: page.keywords },
+          { name: 'theme-color', content: page.theme.color },
+          { name: 'twitter:card', content: 'summary' },
+          { name: 'og:url', content: page.url },
+          { name: 'og:title', content: page.text },
+          { name: 'og:description', content: page.description },
+          { name: 'og:image', content: page.image }
+        ]);
+        console.log('## PAGE', page);
+        return page;
+      })
+    );
   }
 }

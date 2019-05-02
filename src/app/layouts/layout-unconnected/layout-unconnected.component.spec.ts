@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LayoutUnconnnectedComponent } from './layout-unconnected.component';
+import { LayoutUnconnectedComponent } from './layout-unconnected.component';
 
-describe('LayoutUnconnnectedComponent', () => {
-  let component: LayoutUnconnnectedComponent;
-  let fixture: ComponentFixture<LayoutUnconnnectedComponent>;
+describe('LayoutUnconnectedComponent', () => {
+  let component: LayoutUnconnectedComponent;
+  let fixture: ComponentFixture<LayoutUnconnectedComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LayoutUnconnnectedComponent ]
+      declarations: [ LayoutUnconnectedComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LayoutUnconnnectedComponent);
+    fixture = TestBed.createComponent(LayoutUnconnectedComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

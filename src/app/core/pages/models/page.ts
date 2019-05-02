@@ -33,7 +33,7 @@ export interface Page {
   createdAt: Date;
 }
 export class Page {
-  constructor(page) {
+  constructor(page = {}) {
     return this.format(page);
   }
 

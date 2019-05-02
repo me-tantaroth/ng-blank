@@ -20,7 +20,7 @@ export interface Slide {
   createdAt: Date;
 }
 export class Slide {
-  constructor(slide) {
+  constructor(slide = {}) {
     return this.format(slide);
   }
 
