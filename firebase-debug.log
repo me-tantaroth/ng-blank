@@ -1,0 +1,17 @@
+[debug] [2019-05-02T01:42:00.459Z] ----------------------------------------------------------------------
+[debug] [2019-05-02T01:42:00.461Z] Command:       /home/tantaroth/.nvm/versions/node/v10.15.3/bin/node /home/tantaroth/.nvm/versions/node/v10.15.3/bin/firebase serve --only hosting,functions
+[debug] [2019-05-02T01:42:00.461Z] CLI Version:   6.7.1
+[debug] [2019-05-02T01:42:00.461Z] Platform:      linux
+[debug] [2019-05-02T01:42:00.461Z] Node Version:  v10.15.3
+[debug] [2019-05-02T01:42:00.461Z] Time:          Wed May 01 2019 20:42:00 GMT-0500 (Colombia Standard Time)
+[debug] [2019-05-02T01:42:00.461Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-05-02T01:42:00.465Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-05-02T01:42:00.466Z] > authorizing via signed-in user
+[debug] [2019-05-02T01:42:00.466Z] [iam] checking project blank-fire for permissions ["firebase.projects.get"]
+[debug] [2019-05-02T01:42:00.467Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/blank-fire:testIamPermissions  
+
+[debug] [2019-05-02T01:42:01.192Z] <<< HTTP RESPONSE 200
+[debug] [2019-05-02T01:42:01.196Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/blank-fire  
+ 
+[debug] [2019-05-02T01:42:01.722Z] <<< HTTP RESPONSE 200
