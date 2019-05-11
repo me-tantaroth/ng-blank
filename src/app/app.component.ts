@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { Router, Event, NavigationEnd } from '@angular/router';
 import { TdLoadingService } from './covalent.module';
 
 import { StoreService } from 'ng-barn';
-import { ConfigService } from './shared/services/config.service';
+import { ConfigService, Config } from './shared/services/config.service';
 import { LAYOUTS } from './layouts';
 
 import { environment } from '../environments/environment';
@@ -18,6 +19,7 @@ export class AppComponent implements OnInit {
   title = 'ng-blank';
 
   constructor(
+    @Inject(DOCUMENT) private _document: HTMLDocument,
     private router: Router,
     private _loadingService: TdLoadingService,
     private store: StoreService,
@@ -75,5 +77,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this._loadingService.resolve('loader');
+
+    console.log('> ENTER')
+    this.configService.get().subscribe(
+      (config: Config) => {
+        this._document.querySelector('link[rel="icon"]').setAttribute('href', config.project.favicon);
+        console.log('>>> CONFIG', config);
+      }
+    );
   }
 }

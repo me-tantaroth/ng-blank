@@ -14,6 +14,7 @@ export interface Project {
   layout?: string;
   lang?: string;
   icon?: string;
+  favicon?: string;
 }
 
 export interface Config {
@@ -44,6 +45,7 @@ export class ConfigService {
               this.config.project.name = project.name;
               this.config.project.layout = project.layout;
               this.config.project.icon = project.icon;
+              this.config.project.favicon = project.favicon;
 
               this.projectsCollection
                 .doc(this.config.project.uuid)
